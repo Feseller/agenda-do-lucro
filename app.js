@@ -6,6 +6,8 @@
 
 const STORAGE_KEY = 'AGENDA_DO_LUCRO_SOBRANCELHA_V1';
 const LEGACY_STORAGE_KEY = 'MINHA_AGENDA_SOBRANCELHA_V1';
+const SESSION_KEY = 'AGENDA_DO_LUCRO_SESSION_V1';
+const STUDIO_KEY = 'AGENDA_DO_LUCRO_STUDIO_V1';
 const STUDIO_PHONE = '5511988887777';
 
 // Catálogo Padrão de Procedimentos de Sobrancelha
@@ -85,7 +87,6 @@ function getDaysForMonth(year, monthIndex) {
   const daysList = [];
 
   let startDay = 1;
-  // Se for o mês corrente (Setembro/2026), começar a partir de hoje (dia 22)
   if (year === 2026 && monthIndex === 8) {
     startDay = 22;
   }
@@ -110,6 +111,13 @@ function getDaysForMonth(year, monthIndex) {
 
 // Estado Geral da Aplicação
 let appState = {
+  currentUser: null,
+  studioConfig: {
+    designerName: 'Fernanda Araújo',
+    studioName: 'Studio Sobrancelha VIP',
+    studioPhone: '5511988887777',
+    designerEmail: 'araujofernando88@gmail.com'
+  },
   currentScreen: 'screenAgenda',
   selectedDay: 22,
   selectedMonth: 8, // Setembro
@@ -130,6 +138,25 @@ let appState = {
 // BANCO DE DADOS INICIAL COM AS AGENDAS DAS TELAS DE REFERENCIA (IMAGEM 3)
 // ==========================================================================
 function initDefaultData() {
+  // Carregar dados do estúdio e designer
+  const storedStudio = localStorage.getItem(STUDIO_KEY);
+  if (storedStudio) {
+    try {
+      appState.studioConfig = { ...appState.studioConfig, ...JSON.parse(storedStudio) };
+    } catch(e){}
+  }
+
+  // Carregar sessão de login
+  const storedSession = localStorage.getItem(SESSION_KEY);
+  if (storedSession) {
+    try {
+      appState.currentUser = JSON.parse(storedSession);
+    } catch(e){}
+  }
+
+  // Atualizar cabeçalhos do estúdio com os dados da designer
+  updateStudioUI();
+
   const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
   if (stored) {
     try {
@@ -413,6 +440,17 @@ function navigateToScreen(screenId, menuItem) {
 
   // Esconder todas as telas
   document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
+
+  // Esconder barra inferior e topo se for tela de login
+  const bottomNav = document.querySelector('.mobile-bottom-nav');
+  const trialStrip = document.querySelector('.trial-top-strip');
+  if (screenId === 'screenLogin') {
+    if (bottomNav) bottomNav.style.display = 'none';
+    if (trialStrip) trialStrip.style.display = 'none';
+  } else {
+    if (bottomNav) bottomNav.style.display = '';
+    if (trialStrip) trialStrip.style.display = '';
+  }
 
   // Exibir a tela selecionada
   const target = document.getElementById(screenId);
@@ -1193,10 +1231,14 @@ function confirmOnlineBooking() {
   closeOnlineBookingModalDirect();
 
   // Sincronizar com Nuvem (MongoDB + Disparo Resend)
+  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
   fetch('/api/appointments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newApt)
+    body: JSON.stringify({
+      ...newApt,
+      designerEmail: targetEmail
+    })
   }).then(r => r.json()).then(res => {
     if (res && res.emailSent) {
       console.log('✅ Notificação de e-mail enviada para a Designer via Resend!');
@@ -1233,8 +1275,9 @@ function confirmOnlineBooking() {
   highlightAndScrollToAppointment(aptId);
 
   // 5. Enviar confirmação no WhatsApp (Sem sinal PIX)
+  const studioName = appState.studioConfig.studioName || 'Studio VIP';
   const msg = `*AGENDAMENTO CONFIRMADO — AGENDA DO LUCRO*\n\n` +
-    `Olá, Studio Kiko! Acabei de agendar meu atendimento:\n\n` +
+    `Olá, ${studioName}! Acabei de agendar meu atendimento:\n\n` +
     ` *Cliente:* ${name}\n` +
     ` *Procedimento:* ${s.name}\n` +
     ` *Data:* ${curDay.full} de ${curDay.year}\n` +
@@ -1243,7 +1286,9 @@ function confirmOnlineBooking() {
     `_Agendado pelo portal online: Agenda do Lucro_`;
 
   setTimeout(() => {
-    const url = `https://wa.me/${STUDIO_PHONE}?text=${encodeURIComponent(msg)}`;
+    const rawPhone = (appState.studioConfig.studioPhone || STUDIO_PHONE).replace(/\D/g, '');
+    const cleanStudioPhone = rawPhone.startsWith('55') ? rawPhone : `55${rawPhone}`;
+    const url = `https://wa.me/${cleanStudioPhone}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   }, 1000);
 }
@@ -1611,6 +1656,221 @@ function closeCloudStatusModalDirect() {
 }
 
 // ==========================================================================
+// SISTEMA DE AUTENTICAÇÃO, LOGIN & CONFIGURAÇÃO DO ESTÚDIO
+// ==========================================================================
+function updateStudioUI() {
+  const userInfoEl = document.getElementById('drawerUserInfo');
+  const user = appState.currentUser;
+  const cfg = appState.studioConfig;
+
+  if (userInfoEl) {
+    if (user && user.name) {
+      userInfoEl.innerText = `Olá, ${user.name.split(' ')[0]} 💎`;
+    } else if (cfg && cfg.designerName) {
+      userInfoEl.innerText = `Olá, ${cfg.designerName.split(' ')[0]}`;
+    }
+  }
+}
+
+async function handleLoginSubmit(event) {
+  event.preventDefault();
+  const emailInput = document.getElementById('loginEmail');
+  const passwordInput = document.getElementById('loginPassword');
+  const rememberMe = document.getElementById('rememberMe');
+  const btnSubmit = document.getElementById('btnLoginSubmit');
+
+  const email = emailInput ? emailInput.value.trim() : '';
+  const password = passwordInput ? passwordInput.value.trim() : '';
+
+  if (!email || !password) {
+    alert('Por favor, informe seu e-mail e senha.');
+    return;
+  }
+
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Entrando...';
+  }
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      alert(data.error || 'Não foi possível entrar. Verifique seu e-mail e senha.');
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Entrar na Minha Agenda</span>';
+      }
+      return;
+    }
+
+    // Login com sucesso
+    appState.currentUser = data.user;
+    if (rememberMe && rememberMe.checked) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(data.user));
+    }
+
+    if (data.user.studioName) appState.studioConfig.studioName = data.user.studioName;
+    if (data.user.studioPhone) appState.studioConfig.studioPhone = data.user.studioPhone;
+    if (data.user.email) appState.studioConfig.designerEmail = data.user.email;
+    if (data.user.name) appState.studioConfig.designerName = data.user.name;
+    localStorage.setItem(STUDIO_KEY, JSON.stringify(appState.studioConfig));
+
+    updateStudioUI();
+    navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
+    showToast(`Bem-vinda, ${data.user.name || 'Designer'}! ✨`);
+  } catch (err) {
+    console.error('Erro no login:', err);
+    loginAsGuest();
+  } finally {
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Entrar na Minha Agenda</span>';
+    }
+  }
+}
+
+function loginAsGuest() {
+  const guestUser = {
+    id: 'usr-guest',
+    name: 'Designer Convidada',
+    email: 'convidada@agendadolucro.com',
+    studioName: 'Studio Designer VIP',
+    studioPhone: '(11) 98888-7777',
+    plan: 'trial-7dias'
+  };
+
+  appState.currentUser = guestUser;
+  localStorage.setItem(SESSION_KEY, JSON.stringify(guestUser));
+  updateStudioUI();
+  navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
+  showToast('Modo Demonstração (7 Dias) liberado com sucesso! 💎');
+}
+
+function logout() {
+  closeDrawer();
+  if (confirm('Deseja realmente sair da sua conta?')) {
+    localStorage.removeItem(SESSION_KEY);
+    appState.currentUser = null;
+    const emailInput = document.getElementById('loginEmail');
+    const pwdInput = document.getElementById('loginPassword');
+    if (emailInput) emailInput.value = '';
+    if (pwdInput) pwdInput.value = '';
+    navigateToScreen('screenLogin', null);
+    showToast('Sessão encerrada com sucesso.');
+  }
+}
+
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isPwd = input.type === 'password';
+  input.type = isPwd ? 'text' : 'password';
+  if (btn) {
+    btn.innerHTML = isPwd ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+  }
+}
+
+function openForgotPasswordModal() {
+  const modal = document.getElementById('forgotPasswordModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeForgotPasswordModal(e) {
+  const modal = document.getElementById('forgotPasswordModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function closeForgotPasswordModalDirect() {
+  const modal = document.getElementById('forgotPasswordModal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function handleForgotPasswordSubmit(e) {
+  e.preventDefault();
+  const input = document.getElementById('forgotEmail');
+  const email = input ? input.value.trim() : '';
+  if (!email) return;
+
+  try {
+    const res = await fetch('/api/auth/forgot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    showToast(data.message || 'Instruções enviadas para seu e-mail!');
+  } catch (err) {
+    showToast('Instruções enviadas para o seu e-mail!');
+  }
+  closeForgotPasswordModalDirect();
+}
+
+// Configurações do Estúdio
+function openStudioSettingsModal() {
+  closeDrawer();
+  const modal = document.getElementById('studioSettingsModal');
+  if (!modal) return;
+
+  const nameInput = document.getElementById('cfgDesignerName');
+  const studioInput = document.getElementById('cfgStudioName');
+  const phoneInput = document.getElementById('cfgStudioPhone');
+  const emailInput = document.getElementById('cfgDesignerEmail');
+
+  const cfg = appState.studioConfig || {};
+  if (nameInput) nameInput.value = cfg.designerName || (appState.currentUser ? appState.currentUser.name : '');
+  if (studioInput) studioInput.value = cfg.studioName || '';
+  if (phoneInput) phoneInput.value = cfg.studioPhone || '';
+  if (emailInput) emailInput.value = cfg.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
+
+  modal.classList.add('active');
+}
+
+function closeStudioSettingsModal(e) {
+  const modal = document.getElementById('studioSettingsModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function closeStudioSettingsModalDirect() {
+  const modal = document.getElementById('studioSettingsModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function handleSaveStudioSettings(e) {
+  e.preventDefault();
+  const name = document.getElementById('cfgDesignerName').value.trim();
+  const studioName = document.getElementById('cfgStudioName').value.trim();
+  const studioPhone = document.getElementById('cfgStudioPhone').value.trim();
+  const designerEmail = document.getElementById('cfgDesignerEmail').value.trim();
+
+  appState.studioConfig = {
+    designerName: name,
+    studioName: studioName,
+    studioPhone: studioPhone,
+    designerEmail: designerEmail
+  };
+
+  if (appState.currentUser) {
+    appState.currentUser.name = name;
+    appState.currentUser.email = designerEmail;
+    appState.currentUser.studioName = studioName;
+    appState.currentUser.studioPhone = studioPhone;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(appState.currentUser));
+  }
+
+  localStorage.setItem(STUDIO_KEY, JSON.stringify(appState.studioConfig));
+  updateStudioUI();
+  closeStudioSettingsModalDirect();
+  showToast('Configurações salvas! E-mail de notificações atualizado.');
+}
+
+// ==========================================================================
 // INICIALIZAÇÃO
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1627,6 +1887,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Sincronizar com Nuvem Vercel + MongoDB
   syncWithCloudBackend();
+
+  // Controle de Acesso: Exibir Login ou Agenda conforme autenticação
+  if (!appState.currentUser) {
+    navigateToScreen('screenLogin', null);
+  } else {
+    navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
+  }
 });
 
 

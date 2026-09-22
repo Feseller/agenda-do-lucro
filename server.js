@@ -23,12 +23,15 @@ const MIME_TYPES = {
 };
 
 // Carregar manipuladores de API Serverless locais
-let apiAppointments, apiServices, apiClients, apiHealth;
+let apiAppointments, apiServices, apiClients, apiHealth, apiKiwify, apiLogin, apiForgot;
 try {
   apiAppointments = (await import('./api/appointments.js')).default;
   apiServices = (await import('./api/services.js')).default;
   apiClients = (await import('./api/clients.js')).default;
   apiHealth = (await import('./api/health.js')).default;
+  apiKiwify = (await import('./api/webhook/kiwify.js')).default;
+  apiLogin = (await import('./api/auth/login.js')).default;
+  apiForgot = (await import('./api/auth/forgot.js')).default;
 } catch (e) {
   console.warn('Aviso ao carregar módulos API locais:', e.message);
 }
@@ -37,7 +40,10 @@ const apiHandlers = {
   '/api/appointments': apiAppointments,
   '/api/services': apiServices,
   '/api/clients': apiClients,
-  '/api/health': apiHealth
+  '/api/health': apiHealth,
+  '/api/webhook/kiwify': apiKiwify,
+  '/api/auth/login': apiLogin,
+  '/api/auth/forgot': apiForgot
 };
 
 const server = http.createServer(async (req, res) => {
@@ -117,5 +123,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Agenda do Lucro Server rodando em http://localhost:${PORT}`);
-  console.log(`APIs ativas: /api/appointments, /api/services, /api/clients, /api/health`);
+  console.log(`APIs ativas: /api/appointments, /api/services, /api/clients, /api/health, /api/webhook/kiwify, /api/auth/login`);
 });

@@ -195,20 +195,20 @@
               <span class="drawer-badge-new" style="background: #10B981;">Online</span>
             </a>
 
-            <a href="javascript:void(0)" class="drawer-item" onclick="showToast('Configurações do aplicativo')">
-              <i class="fa-solid fa-gear"></i>
-              <span>Configurações</span>
+            <a href="javascript:void(0)" class="drawer-item" onclick="openStudioSettingsModal()">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Configurações do Estúdio</span>
             </a>
 
-            <a href="javascript:void(0)" class="drawer-item exit" onclick="showToast('Saindo da sessão...')">
+            <a href="javascript:void(0)" class="drawer-item exit" onclick="logout()">
               <i class="fa-solid fa-arrow-right-from-bracket"></i>
-              <span>Sair</span>
+              <span>Sair da Conta</span>
             </a>
           </div>
 
           <!-- Rodapé do Drawer -->
           <div class="drawer-footer">
-            <div class="drawer-user-info">Olá, Kiko Designer</div>
+            <div class="drawer-user-info" id="drawerUserInfo">Olá, Designer VIP</div>
             <button class="drawer-help-btn" onclick="showToast('Central de Suporte Agenda do Lucro')">
               <i class="fa-regular fa-circle-question"></i>
               <span>Suporte / Ajuda</span>
@@ -222,6 +222,79 @@
            CONTEÚDO PRINCIPAL (TELAS NAVEGÁVEIS)
            ==================================================================== -->
       <div class="app-screen-content" id="appScreenContent">
+
+        <!-- ------------------------------------------------------------------
+             TELA DE LOGIN VIP (INTEGRAÇÃO KIWIFY / ACESSO DA DESIGNER)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen login-screen hidden" id="screenLogin">
+          <div class="login-container">
+            <div class="login-brand">
+              <div class="login-logo-circle">
+                <i class="fa-solid fa-crown"></i>
+              </div>
+              <h1 class="login-title">Agenda do Lucro</h1>
+              <p class="login-subtitle">Gestão & Agendamento VIP para Designers</p>
+            </div>
+
+            <div class="login-card">
+              <div class="login-card-header">
+                <h3>Área da Designer</h3>
+                <p>Digite os dados de acesso enviados no seu e-mail após a compra.</p>
+              </div>
+
+              <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+                <div class="login-form-group">
+                  <label for="loginEmail">E-mail da Compra (Kiwify)</label>
+                  <div class="login-input-wrapper">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="ex: designer@gmail.com" required autocomplete="email">
+                  </div>
+                </div>
+
+                <div class="login-form-group">
+                  <label for="loginPassword">Senha de Acesso</label>
+                  <div class="login-input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Sua senha secreta" required autocomplete="current-password">
+                    <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('loginPassword', this)">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="login-options-row">
+                  <label class="remember-me-checkbox">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <span>Lembrar meu acesso</span>
+                  </label>
+                  <a href="javascript:void(0)" class="forgot-link" onclick="openForgotPasswordModal()">Esqueci minha senha</a>
+                </div>
+
+                <button type="submit" class="btn-login-submit" id="btnLoginSubmit">
+                  <i class="fa-solid fa-right-to-bracket"></i>
+                  <span>Entrar na Minha Agenda</span>
+                </button>
+              </form>
+
+              <div class="login-divider">
+                <span>OU</span>
+              </div>
+
+              <button type="button" class="btn-login-guest" onclick="loginAsGuest()">
+                <i class="fa-solid fa-sparkles" style="color: #EAB308;"></i>
+                <span>Acessar Modo Demonstração (7 Dias)</span>
+              </button>
+            </div>
+
+            <div class="login-footer">
+              <div class="login-security-tag">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Acesso Seguro com Kiwify Webhook & Resend</span>
+              </div>
+              <p>Comprou e não recebeu? Verifique sua caixa de spam ou use o modo demonstração.</p>
+            </div>
+          </div>
+        </section>
 
         <!-- ------------------------------------------------------------------
              TELA 1: AGENDA (LINHA DO TEMPO DIÁRIA CONFORME IMAGEM 3)
@@ -1103,6 +1176,86 @@
       <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeCloudStatusModalDirect()">
         Fechar
       </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: CONFIGURAÇÕES DO ESTÚDIO & E-MAIL DA DESIGNER
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="studioSettingsModal" onclick="closeStudioSettingsModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #A855F7, #6B21A8); color: #FFFFFF; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 22px; box-shadow: 0 4px 14px rgba(107, 33, 168, 0.4);">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+        <h3 style="font-size: 17px; font-weight: 800; color: #111827;">Configurações do Estúdio</h3>
+        <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">Personalize seus dados e seu e-mail de recebimento</p>
+      </div>
+
+      <form id="studioSettingsForm" onsubmit="handleSaveStudioSettings(event)">
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563; text-transform: uppercase;">Seu Nome / Designer</label>
+          <input type="text" id="cfgDesignerName" placeholder="Ex: Fernanda Araújo" style="width: 100%; padding: 10px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563; text-transform: uppercase;">Nome do seu Estúdio</label>
+          <input type="text" id="cfgStudioName" placeholder="Ex: Studio Sobrancelha Realista" style="width: 100%; padding: 10px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563; text-transform: uppercase;">WhatsApp do Estúdio</label>
+          <input type="text" id="cfgStudioPhone" placeholder="Ex: (11) 98888-7777" style="width: 100%; padding: 10px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563; text-transform: uppercase;">Seu E-mail para Notificações (Resend)</label>
+          <input type="email" id="cfgDesignerEmail" placeholder="Ex: seuemail@gmail.com" style="width: 100%; padding: 10px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+          <div style="font-size: 11px; color: #6B7280; margin-top: 4px; line-height: 1.4;">
+            <i class="fa-solid fa-circle-info" style="color: #6B21A8;"></i> É neste e-mail que você receberá os avisos instantâneos sempre que uma cliente fizer um agendamento online.
+          </div>
+        </div>
+
+        <button type="submit" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Salvar Alterações</span>
+        </button>
+
+        <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeStudioSettingsModalDirect()">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: ESQUECI MINHA SENHA
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="forgotPasswordModal" onclick="closeForgotPasswordModal(event)">
+    <div class="action-modal-card" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #F3E8FF; color: #6B21A8; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px;">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #111827;">Recuperar Acesso</h3>
+        <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">Informe o e-mail da sua compra na Kiwify</p>
+      </div>
+
+      <form onsubmit="handleForgotPasswordSubmit(event)">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">E-mail Cadastrado</label>
+          <input type="email" id="forgotEmail" placeholder="designer@gmail.com" style="width: 100%; padding: 10px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <button type="submit" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;">
+          <i class="fa-regular fa-paper-plane"></i>
+          <span>Enviar Nova Senha</span>
+        </button>
+
+        <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeForgotPasswordModalDirect()">
+          Voltar ao Login
+        </button>
+      </form>
     </div>
   </div>
 
