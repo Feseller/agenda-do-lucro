@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         name: cleanEmail.includes('araujo') ? 'Fernando Araújo' : 'Designer VIP',
         studioName: 'Studio Designer VIP',
         studioPhone: '(11) 98888-7777',
-        plan: 'pro',
+        plan: 'anual',
         role: 'admin'
       }
     });

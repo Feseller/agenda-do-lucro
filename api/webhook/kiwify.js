@@ -67,7 +67,9 @@ export default async function handler(req, res) {
             phone: phone,
             password: passwordToEmail,
             status: 'ativo',
-            plan: 'pro',
+            plan: 'anual',
+            billingCycle: 'anual',
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
             source: 'kiwify',
             studioName: `Studio ${name.split(' ')[0]} VIP`,
             createdAt: new Date().toISOString()
@@ -80,9 +82,7 @@ export default async function handler(req, res) {
       }
 
       // Disparar e-mail de boas-vindas com Login e Senha via Resend
-      const appUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : 'https://agenda-do-lucro.vercel.app';
+      const appUrl = 'https://agenda-do-lucro-app.vercel.app';
 
       const emailResult = await sendWelcomeKiwifyEmail({
         name,

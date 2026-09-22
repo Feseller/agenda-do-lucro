@@ -156,10 +156,10 @@ export async function sendWelcomeKiwifyEmail({
           <p>Seu Acesso VIP foi Liberado com Sucesso!</p>
         </div>
         <div class="content">
-          <div class="badge">⚡ Compra Confirmada via Kiwify</div>
+          <div class="badge">⚡ Assinatura Anual Confirmada via Kiwify</div>
           <h2 style="font-size: 18px; color: #111827; margin: 0 0 10px;">Parabéns, ${firstName}! 🎉</h2>
           <p style="font-size: 14px; color: #4B5563; margin: 0 0 16px; line-height: 1.5;">
-            Seu pagamento foi confirmado e a sua plataforma de gestão e agendamentos VIP já está pronta para transformar os lucros do seu estúdio.
+            Sua assinatura do <strong>Plano Anual da Agenda do Lucro</strong> foi confirmada com sucesso! Você tem 1 ano completo de acesso ilimitado para transformar a gestão e os lucros do seu estúdio.
           </p>
 
           <div class="credentials-box">
