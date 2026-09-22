@@ -3,3 +3,4 @@ cloudflared.exe
 *.log
 agenda-do-lucro-producao.zip
 .env.example
+server.js
