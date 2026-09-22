@@ -1,0 +1,1851 @@
+/* ==========================================================================
+   MINHA AGENDA APP — DESIGNER DE SOBRANCELHA (EDICAO OFICIAL MINHA AGENDA)
+   Reprodução Fiel às Telas Oficiais do App Minha Agenda
+   Identidade: portal.minhaagendaapp.com.br/agenda
+   Paleta: Roxo Real Oficial (#6B21A8 / #7C3AED), Branco Puro e Acentos Coloridos
+   ========================================================================== */
+
+:root {
+  /* Cores Oficiais Minha Agenda */
+  --purple-primary: #6B21A8;
+  --purple-vivid: #7C3AED;
+  --purple-deep: #581C87;
+  --purple-dark: #4C1D95;
+  --purple-light: #E9D5FF;
+  --purple-soft: #F5EEFD;
+  --purple-gradient: linear-gradient(135deg, #7C3AED 0%, #6B21A8 50%, #581C87 100%);
+  --purple-glow: rgba(107, 33, 168, 0.3);
+
+  /* Fundo e Superfícies */
+  --bg-page: #F3F4F6;
+  --bg-canvas: #FFFFFF;
+  --bg-subtle: #F9FAFB;
+  --bg-card: #FFFFFF;
+  --bg-dark-strip: #E5E7EB;
+
+  /* Cores dos Blocos da Linha do Tempo da Agenda */
+  --slot-blue-bg: #E0F2FE;
+  --slot-blue-border: #38BDF8;
+  --slot-blue-text: #0369A1;
+
+  --slot-yellow-bg: #FEF9C3;
+  --slot-yellow-border: #FACC15;
+  --slot-yellow-text: #854D0E;
+
+  --slot-mint-bg: #DCFCE7;
+  --slot-mint-border: #34D399;
+  --slot-mint-text: #065F46;
+
+  --slot-pink-bg: #FCE7F3;
+  --slot-pink-border: #F472B6;
+  --slot-pink-text: #9D174D;
+
+  /* Status e Alertas */
+  --red-badge: #DC2626;
+  --emerald: #059669;
+  --blue-action: #2563EB;
+  --amber: #D97706;
+  --whatsapp: #25D366;
+
+  /* Tipografia */
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Formas & Sombras */
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --radius-pill: 9999px;
+
+  --shadow-drawer: 8px 0 30px rgba(0, 0, 0, 0.25);
+  --shadow-modal: 0 10px 40px rgba(0, 0, 0, 0.25);
+  --shadow-fab: 0 6px 22px rgba(107, 33, 168, 0.45);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset Global */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-page);
+  color: #1F2937;
+  min-height: 100vh;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   BARRA SUPERIOR DE SIMULAÇÃO (Desktop / Web)
+   ========================================================================== */
+.simulator-bar {
+  background: #FFFFFF;
+  color: #1F2937;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.simulator-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--purple-primary);
+}
+
+.simulator-title .brand-domain-tag {
+  background: var(--purple-soft);
+  border: 1px solid var(--purple-light);
+  color: var(--purple-primary);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.simulator-toggles {
+  display: flex;
+  background: #F3F4F6;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: #6B7280;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle-btn.active {
+  background: var(--purple-primary);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(107, 33, 168, 0.3);
+}
+
+/* ==========================================================================
+   FRAME DO SMARTPHONE (Dispositivo Móvel)
+   ========================================================================== */
+.app-viewport-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 40px;
+  min-height: calc(100vh - 55px);
+}
+
+.app-mobile-frame {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-canvas);
+  border: 1px solid #E5E7EB;
+  border-radius: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 4px 20px rgba(107, 33, 168, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 890px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Barra de Status Estilo iOS */
+.mobile-status-bar {
+  padding: 10px 24px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #111827;
+  z-index: 998;
+  position: relative;
+  background: #FFFFFF;
+}
+
+.mobile-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+/* Área de Rolagem do Conteúdo */
+.app-screen-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+
+.app-screen-content::-webkit-scrollbar {
+  width: 4px;
+}
+.app-screen-content::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+/* Telas principais */
+.app-screen {
+  display: block;
+}
+
+.app-screen.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   CABEÇALHO PADRÃO DO APP MINHA AGENDA (Roxo & Branco)
+   ========================================================================== */
+.app-header {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-bottom: 1px solid #F3F4F6;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-hamburger {
+  background: none;
+  border: none;
+  color: var(--purple-primary);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.header-title {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.header-right-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon-btn {
+  background: none;
+  border: none;
+  color: var(--purple-primary);
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.header-icon-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   TELA 1: AGENDA (LINHA DO TEMPO DIÁRIA CONFORME IMAGEM 3)
+   ========================================================================== */
+/* Seletor de Meses ("Setembro | Outubro") */
+.month-tabs-strip {
+  display: flex;
+  border-bottom: 1px solid #E5E7EB;
+  background: #FFFFFF;
+}
+
+.month-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6B7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.month-tab-btn.active {
+  color: var(--purple-primary);
+}
+
+.month-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  background: var(--purple-primary);
+  border-radius: var(--radius-pill);
+}
+
+/* Carrossel Horizontal dos Dias da Semana */
+.weekday-strip-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 12px 8px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #F3F4F6;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.weekday-strip-container::-webkit-scrollbar {
+  display: none;
+}
+
+.weekday-col {
+  flex: 0 0 auto;
+  min-width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.weekday-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B7280;
+}
+
+.weekday-number {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1F2937;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+/* Dia Ativo no Estilo Vermelho da Imagem 3 */
+.weekday-col.active .weekday-number {
+  background: var(--red-badge);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+.weekday-col.active .weekday-name {
+  color: var(--red-badge);
+  font-weight: 800;
+}
+
+/* Subtítulo com a Data de Hoje */
+.agenda-date-headline {
+  text-align: center;
+  padding: 10px 16px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4B5563;
+  background: #FFFFFF;
+}
+
+/* Faixa Cinza com Título "Agendamentos" */
+.agenda-section-header {
+  background: #E5E7EB;
+  padding: 6px 18px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #4B5563;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Grade de Linha do Tempo com Horários Contínuos (08:00 às 20:00) */
+.timeline-grid {
+  position: relative;
+  background: #FFFFFF;
+  padding-bottom: 80px;
+}
+
+.timeline-hour-row {
+  display: flex;
+  min-height: 58px;
+  border-bottom: 1px solid #F3F4F6;
+  position: relative;
+}
+
+.timeline-hour-label {
+  width: 48px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9CA3AF;
+  text-align: right;
+  flex-shrink: 0;
+  border-right: 1px solid #F3F4F6;
+}
+
+.timeline-hour-content {
+  flex: 1;
+  position: relative;
+  padding: 3px 6px;
+}
+
+/* Blocos de Agendamentos (Coloridos Conforme Imagem 3) */
+.appointment-block {
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  border-left: 4px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.appointment-block:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+/* Variantes de Cor dos Blocos */
+.appointment-block.blue {
+  background-color: var(--slot-blue-bg);
+  border-left-color: var(--slot-blue-border);
+  color: var(--slot-blue-text);
+}
+
+.appointment-block.yellow {
+  background-color: var(--slot-yellow-bg);
+  border-left-color: var(--slot-yellow-border);
+  color: var(--slot-yellow-text);
+}
+
+.appointment-block.mint {
+  background-color: var(--slot-mint-bg);
+  border-left-color: var(--slot-mint-border);
+  color: var(--slot-mint-text);
+}
+
+.appointment-block.pink {
+  background-color: var(--slot-pink-bg);
+  border-left-color: var(--slot-pink-border);
+  color: var(--slot-pink-text);
+}
+
+.apt-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.apt-client-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.apt-client-row i {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.apt-service-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.apt-status-tag {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.appointment-block.blue .apt-status-tag {
+  color: #0369A1;
+}
+
+.appointment-block.yellow .apt-status-tag {
+  color: #854D0E;
+}
+
+/* Botão Flutuante de Novo Agendamento (+) */
+.fab-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--purple-primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: var(--shadow-fab);
+  border: none;
+  cursor: pointer;
+  z-index: 90;
+  transition: var(--transition);
+}
+
+.fab-btn:hover {
+  transform: scale(1.08) rotate(90deg);
+  background: var(--purple-vivid);
+}
+
+/* ==========================================================================
+   MENU LATERAL GAVETA (DRAWER CONFORME IMAGEM 1)
+   ========================================================================== */
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-menu {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 82%;
+  max-width: 320px;
+  background: #FFFFFF;
+  z-index: 1600;
+  box-shadow: var(--shadow-drawer);
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.drawer-backdrop.active .drawer-menu {
+  transform: translateX(0);
+}
+
+/* Alerta Amarelo de Teste */
+.drawer-trial-alert {
+  background: #FACC15;
+  color: #78350F;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  border-radius: 0 0 16px 16px;
+  margin: 0 12px;
+}
+
+/* Card Roxo Premium */
+.drawer-premium-card {
+  background: var(--purple-gradient);
+  color: #FFFFFF;
+  padding: 14px 16px;
+  margin: 10px 12px 6px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 14px var(--purple-glow);
+  cursor: pointer;
+}
+
+.drawer-premium-card .crown-icon {
+  font-size: 24px;
+  color: #FACC15;
+}
+
+.drawer-premium-card .card-text h4 {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.drawer-premium-card .card-text p {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+/* Lista de Itens do Menu */
+.drawer-items-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 16px;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 2px;
+  text-decoration: none;
+}
+
+.drawer-item i {
+  font-size: 16px;
+  color: var(--purple-primary);
+  width: 20px;
+  text-align: center;
+}
+
+.drawer-item:hover {
+  background: var(--purple-soft);
+  color: var(--purple-primary);
+}
+
+/* Item Ativo (Pílula Roxa Sólida da Imagem 1) */
+.drawer-item.active {
+  background: var(--purple-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(107, 33, 168, 0.35);
+}
+
+.drawer-item.active i {
+  color: #FFFFFF;
+}
+
+.drawer-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px 4px;
+}
+
+.drawer-badge-new {
+  background: #FACC15;
+  color: #78350F;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  margin-left: auto;
+}
+
+.drawer-item.exit {
+  color: #DC2626;
+}
+
+.drawer-item.exit i {
+  color: #DC2626;
+}
+
+/* Rodapé do Menu Drawer */
+.drawer-footer {
+  background: var(--purple-primary);
+  color: #FFFFFF;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-user-info {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.drawer-help-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   TELA 2: RELATÓRIOS / RESUMO FINANCEIRO (CONFORME IMAGEM 2)
+   ========================================================================== */
+.reports-container {
+  padding: 14px 16px 80px;
+}
+
+/* Seletor de Mês */
+.reports-month-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* Abas de Tipos de Relatórios (Ícones de Pizza, Tabela, Barras) */
+.reports-view-tabs {
+  display: flex;
+  justify-content: space-around;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-md);
+  padding: 6px;
+  margin-bottom: 14px;
+}
+
+.reports-tab-btn {
+  background: none;
+  border: none;
+  font-size: 17px;
+  color: #9CA3AF;
+  padding: 6px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.reports-tab-btn.active {
+  background: var(--purple-soft);
+  color: var(--purple-primary);
+}
+
+/* Cards de KPIs (Receita, Gastos, Lucro) */
+.kpi-summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-lg);
+  padding: 14px 10px;
+  margin-bottom: 14px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.kpi-box-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+}
+
+.kpi-box-val {
+  font-size: 13px;
+  font-weight: 800;
+  margin: 4px 0 2px;
+}
+
+.kpi-box-val.revenue {
+  color: var(--emerald);
+}
+
+.kpi-box-val.expenses {
+  color: #DC2626;
+}
+
+.kpi-box-val.profit {
+  color: var(--blue-action);
+}
+
+.kpi-box-diff {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.kpi-box-diff.up {
+  color: var(--emerald);
+}
+
+.kpi-box-diff.sub {
+  color: #9CA3AF;
+}
+
+/* Linha de Meios de Pagamento (Dinheiro, Crédito, Débito, etc.) */
+.payments-methods-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-lg);
+  padding: 12px 6px;
+  margin-bottom: 14px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.payment-col i {
+  font-size: 15px;
+  color: var(--emerald);
+  margin-bottom: 4px;
+}
+
+.payment-col .pay-name {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6B7280;
+}
+
+.payment-col .pay-val {
+  font-size: 10px;
+  font-weight: 800;
+  color: #111827;
+  margin: 2px 0;
+}
+
+.payment-col .pay-pct {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--emerald);
+}
+
+/* Card: Top 5 Receita por Serviço com Gráfico de Pizza/Donut */
+.donut-report-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.donut-card-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.donut-chart-layout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.donut-svg-wrap {
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.donut-legend-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.donut-legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.legend-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.legend-text strong {
+  color: #111827;
+  display: block;
+}
+
+.legend-text span {
+  color: #6B7280;
+  font-size: 10px;
+}
+
+.btn-view-all-reports {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  border: 1px solid #A7F3D0;
+  background: #F0FDF4;
+  color: #059669;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.btn-view-all-reports:hover {
+  background: #DCFCE7;
+}
+
+/* ==========================================================================
+   TELA 3: COMANDAS (CONFORME IMAGEM 4)
+   ========================================================================== */
+.comandas-container {
+  padding: 14px 16px 80px;
+}
+
+.comandas-tabs-bar {
+  display: flex;
+  border-bottom: 2px solid #E5E7EB;
+  margin-bottom: 14px;
+}
+
+.comanda-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6B7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.comanda-tab-btn.active {
+  color: var(--blue-action);
+}
+
+.comanda-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--blue-action);
+}
+
+.comanda-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.comanda-card:hover {
+  border-color: var(--purple-primary);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   TELA 4: CLIENTES & ANAMNESE (CRM A-Z COM ANTES E DEPOIS)
+   ========================================================================== */
+.clientes-crm-container {
+  padding: 14px 16px 80px;
+}
+
+.client-search-bar {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  margin-bottom: 14px;
+}
+
+.client-search-bar input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 13px;
+  font-family: var(--font-main);
+  padding-left: 8px;
+}
+
+.client-az-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 6px;
+}
+
+.client-az-badge {
+  width: 26px;
+  height: 26px;
+  background: var(--purple-primary);
+  color: #FFFFFF;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.client-az-line {
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+}
+
+.client-crm-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.client-crm-info h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.client-crm-info p {
+  font-size: 11px;
+  color: #6B7280;
+}
+
+.client-crm-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--purple-primary);
+  background: var(--purple-soft);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   TELA 5: SUA PÁGINA & LINK ONLINE (PORTAL DA CLIENTE COM SINAL PIX)
+   ========================================================================== */
+.online-portal-container {
+  padding-bottom: 90px;
+}
+
+.online-banner-cover {
+  height: 170px;
+  background: url('assets/banner-sobrancelha.jpg') center 22%/cover no-repeat;
+  position: relative;
+}
+
+.online-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.online-profile-box {
+  padding: 0 16px;
+  margin-top: -36px;
+  position: relative;
+  z-index: 10;
+}
+
+.online-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  background: #FFFFFF;
+}
+
+.online-domain-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--purple-soft);
+  border: 1px solid var(--purple-light);
+  color: var(--purple-primary);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.online-service-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin: 0 16px 8px;
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.online-service-card.selected {
+  border-color: var(--purple-primary);
+  background: var(--purple-soft);
+}
+
+/* Botão de Incluir Procedimento no Cabeçalho */
+.btn-manage-services-header {
+  background: #FDF2F8;
+  border: 1px solid #FBCFE8;
+  color: var(--purple-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-manage-services-header:hover {
+  background: var(--purple-soft);
+  border-color: var(--purple-light);
+  transform: translateY(-1px);
+}
+
+/* Botão Editar Serviço no Card */
+.btn-service-edit-inline {
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  color: #4B5563;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-service-edit-inline:hover {
+  background: var(--purple-soft);
+  color: var(--purple-primary);
+  border-color: var(--purple-light);
+}
+
+/* Card CTA para Adicionar Procedimento */
+.add-service-cta-card {
+  margin: 4px 16px 14px;
+  background: #FAF5FF;
+  border: 1.5px dashed var(--purple-light);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.add-service-cta-card:hover {
+  background: #F3E8FF;
+  border-color: var(--purple-primary);
+  transform: translateY(-1px);
+}
+
+.add-service-cta-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: var(--purple-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.15);
+}
+
+/* Faixa Superior de Período de Teste de 7 Dias */
+.trial-top-strip {
+  background: linear-gradient(90deg, #FEF08A 0%, #FDE047 100%);
+  color: #713F12;
+  padding: 6px 14px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid #FACC15;
+  transition: all 0.2s ease;
+}
+
+.trial-top-strip:hover {
+  background: #FDE047;
+}
+
+.trial-badge {
+  background: #854D0E;
+  color: #FEF08A;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trial-msg {
+  font-size: 11px;
+  font-weight: 600;
+  flex: 1;
+  margin: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trial-link {
+  font-size: 10px;
+  font-weight: 800;
+  color: #854D0E;
+  white-space: nowrap;
+}
+
+
+/* Seletor de Mês & Abas Rápidas */
+.online-month-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  background: #F9FAFB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237C3AED' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.online-month-select:focus {
+  border-color: var(--purple-primary);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.online-month-tabs-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.online-month-tabs-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.online-month-tab {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1.5px solid #E5E7EB;
+  background: #F9FAFB;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.online-month-tab:hover {
+  border-color: var(--purple-primary);
+  color: var(--purple-primary);
+  background: #FAF5FF;
+}
+
+.online-month-tab.active {
+  background: var(--purple-primary);
+  border-color: var(--purple-primary);
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+/* Carrossel dos Dias: Terça 22 de Setembro, Quarta 23 de Setembro, etc. */
+.online-days-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 6px 2px 10px 2px;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.online-days-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+
+.online-days-scroll::-webkit-scrollbar-track {
+  background: #F3F4F6;
+  border-radius: 10px;
+}
+
+.online-days-scroll::-webkit-scrollbar-thumb {
+  background: #E9D5FF;
+  border-radius: 10px;
+}
+
+.online-day-card {
+  flex: 0 0 auto;
+  min-width: 152px;
+  padding: 10px 14px;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  user-select: none;
+}
+
+.online-day-card:hover {
+  border-color: var(--purple-primary);
+  background: #FAF5FF;
+  transform: translateY(-1px);
+}
+
+.online-day-card.selected {
+  background: linear-gradient(135deg, #9333EA 0%, #7E22CE 100%);
+  border-color: #7E22CE;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 16px rgba(147, 51, 234, 0.32);
+  transform: translateY(-2px);
+}
+
+.online-day-card .day-weekday {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1F2937;
+  letter-spacing: -0.2px;
+}
+
+.online-day-card.selected .day-weekday {
+  color: #FFFFFF !important;
+}
+
+.online-day-card .day-full-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-top: 3px;
+}
+
+.online-day-card.selected .day-full-date {
+  color: #FDF4FF !important;
+}
+
+/* Botões de Horários Livres */
+.online-slot-btn {
+  padding: 9px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1.5px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #1F2937;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.online-slot-btn:hover {
+  border-color: var(--purple-primary);
+  background: #FAF5FF;
+}
+
+.online-slot-btn.selected {
+  border-color: var(--purple-primary);
+  background: var(--purple-primary);
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+
+/* ==========================================================================
+   MODAIS (AÇÕES DO AGENDAMENTO CONFORME IMAGEM 5 & COMANDA DA IMAGEM 4)
+   ========================================================================== */
+.action-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.action-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.action-modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-modal);
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+}
+
+.action-modal-overlay.active .action-modal-card {
+  transform: translateY(0);
+}
+
+/* Topo com os 4 Ícones de Ação (Ligar, Whats, Editar, Deletar) */
+.action-icons-row {
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #F3F4F6;
+  margin-bottom: 14px;
+}
+
+.action-icon-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.action-icon-col:hover {
+  transform: translateY(-2px);
+}
+
+.action-icon-col.ligar {
+  color: #059669;
+}
+
+.action-icon-col.whats {
+  color: var(--whatsapp);
+}
+
+.action-icon-col.editar {
+  color: var(--blue-action);
+}
+
+.action-icon-col.deletar {
+  color: #EF4444;
+}
+
+.action-icon-col i {
+  font-size: 22px;
+}
+
+/* Detalhes do Horário */
+.action-details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #F9FAFB;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+/* Menu de Opções Rápidas da Imagem 5 */
+.action-quick-menu {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.action-tip-box {
+  background: #F9FAFB;
+  padding: 8px 12px;
+  font-size: 10px;
+  color: #6B7280;
+  border-bottom: 1px solid #E5E7EB;
+  text-align: center;
+}
+
+.quick-menu-item {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2563EB;
+  text-align: center;
+  border-bottom: 1px solid #F3F4F6;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.quick-menu-item:hover {
+  background: #EFF6FF;
+}
+
+.quick-menu-item.cancel {
+  color: #6B7280;
+  border-bottom: none;
+}
+
+/* Link de Adicionar Cobrança */
+.action-add-charge-link {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563EB;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+/* Botão Fechar Azul Sólido */
+.btn-action-close {
+  width: 100%;
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-action-close:hover {
+  background: #1D4ED8;
+}
+
+/* ==========================================================================
+   TOAST DE NOTIFICAÇÃO
+   ========================================================================== */
+.app-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1F2937;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 3000;
+  opacity: 0;
+  transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.app-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.app-toast i {
+  color: #10B981;
+}
+
+/* ==========================================================================
+   SISTEMA DE NOTIFICAÇÃO PUSH & LEMBRETE DE 30 MINUTOS
+   ========================================================================== */
+.push-notification-banner {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  right: 14px;
+  background: rgba(24, 20, 32, 0.96);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  border-radius: 18px;
+  padding: 12px 14px;
+  color: #FFFFFF;
+  z-index: 2500;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(107, 33, 168, 0.4);
+  transform: translateY(-160%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.push-notification-banner.show {
+  transform: translateY(0);
+}
+
+.push-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.push-brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #C084FC;
+}
+
+.push-brand-badge i {
+  color: #FACC15;
+}
+
+.push-time-tag {
+  font-size: 10px;
+  color: #9CA3AF;
+  font-weight: 600;
+}
+
+.push-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.push-desc {
+  font-size: 11px;
+  color: #E2E8F0;
+  line-height: 1.35;
+}
+
+.push-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-push-action {
+  flex: 1;
+  background: var(--purple-gradient);
+  color: #FFFFFF;
+  border: none;
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.btn-push-action:hover {
+  filter: brightness(1.1);
+}
+
+.btn-push-dismiss {
+  background: rgba(255, 255, 255, 0.12);
+  color: #CBD5E1;
+  border: none;
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Faixa de Alerta de Lembrete 30 Minutos na Agenda */
+.reminder-strip-bar {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+  border: 1px solid #FECDD3;
+  border-left: 4px solid #DC2626;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+}
+
+.reminder-strip-text strong {
+  font-size: 12px;
+  color: #991B1B;
+  display: block;
+}
+
+.reminder-strip-text p {
+  font-size: 11px;
+  color: #7F1D1D;
+}
+
+.btn-send-whatsapp-30 {
+  background: var(--whatsapp);
+  color: #FFFFFF;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+}
+
+.btn-send-whatsapp-30:hover {
+  filter: brightness(1.08);
+}
+
+/* Animação de Destaque Pulsante ao Entrar no Calendário */
+@keyframes pulseAppointment {
+  0% {
+    box-shadow: 0 0 0 0 rgba(107, 33, 168, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(107, 33, 168, 0);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(107, 33, 168, 0);
+    transform: scale(1);
+  }
+}
+
+.just-booked-pulse {
+  animation: pulseAppointment 1.4s ease-in-out 3;
+  border: 2px solid var(--purple-primary) !important;
+}
+
+/* Badges de Status da Nuvem */
+.status-badge-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #DCFCE7;
+  color: #166534;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-badge-offline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+

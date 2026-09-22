@@ -1,0 +1,24 @@
+{
+  "name": "agenda-do-lucro",
+  "version": "1.0.0",
+  "description": "Agenda do Lucro — Sistema VIP de Gestão & Agendamento para Designers de Sobrancelha",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "mongodb": "^6.8.0",
+    "resend": "^3.5.0"
+  },
+  "keywords": [
+    "agenda-do-lucro",
+    "agendamento",
+    "sobrancelha",
+    "beleza",
+    "gestao"
+  ],
+  "author": "Agenda do Lucro",
+  "license": "MIT"
+}

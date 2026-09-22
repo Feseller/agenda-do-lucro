@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Agenda do Lucro — Designer de Sobrancelha | portal.minhaagendaapp.com.br/agenda</title>
+  
+  <!-- Fontes & Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- BARRA DE CONTROLE SUPERIOR (Simulador Desktop / Web) -->
+  <header class="simulator-bar">
+    <div class="simulator-title">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>AGENDA DO LUCRO</span>
+      <span class="brand-domain-tag">portal.minhaagendaapp.com.br/agenda</span>
+    </div>
+
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <button class="toggle-btn" style="color: #6B21A8; background: #F5EEFD;" onclick="requestNotificationPermission()" title="Ativar Notificações no Celular">
+        <i class="fa-solid fa-bell"></i>
+        <span>Ativar Notificações</span>
+      </button>
+      <button class="toggle-btn" style="color: #059669; background: #DCFCE7;" onclick="test30MinReminderNow()" title="Testar Lembrete de 30 Minutos">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Testar 30 Min</span>
+      </button>
+    </div>
+
+    <div class="simulator-toggles">
+      <button class="toggle-btn active" id="btnModeApp" onclick="switchMainView('screenAgenda', this)">
+        <i class="fa-solid fa-mobile-screen"></i>
+        <span>App Profissional</span>
+      </button>
+      <button class="toggle-btn" id="btnModeOnline" onclick="switchMainView('screenLinkOnline', this)">
+        <i class="fa-solid fa-globe"></i>
+        <span>Link da Cliente</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- FRAME DO SMARTPHONE -->
+  <main class="app-viewport-wrapper">
+    <div class="app-mobile-frame">
+      
+      <!-- BANNER DE NOTIFICAÇÃO PUSH FLUTUANTE ESTILO CELULAR -->
+      <div class="push-notification-banner" id="pushNotificationBanner">
+        <div class="push-top-row">
+          <div class="push-brand-badge">
+            <i class="fa-solid fa-crown"></i>
+            <span>AGENDA DO LUCRO</span>
+          </div>
+          <span class="push-time-tag" id="pushTimeTag">Agora</span>
+        </div>
+        <div class="push-title" id="pushTitle">Novo Agendamento Confirmado! 🔔</div>
+        <div class="push-desc" id="pushDesc">Juliana Mendes agendou Nanoblading para hoje às 14:00.</div>
+        <div class="push-actions-row">
+          <button class="btn-push-action" id="btnPushAction" onclick="onPushActionClick()">
+            <i class="fa-regular fa-calendar-check"></i>
+            <span>Ver no Calendário</span>
+          </button>
+          <button class="btn-push-dismiss" onclick="dismissPushBanner()">Fechar</button>
+        </div>
+      </div>
+      
+      <!-- Barra Superior do Celular -->
+      <div class="mobile-status-bar">
+        <span id="mobileClock">12:41</span>
+        <div class="mobile-status-icons">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-full"></i>
+        </div>
+      </div>
+
+      <!-- Faixa Superior de Período de Teste de 7 Dias -->
+      <div class="trial-top-strip" onclick="openTrialModal()">
+        <div class="trial-badge"><i class="fa-solid fa-sparkles"></i> 7 DIAS GRÁTIS</div>
+        <div class="trial-msg">Período de teste ativo no <strong>Agenda do Lucro</strong></div>
+        <span class="trial-link">Detalhes ➔</span>
+      </div>
+
+      <!-- ====================================================================
+           MENU LATERAL GAVETA (DRAWER CONFORME IMAGEM 1)
+           ==================================================================== -->
+      <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer(event)">
+        <nav class="drawer-menu" id="drawerMenu" onclick="event.stopPropagation()">
+          
+          <!-- Topo de Marca: Agenda do Lucro -->
+          <div style="padding: 14px 18px 8px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #F3F4F6;">
+            <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--purple-gradient); display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 17px; box-shadow: 0 4px 12px var(--purple-glow);">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: #111827; letter-spacing: -0.3px;">Agenda do Lucro</div>
+              <div style="font-size: 11px; color: var(--purple-primary); font-weight: 700;">Studio & Gestão VIP</div>
+            </div>
+          </div>
+
+          <!-- Faixa Amarela de Teste de 7 Dias -->
+          <div class="drawer-trial-alert" onclick="openTrialModal()" style="cursor: pointer;">
+            <i class="fa-solid fa-clock" style="margin-right: 4px;"></i> O período de teste expira em 7 dias.
+          </div>
+
+          <!-- Card Roxo Premium -->
+          <div class="drawer-premium-card" onclick="openTrialModal()">
+            <i class="fa-solid fa-crown crown-icon"></i>
+            <div class="card-text">
+              <h4>Agenda do Lucro Pro</h4>
+              <p>Teste de 7 dias • Ver detalhes do plano</p>
+            </div>
+          </div>
+
+          <!-- Lista de Itens do Menu com Ícones Roxos -->
+          <div class="drawer-items-scroll">
+            <a href="javascript:void(0)" class="drawer-item active" id="drawerItemAgenda" onclick="navigateToScreen('screenAgenda', this)">
+              <i class="fa-solid fa-book-open"></i>
+              <span>Agenda</span>
+            </a>
+            
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemCobrancas" onclick="navigateToScreen('screenComandas', this)">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+              <span>Cobranças</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemComandas" onclick="navigateToScreen('screenComandas', this)">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <span>Comandas</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="showPreDefinedMsgsModal()">
+              <i class="fa-solid fa-comment-dots"></i>
+              <span>Msgs Pre-definidas</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemClientes" onclick="navigateToScreen('screenClientes', this)">
+              <i class="fa-solid fa-user-group"></i>
+              <span>Clientes & Anamnese</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenLinkOnline', this)">
+              <i class="fa-solid fa-briefcase"></i>
+              <span>Serviços & Pacotes</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="showToast('Controle de estoque e produtos')">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span>Produtos & Estoque</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenRelatorios', this)">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <span>Despesas</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="showToast('Comissões de designers configuradas')">
+              <i class="fa-solid fa-users"></i>
+              <span>Profissionais & Comissão</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemLinkOnline" onclick="navigateToScreen('screenLinkOnline', this)">
+              <i class="fa-solid fa-link"></i>
+              <span>Sua Página & Link Online</span>
+              <span class="drawer-badge-new">Novo</span>
+            </a>
+
+            <!-- Seção de Relatórios -->
+            <div class="drawer-section-title">Relatórios</div>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenRelatorios', this)">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>Performance</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemRelatorios" onclick="navigateToScreen('screenRelatorios', this)">
+              <i class="fa-solid fa-chart-column"></i>
+              <span>Resumo Financeiro</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenClientes', this)">
+              <i class="fa-solid fa-user-tie"></i>
+              <span>Melhores Clientes</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="openCloudStatusModal()">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Status Nuvem & Banco</span>
+              <span class="drawer-badge-new" style="background: #10B981;">Online</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" onclick="showToast('Configurações do aplicativo')">
+              <i class="fa-solid fa-gear"></i>
+              <span>Configurações</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item exit" onclick="showToast('Saindo da sessão...')">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair</span>
+            </a>
+          </div>
+
+          <!-- Rodapé do Drawer -->
+          <div class="drawer-footer">
+            <div class="drawer-user-info">Olá, Kiko Designer</div>
+            <button class="drawer-help-btn" onclick="showToast('Central de Suporte Agenda do Lucro')">
+              <i class="fa-regular fa-circle-question"></i>
+              <span>Suporte / Ajuda</span>
+            </button>
+          </div>
+
+        </nav>
+      </div>
+
+      <!-- ====================================================================
+           CONTEÚDO PRINCIPAL (TELAS NAVEGÁVEIS)
+           ==================================================================== -->
+      <div class="app-screen-content" id="appScreenContent">
+
+        <!-- ------------------------------------------------------------------
+             TELA 1: AGENDA (LINHA DO TEMPO DIÁRIA CONFORME IMAGEM 3)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen" id="screenAgenda">
+          
+          <!-- Cabeçalho Oficial Minha Agenda -->
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()" title="Abrir Menu">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Agenda</h1>
+            </div>
+            <div class="header-right-icons">
+              <button class="header-icon-btn" title="Aniversariantes do Mês" onclick="showToast('Juliana comemora aniversário hoje! 🎂')">
+                <i class="fa-solid fa-cake-candles"></i>
+              </button>
+              <button class="header-icon-btn" title="Buscar Agendamento" onclick="focusSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+              <button class="header-icon-btn" title="Calendário" onclick="showToast('Mês de Setembro selecionado')">
+                <i class="fa-regular fa-calendar-days"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Seletor de Meses ("Setembro | Outubro") -->
+          <div class="month-tabs-strip">
+            <button class="month-tab-btn active" id="tabMonthSep">Setembro</button>
+            <button class="month-tab-btn" id="tabMonthOct">Outubro</button>
+          </div>
+
+          <!-- Carrossel dos Dias da Semana com Destaque em Vermelho -->
+          <div class="weekday-strip-container" id="weekdayStrip">
+            <div class="weekday-col active" onclick="selectAgendaDay(22, this)">
+              <span class="weekday-name">Ter</span>
+              <span class="weekday-number">22</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(23, this)">
+              <span class="weekday-name">Qua</span>
+              <span class="weekday-number">23</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(24, this)">
+              <span class="weekday-name">Qui</span>
+              <span class="weekday-number">24</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(25, this)">
+              <span class="weekday-name">Sex</span>
+              <span class="weekday-number">25</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(26, this)">
+              <span class="weekday-name">Sáb</span>
+              <span class="weekday-number">26</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(27, this)">
+              <span class="weekday-name">Dom</span>
+              <span class="weekday-number">27</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(28, this)">
+              <span class="weekday-name">Seg</span>
+              <span class="weekday-number">28</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(29, this)">
+              <span class="weekday-name">Ter</span>
+              <span class="weekday-number">29</span>
+            </div>
+            <div class="weekday-col" onclick="selectAgendaDay(30, this)">
+              <span class="weekday-name">Qua</span>
+              <span class="weekday-number">30</span>
+            </div>
+          </div>
+
+          <!-- Subtítulo da Data -->
+          <div class="agenda-date-headline" id="agendaDateHeadline">
+            Hoje, Terça, 22 de Setembro, 2026
+          </div>
+
+          <!-- Faixa Cinza com Título -->
+          <div class="agenda-section-header">Agendamentos</div>
+
+          <!-- Faixa Dinâmica de Lembrete 30 Minutos Antes -->
+          <div id="reminderContainer"></div>
+
+          <!-- Grade de Linha do Tempo com Horários e Blocos Coloridos -->
+          <div class="timeline-grid" id="timelineContainer">
+            <!-- Renderizado dinamicamente via app.js -->
+          </div>
+
+          <!-- Botão Flutuante (+) da Imagem 3 -->
+          <button class="fab-btn" onclick="openNewAppointmentModal()" title="Novo Agendamento">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 2: RELATÓRIOS / RESUMO FINANCEIRO (CONFORME IMAGEM 2)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenRelatorios">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Relatórios</h1>
+            </div>
+          </div>
+
+          <div class="reports-container">
+            
+            <!-- Seletor de Mês -->
+            <div class="reports-month-picker">
+              <span>Setembro de 2026</span>
+              <i class="fa-solid fa-chevron-down" style="color: var(--purple-primary);"></i>
+            </div>
+
+            <!-- Abas de Tipos de Relatórios (Pizza, Tabela, Barras) -->
+            <div class="reports-view-tabs">
+              <button class="reports-tab-btn active" title="Gráfico de Pizza">
+                <i class="fa-solid fa-chart-pie"></i>
+              </button>
+              <button class="reports-tab-btn" title="Tabela" onclick="showToast('Modo tabela detalhada')">
+                <i class="fa-solid fa-table-cells"></i>
+              </button>
+              <button class="reports-tab-btn" title="Gráfico de Barras" onclick="showToast('Modo gráfico de barras')">
+                <i class="fa-solid fa-chart-column"></i>
+              </button>
+            </div>
+
+            <!-- 3 Cards de KPIs (Receita, Gastos, Lucro) -->
+            <div class="kpi-summary-row">
+              <div>
+                <div class="kpi-box-title">Receita</div>
+                <div class="kpi-box-val revenue" id="kpiRevenueVal">R$ 4.850,00</div>
+                <div class="kpi-box-diff up">↑ +36,0%</div>
+              </div>
+              <div style="border-left: 1px solid #F3F4F6; border-right: 1px solid #F3F4F6;">
+                <div class="kpi-box-title">Gastos</div>
+                <div class="kpi-box-val expenses">R$ 518,34</div>
+                <div class="kpi-box-diff sub">contra o mês ant.</div>
+              </div>
+              <div>
+                <div class="kpi-box-title">Lucro</div>
+                <div class="kpi-box-val profit" id="kpiProfitVal">R$ 4.331,66</div>
+                <div class="kpi-box-diff up">↑ +42,8%</div>
+              </div>
+            </div>
+
+            <!-- Meios de Pagamento -->
+            <div class="payments-methods-row">
+              <div class="payment-col">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <div class="pay-name">Dinheiro/PIX</div>
+                <div class="pay-val">R$ 3.460,00</div>
+                <div class="pay-pct">71,4%</div>
+              </div>
+              <div class="payment-col">
+                <i class="fa-regular fa-credit-card"></i>
+                <div class="pay-name">Crédito</div>
+                <div class="pay-val">R$ 785,00</div>
+                <div class="pay-pct">16,2%</div>
+              </div>
+              <div class="payment-col">
+                <i class="fa-solid fa-credit-card"></i>
+                <div class="pay-name">Débito</div>
+                <div class="pay-val">R$ 450,00</div>
+                <div class="pay-pct">9,3%</div>
+              </div>
+              <div class="payment-col">
+                <i class="fa-solid fa-money-check"></i>
+                <div class="pay-name">Cheque</div>
+                <div class="pay-val">R$ 155,00</div>
+                <div class="pay-pct">3,0%</div>
+              </div>
+              <div class="payment-col">
+                <i class="fa-solid fa-building-columns"></i>
+                <div class="pay-name">Bancária</div>
+                <div class="pay-val">R$ 0,00</div>
+                <div class="pay-pct">0,0%</div>
+              </div>
+            </div>
+
+            <!-- Card: Top 5 Receita por Serviço com Gráfico Donut da Imagem 2 -->
+            <div class="donut-report-card">
+              <div class="donut-card-title">Top 5 Receita Por Serviço</div>
+              
+              <div class="donut-chart-layout">
+                <!-- SVG Donut Chart Interativo -->
+                <div class="donut-svg-wrap">
+                  <svg viewBox="0 0 36 36" class="donut-svg">
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#E5E7EB" stroke-width="4"></circle>
+                    <!-- Fatias com porcentagens proporcionais: 38% Azul, 20% Verde, 13% Amarelo, 11% Rosa, 10% Verde-Oliva -->
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#2563EB" stroke-width="4" stroke-dasharray="38 62" stroke-dashoffset="25"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#10B981" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="87"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#F59E0B" stroke-width="4" stroke-dasharray="13 87" stroke-dashoffset="67"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#EC4899" stroke-width="4" stroke-dasharray="11 89" stroke-dashoffset="54"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#84CC16" stroke-width="4" stroke-dasharray="10 90" stroke-dashoffset="43"></circle>
+                  </svg>
+                </div>
+
+                <!-- Legenda do Gráfico -->
+                <div class="donut-legend-list">
+                  <div class="donut-legend-item">
+                    <div class="legend-color-dot" style="background-color: #2563EB;"></div>
+                    <div class="legend-text">
+                      <strong>Nanoblading Fio a Fio (38%)</strong>
+                      <span>Receita: R$ 1.843,00</span>
+                    </div>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-color-dot" style="background-color: #10B981;"></div>
+                    <div class="legend-text">
+                      <strong>Brow Lamination & Nutrição (20%)</strong>
+                      <span>Receita: R$ 970,00</span>
+                    </div>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-color-dot" style="background-color: #F59E0B;"></div>
+                    <div class="legend-text">
+                      <strong>Design de Sobrancelhas (13%)</strong>
+                      <span>Receita: R$ 630,00</span>
+                    </div>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-color-dot" style="background-color: #EC4899;"></div>
+                    <div class="legend-text">
+                      <strong>Shadow Line Luxo (11%)</strong>
+                      <span>Receita: R$ 533,50</span>
+                    </div>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-color-dot" style="background-color: #84CC16;"></div>
+                    <div class="legend-text">
+                      <strong>Epilação Egípcia Facial (10%)</strong>
+                      <span>Receita: R$ 485,00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn-view-all-reports" onclick="showToast('Exibindo histórico completo de procedimentos...')">
+                Ver todos
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 3: COMANDAS (CONFORME IMAGEM 4)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenComandas">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Comandas</h1>
+            </div>
+            <button class="header-icon-btn" onclick="openNewComandaModal()" title="Nova Comanda">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
+          <div class="comandas-container">
+            <div class="comandas-tabs-bar">
+              <button class="comanda-tab-btn active" id="tabComandasAbertas">Comandas Abertas</button>
+              <button class="comanda-tab-btn" id="tabComandasFechadas">Comandas Fechadas</button>
+            </div>
+
+            <div id="comandasList">
+              <!-- Cards de Comandas -->
+              <div class="comanda-card" onclick="openComandaModal('Dayane', 'Pacote Sobrancelha & Lamination', '400,00', '150,00', '250,00')">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <strong style="font-size: 14px; color: #111827;">Dayane</strong>
+                    <div style="font-size: 12px; color: var(--purple-primary); font-weight: 700; margin-top: 2px;">
+                      Pacote Sobrancelha & Lamination
+                    </div>
+                    <div style="font-size: 11px; color: #6B7280; margin-top: 4px;">
+                      Atendimentos: 6 de 10 realizados
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 14px; font-weight: 800; color: #111827;">R$ 400,00</div>
+                    <span style="font-size: 10px; font-weight: 800; color: #DC2626; background: #FEE2E2; padding: 2px 6px; border-radius: 4px;">
+                      Deve: R$ 250,00
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="comanda-card" onclick="openComandaModal('Juliana Mendes', 'Nanoblading Fio a Fio', '380,00', '190,00', '190,00')">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <strong style="font-size: 14px; color: #111827;">Juliana Mendes</strong>
+                    <div style="font-size: 12px; color: var(--purple-primary); font-weight: 700; margin-top: 2px;">
+                      Nanoblading Fio a Fio (Sinal PIX Pago)
+                    </div>
+                    <div style="font-size: 11px; color: #6B7280; margin-top: 4px;">
+                      Sessão inicial agendada
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 14px; font-weight: 800; color: #111827;">R$ 380,00</div>
+                    <span style="font-size: 10px; font-weight: 800; color: #059669; background: #DCFCE7; padding: 2px 6px; border-radius: 4px;">
+                      Sinal 50% OK
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 4: CLIENTES & ANAMNESE (CRM A-Z COM ANTES E DEPOIS)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenClientes">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Clientes & Anamnese</h1>
+            </div>
+            <button class="header-icon-btn" onclick="openNewClientModal()" title="Cadastrar Cliente">
+              <i class="fa-solid fa-user-plus"></i>
+            </button>
+          </div>
+
+          <div class="clientes-crm-container">
+            <!-- Barra de Busca -->
+            <div class="client-search-bar">
+              <i class="fa-solid fa-magnifying-glass" style="color: #9CA3AF;"></i>
+              <input type="text" id="clientSearchInput" placeholder="Buscar cliente por nome ou WhatsApp..." oninput="onSearchClient(this.value)">
+            </div>
+
+            <!-- Lista A-Z com Divisores e Ficha com Fotos Antes/Depois -->
+            <div id="clientsAlphaList">
+              <!-- Renderizado via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 5: SUA PÁGINA & LINK ONLINE (PORTAL DA CLIENTE COM SINAL PIX)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenLinkOnline">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Página & Link Online</h1>
+            </div>
+            <button class="header-icon-btn" onclick="copyPortalLink()" title="Copiar Link">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+
+          <div class="online-portal-container">
+            
+            <!-- Banner da Sobrancelha Perfeita -->
+            <div class="online-banner-cover">
+              <div class="online-banner-overlay"></div>
+            </div>
+
+            <div class="online-profile-box">
+              <img src="assets/logo-kiko.jpg" alt="Logo Kiko" class="online-avatar">
+              <div style="margin-top: 6px;">
+                <h2 style="font-size: 18px; font-weight: 800; color: #111827;">Studio Kiko & Co</h2>
+                <p style="font-size: 12px; color: #6B7280;">Design Estratégico de Sobrancelhas & Visagismo</p>
+                <div class="online-domain-chip">
+                  <i class="fa-solid fa-globe"></i>
+                  <span>portal.minhaagendaapp.com.br/agenda</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Banner Informativo de Agendamento Online -->
+            <div style="background: #FDF2F8; border: 1px solid #FBCFE8; border-radius: var(--radius-md); padding: 12px 14px; margin: 14px 16px; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-calendar-check" style="font-size: 20px; color: var(--purple-primary);"></i>
+              <div style="font-size: 11px; color: #374151;">
+                <strong style="color: var(--purple-primary);">Agendamento Online Direto & Rápido</strong>
+                <p style="margin-top: 2px;">Sem cobrança de sinal prévio: escolha seu horário e o pagamento é realizado no estúdio após o atendimento.</p>
+              </div>
+            </div>
+
+            <!-- Passo 1: Procedimentos Editáveis -->
+            <div style="padding: 10px 16px 6px; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-size: 13px; font-weight: 800; color: #111827;">
+                1. Selecione o Procedimento:
+              </div>
+              <button type="button" class="btn-manage-services-header" onclick="openNewServiceModal()">
+                <i class="fa-solid fa-plus-circle"></i> + Incluir Serviço
+              </button>
+            </div>
+            <div id="onlineServicesList">
+              <!-- Renderizado via app.js com botão de editar em cada card -->
+            </div>
+            <!-- Card CTA para Adicionar Procedimento -->
+            <div class="add-service-cta-card" onclick="openNewServiceModal()">
+              <div class="add-service-cta-icon"><i class="fa-solid fa-plus"></i></div>
+              <div>
+                <strong style="font-size: 12px; color: #111827; display: block;">+ Incluir Novo Procedimento</strong>
+                <span style="font-size: 11px; color: #6B7280;">Adicione mais opções de serviços e defina preços personalizados</span>
+              </div>
+            </div>
+
+            <!-- Passo 2: Escolha o Mês e Dia -->
+            <div style="padding: 14px 16px 6px; font-size: 13px; font-weight: 800; color: #111827;">
+              2. Escolha o Mês e o Dia do Atendimento:
+            </div>
+            <div style="margin: 0 16px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: var(--radius-md); padding: 14px;">
+              <!-- Campo de Seleção do Mês -->
+              <div style="margin-bottom: 12px;">
+                <label for="onlineMonthSelect" style="display: block; font-size: 11px; font-weight: 700; color: #4B5563; margin-bottom: 6px;">
+                  <i class="fa-solid fa-calendar-days" style="color: var(--purple-primary); margin-right: 4px;"></i> Selecionar Mês:
+                </label>
+                <select id="onlineMonthSelect" class="online-month-select" onchange="onOnlineMonthSelectChange(this.value)">
+                  <option value="2026-8" selected>📅 Setembro 2026 (Mês Atual)</option>
+                  <option value="2026-9">📅 Outubro 2026 (Próximo Mês)</option>
+                  <option value="2026-10">📅 Novembro 2026</option>
+                  <option value="2026-11">📅 Dezembro 2026</option>
+                  <option value="2027-0">📅 Janeiro 2027</option>
+                  <option value="2027-1">📅 Fevereiro 2027</option>
+                </select>
+
+                <!-- Abas Rápidas dos Meses para Toque Fácil -->
+                <div class="online-month-tabs-strip" id="onlineMonthTabsContainer">
+                  <button type="button" class="online-month-tab active" data-month="8" data-year="2026" onclick="selectOnlineMonth(8, 2026)">Setembro</button>
+                  <button type="button" class="online-month-tab" data-month="9" data-year="2026" onclick="selectOnlineMonth(9, 2026)">Outubro</button>
+                  <button type="button" class="online-month-tab" data-month="10" data-year="2026" onclick="selectOnlineMonth(10, 2026)">Novembro</button>
+                  <button type="button" class="online-month-tab" data-month="11" data-year="2026" onclick="selectOnlineMonth(11, 2026)">Dezembro</button>
+                  <button type="button" class="online-month-tab" data-month="0" data-year="2027" onclick="selectOnlineMonth(0, 2027)">Jan/27</button>
+                </div>
+              </div>
+
+              <!-- Indicador de Data Selecionada -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-top: 1px dashed #F3F4F6; padding-top: 10px;">
+                <span style="font-size: 12px; font-weight: 700; color: #4B5563;">
+                  <i class="fa-regular fa-calendar" style="color: var(--purple-primary); margin-right: 4px;"></i> Data Selecionada:
+                </span>
+                <span id="onlineSelectedDateBadge" style="background: #FDF2F8; border: 1px solid #FBCFE8; color: var(--purple-primary); padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 800;">
+                  Terça, 22 de Setembro
+                </span>
+              </div>
+
+              <!-- Carrossel com os Dias (Terça 22 de Setembro, Quarta 23 de Setembro, etc.) -->
+              <div class="online-days-scroll" id="onlineDaysContainer">
+                <!-- Renderizado via app.js -->
+              </div>
+              
+              <!-- Slots Livres -->
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; color: #6B7280; margin: 14px 0 8px;">
+                <span>Horários Livres para <strong id="onlineSlotsDayText" style="color: var(--purple-primary);">Terça, 22 de Setembro</strong>:</span>
+                <span style="font-size: 10px; color: #059669; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Disponíveis</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="onlineSlotsGrid">
+                <!-- Renderizado via app.js -->
+              </div>
+            </div>
+
+            <div style="padding: 16px;">
+              <button class="btn-action-close" style="background: var(--purple-primary);" onclick="openOnlineCheckout()">
+                <span>Continuar Agendamento ➔</span>
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       MODAL: AÇÕES RÁPIDAS DO AGENDAMENTO (CONFORME IMAGEM 5)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="appointmentActionModal" onclick="closeActionModal(event)">
+    <div class="action-modal-card" onclick="event.stopPropagation()">
+      
+      <!-- Linha com os 4 Ícones de Ação da Imagem 5 -->
+      <div class="action-icons-row">
+        <a href="tel:11988889900" class="action-icon-col ligar" id="btnActionCall">
+          <i class="fa-solid fa-phone"></i>
+          <span>Ligar</span>
+        </a>
+        <a href="javascript:void(0)" class="action-icon-col whats" id="btnActionWhats" onclick="openWhatsAppChat()">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>Whats</span>
+        </a>
+        <button type="button" class="action-icon-col editar" onclick="editAppointment()">
+          <i class="fa-solid fa-pencil"></i>
+          <span>Editar</span>
+        </button>
+        <button type="button" class="action-icon-col deletar" onclick="deleteAppointment()">
+          <i class="fa-regular fa-trash-can"></i>
+          <span>Deletar</span>
+        </button>
+      </div>
+
+      <!-- Detalhes do Agendamento -->
+      <div class="action-details-row">
+        <div>
+          <i class="fa-regular fa-clock" style="color: var(--purple-primary); margin-right: 6px;"></i>
+          <span id="actionModalTimeText">11:00 - 12:00</span>
+          <div style="font-size: 11px; color: #6B7280; margin-top: 2px;" id="actionModalDateText">
+            Segunda, 28 de Setembro de 2026
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #9CA3AF; font-size: 11px;"></i>
+      </div>
+
+      <!-- Menu de Ações Rápidas Conforme Imagem 5 -->
+      <div class="action-quick-menu">
+        <div class="action-tip-box">
+          Dica: Acesse esse menu de forma rápida com um toque no agendamento.
+        </div>
+        <div class="quick-menu-item" onclick="openWhatsAppChat()">
+          Abrir chat
+        </div>
+        <div class="quick-menu-item" onclick="sendWhatsAppReminder()">
+          Enviar lembrete
+        </div>
+        <div class="quick-menu-item" onclick="sendPreDefinedMsg()">
+          Enviar mensagem pré-definida
+        </div>
+        <div class="quick-menu-item cancel" onclick="closeActionModalDirect()">
+          Cancelar
+        </div>
+      </div>
+
+      <!-- Link Adicionar Cobrança -->
+      <div class="action-add-charge-link" onclick="addChargeFromAppointment()">
+        Adicionar Cobrança
+      </div>
+
+      <!-- Botão Azul Fechar -->
+      <button type="button" class="btn-action-close" onclick="closeActionModalDirect()">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: DETALHES DA COMANDA (CONFORME IMAGEM 4)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="comandaDetailModal" onclick="closeComandaModal(event)">
+    <div class="action-modal-card" onclick="event.stopPropagation()">
+      <div class="action-icons-row">
+        <a href="tel:11988889900" class="action-icon-col ligar">
+          <i class="fa-solid fa-phone"></i>
+          <span>Ligar</span>
+        </a>
+        <a href="javascript:void(0)" class="action-icon-col whats" onclick="openWhatsAppChat()">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>Whats</span>
+        </a>
+        <button type="button" class="action-icon-col editar">
+          <i class="fa-solid fa-pencil"></i>
+          <span>Editar</span>
+        </button>
+        <button type="button" class="action-icon-col deletar" onclick="closeComandaModalDirect()">
+          <i class="fa-regular fa-trash-can"></i>
+          <span>Deletar</span>
+        </button>
+      </div>
+
+      <div style="font-size: 13px; color: #111827; padding: 4px 0 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div><i class="fa-solid fa-file-lines" style="color: var(--purple-primary); margin-right: 6px;"></i> <strong id="comandaServiceTitle">Pacote Massagens</strong></div>
+        <div><i class="fa-solid fa-user" style="color: var(--purple-primary); margin-right: 6px;"></i> Cliente: <span id="comandaClientName">Dayane</span></div>
+        <div><i class="fa-regular fa-calendar" style="color: var(--purple-primary); margin-right: 6px;"></i> Data da Comanda: <span>28 de Setembro de 2026</span></div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid #F3F4F6; padding-top: 6px;">
+          <span>Valor Total:</span>
+          <strong id="comandaTotalVal">R$ 400,00</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; color: #DC2626; font-weight: 700;">
+          <span>Total Pago:</span>
+          <span id="comandaPaidVal">R$ 150,00 (Devendo: R$ 250,00)</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-view-all-reports" style="margin-top: 0; margin-bottom: 8px;" onclick="showToast('Pagamento registrado!')">
+        Adicionar Pagamento
+      </button>
+      <button type="button" class="btn-view-all-reports" style="border-color: #FECDD3; background: #FFF1F2; color: #E11D48; margin-top: 0; margin-bottom: 12px;" onclick="showToast('Comanda finalizada!')">
+        Fechar Comanda
+      </button>
+      <button type="button" class="btn-action-close" onclick="closeComandaModalDirect()">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: FICHA TÉCNICA DA CLIENTE (FOTOS ANTES E DEPOIS)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="clientRecordModal" onclick="closeClientRecordModal(event)">
+    <div class="action-modal-card" style="max-height: 85vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <h3 style="font-size: 16px; font-weight: 800; color: #111827; margin-bottom: 2px;" id="clientRecordTitle">Ficha Técnica & Anamnese</h3>
+      <p style="font-size: 11px; color: #6B7280; margin-bottom: 12px;">Histórico, Visagismo e Fotos Antes & Depois</p>
+
+      <input type="hidden" id="recordClientId">
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome da Cliente</label>
+        <input type="text" id="recordClientName" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">WhatsApp</label>
+        <input type="tel" id="recordClientPhone" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Anotações de Visagismo & Pele</label>
+        <textarea id="recordClientNotes" rows="2" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;"></textarea>
+      </div>
+
+      <!-- Upload Antes e Depois -->
+      <label style="font-size: 11px; font-weight: 700; color: #4B5563; display: block; margin-bottom: 6px;">
+        <i class="fa-solid fa-camera" style="color: var(--purple-primary);"></i> Fotos de Alta Resolução (Antes & Depois):
+      </label>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+        <!-- Antes -->
+        <div style="border: 2px dashed #CBD5E1; border-radius: 12px; padding: 10px; text-align: center; height: 130px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;" onclick="document.getElementById('fileBefore').click()">
+          <input type="file" id="fileBefore" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'before')">
+          <span style="position: absolute; top: 6px; left: 6px; background: #DC2626; color: #FFFFFF; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">ANTES</span>
+          <img src="" id="previewBefore" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;">
+          <div id="phBefore" style="color: #6B7280; font-size: 11px;">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 20px; color: var(--purple-primary); margin-bottom: 4px;"></i>
+            <div>Foto Antes</div>
+          </div>
+        </div>
+
+        <!-- Depois -->
+        <div style="border: 2px dashed #CBD5E1; border-radius: 12px; padding: 10px; text-align: center; height: 130px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;" onclick="document.getElementById('fileAfter').click()">
+          <input type="file" id="fileAfter" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'after')">
+          <span style="position: absolute; top: 6px; left: 6px; background: var(--purple-primary); color: #FFFFFF; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">DEPOIS</span>
+          <img src="" id="previewAfter" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;">
+          <div id="phAfter" style="color: #6B7280; font-size: 11px;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 20px; color: var(--purple-primary); margin-bottom: 4px;"></i>
+            <div>Foto Depois</div>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="saveClientRecord()">
+        Salvar Ficha & Fotos
+      </button>
+      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeClientRecordModalDirect()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: FINALIZAR AGENDAMENTO ONLINE (SINAL PIX 50%)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="onlineBookingModal" onclick="closeOnlineBookingModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 12px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--purple-soft); color: var(--purple-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">
+          <i class="fa-solid fa-calendar-plus"></i>
+        </div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #111827;">Confirmar Agendamento</h3>
+        <p style="font-size: 12px; color: #6B7280;" id="obServiceSummary">Nanoblading Fio a Fio • 28/09 às 14:00</p>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Seu Nome Completo</label>
+        <input type="text" id="obClientName" placeholder="Ex: Juliana Mendes" style="width: 100%; padding: 9px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Seu WhatsApp (com DDD)</label>
+        <input type="tel" id="obClientPhone" placeholder="(11) 98765-4321" style="width: 100%; padding: 9px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+      </div>
+
+      <!-- Resumo do Valor do Serviço (Sem Sinal) -->
+      <div style="background: #FDF2F8; border: 1px solid #FBCFE8; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+          <span style="color: #4B5563; font-weight: 700;">Valor do Atendimento:</span>
+          <strong id="obTotalVal" style="color: var(--purple-primary); font-size: 17px; font-weight: 800;">R$ 380,00</strong>
+        </div>
+        <div style="font-size: 11px; color: #059669; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-circle-check"></i> Sem necessidade de sinal! Pague diretamente no estúdio.
+        </div>
+      </div>
+
+      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="confirmOnlineBooking()">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Confirmar Agendamento</span>
+      </button>
+      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeOnlineBookingModalDirect()">
+        Voltar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: CADASTRAR / EDITAR PROCEDIMENTO & PREÇO
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="serviceEditModal" onclick="closeServiceModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--purple-soft); color: var(--purple-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #111827;" id="serviceModalTitle">Cadastrar Procedimento</h3>
+        <p style="font-size: 12px; color: #6B7280;">Defina o nome, valor cobrado e duração do serviço</p>
+      </div>
+
+      <input type="hidden" id="editServiceId">
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome do Procedimento *</label>
+        <input type="text" id="editServiceName" placeholder="Ex: Micropigmentação Labial" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Preço (R$) *</label>
+          <input type="number" step="0.50" id="editServicePrice" placeholder="180.00" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Duração (minutos)</label>
+          <input type="number" id="editServiceDuration" placeholder="60" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Categoria</label>
+        <select id="editServiceCategory" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px; background: #fff;">
+          <option value="sobrancelha">Design de Sobrancelha</option>
+          <option value="micro">Micropigmentação / Nanoblading</option>
+          <option value="lamination">Brow Lamination</option>
+          <option value="labial">Micropigmentação Labial</option>
+          <option value="cilios">Extensão / Lash Lifting</option>
+          <option value="outros">Outros Procedimentos</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Descrição / Detalhes</label>
+        <textarea id="editServiceDesc" rows="2" placeholder="Ex: Mapeamento facial áureo e epilação pela raiz." style="width: 100%; padding: 8px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px; resize: none;"></textarea>
+      </div>
+
+      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="saveServiceModal()">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Salvar Procedimento</span>
+      </button>
+      
+      <button type="button" class="btn-action-close" id="btnDeleteService" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; margin-bottom: 8px; display: none;" onclick="deleteServiceModal()">
+        <i class="fa-regular fa-trash-can"></i>
+        <span>Excluir Procedimento</span>
+      </button>
+
+      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeServiceModalDirect()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: PERÍODO DE TESTE DE 7 DIAS (AGENDA DO LUCRO)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="trialModal" onclick="closeTrialModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #FDE047, #EAB308); color: #78350F; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 24px; box-shadow: 0 4px 14px rgba(234, 179, 8, 0.4);">
+          <i class="fa-solid fa-crown"></i>
+        </div>
+        <h3 style="font-size: 17px; font-weight: 800; color: #111827;">Período de Teste Grátis</h3>
+        <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">Seu plano VIP no <strong>Agenda do Lucro</strong></p>
+      </div>
+
+      <!-- Card de Dias Restantes -->
+      <div style="background: #FEFCE8; border: 1.5px solid #FEF08A; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; text-align: center;">
+        <div style="font-size: 11px; font-weight: 700; color: #854D0E; text-transform: uppercase; letter-spacing: 0.5px;">Status da Assinatura</div>
+        <div style="font-size: 26px; font-weight: 900; color: #713F12; margin: 4px 0;">7 Dias Restantes</div>
+        <div style="font-size: 11px; color: #A16207;">Acesso liberado até <strong>29 de Setembro de 2026</strong></div>
+      </div>
+
+      <!-- Benefícios Inclusos -->
+      <div style="font-size: 12px; color: #374151; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+        <div style="display: flex; gap: 8px; align-items: center;"><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <span>Agenda ilimitada com grade de horários</span></div>
+        <div style="display: flex; gap: 8px; align-items: center;"><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <span>Link online para clientes agendarem sozinhas</span></div>
+        <div style="display: flex; gap: 8px; align-items: center;"><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <span>Notificações na hora e lembretes de 30 min (WhatsApp)</span></div>
+        <div style="display: flex; gap: 8px; align-items: center;"><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <span>Edição completa de procedimentos e preços</span></div>
+        <div style="display: flex; gap: 8px; align-items: center;"><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <span>Fichas de clientes com fotos Antes & Depois</span></div>
+        <div style="display: flex; gap: 8px; align-items: center;"><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <span>Relatórios de faturamento e lucro diário</span></div>
+      </div>
+
+      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="closeTrialModalDirect(); showToast('Aproveite seu teste de 7 dias!')">
+        <i class="fa-solid fa-sparkles"></i>
+        <span>Continuar no Teste de 7 Dias</span>
+      </button>
+      <button type="button" class="btn-action-close" style="background: #10B981; margin-bottom: 8px;" onclick="closeTrialModalDirect(); showToast('Garantido com sucesso!')">
+        <i class="fa-solid fa-lock"></i>
+        <span>Garantir Assinatura do Agenda do Lucro</span>
+      </button>
+      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeTrialModalDirect()">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: STATUS DA NUVEM (VERCEL + MONGODB + RESEND)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="cloudStatusModal" onclick="closeCloudStatusModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #8B5CF6, #6B21A8); color: #FFFFFF; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 22px; box-shadow: 0 4px 14px rgba(107, 33, 168, 0.4);">
+          <i class="fa-solid fa-cloud-bolt"></i>
+        </div>
+        <h3 style="font-size: 17px; font-weight: 800; color: #111827;">Infraestrutura da Nuvem</h3>
+        <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">Vercel • MongoDB Atlas • Resend E-mails</p>
+      </div>
+
+      <!-- Itens de status -->
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+        <!-- Vercel Hosting -->
+        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-server" style="color: #6B21A8; font-size: 16px;"></i>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #111827;">Servidor & Hosting</div>
+              <div style="font-size: 10px; color: #6B7280;">Vercel Edge / Serverless Node.js</div>
+            </div>
+          </div>
+          <div id="cloudServerStatus" style="font-size: 11px; font-weight: 700;">
+            <span class="status-badge-online"><i class="fa-solid fa-circle-check"></i> Ativo</span>
+          </div>
+        </div>
+
+        <!-- MongoDB Atlas -->
+        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-database" style="color: #10B981; font-size: 16px;"></i>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #111827;">Banco de Dados</div>
+              <div style="font-size: 10px; color: #6B7280;">MongoDB Atlas (Persistência)</div>
+            </div>
+          </div>
+          <div id="cloudMongoStatus" style="font-size: 11px; font-weight: 700;">
+            <span class="status-badge-online"><i class="fa-solid fa-circle-check"></i> Conectado</span>
+          </div>
+        </div>
+
+        <!-- Resend -->
+        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-envelope-circle-check" style="color: #EC4899; font-size: 16px;"></i>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #111827;">Disparo de E-mails</div>
+              <div style="font-size: 10px; color: #6B7280;">Resend Transactional API</div>
+            </div>
+          </div>
+          <div id="cloudResendStatus" style="font-size: 11px; font-weight: 700;">
+            <span class="status-badge-online"><i class="fa-solid fa-circle-check"></i> Ativo</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="openCloudStatusModal()">
+        <i class="fa-solid fa-rotate"></i>
+        <span>Testar Conexão em Tempo Real</span>
+      </button>
+
+      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeCloudStatusModalDirect()">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST FLUTUANTE -->
+  <div class="app-toast" id="appToast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastMsg">Operação realizada com sucesso!</span>
+  </div>
+
+  <!-- JAVASCRIPT DO APP -->
+  <script src="app.js"></script>
+</body>
+</html>

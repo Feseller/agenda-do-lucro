@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.local
+cloudflared.exe
+*.log
+.DS_Store
+agenda-do-lucro-producao.zip
