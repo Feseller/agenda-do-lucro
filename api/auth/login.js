@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       if (!user) {
         return res.status(401).json({
           success: false,
-          error: 'E-mail não cadastrado. Se você comprou via Kiwify, aguarde alguns minutos pela ativação ou use o Modo Demonstração.'
+          error: 'E-mail não cadastrado. Se você comprou via Kiwify, aguarde alguns minutos pela ativação ou contate o suporte.'
         });
       }
 

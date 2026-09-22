@@ -1743,14 +1743,14 @@ function loginAsGuest() {
     email: 'convidada@agendadolucro.com',
     studioName: 'Studio Designer VIP',
     studioPhone: '(11) 98888-7777',
-    plan: 'trial-7dias'
+    plan: 'vip-vitalicio'
   };
 
   appState.currentUser = guestUser;
   localStorage.setItem(SESSION_KEY, JSON.stringify(guestUser));
   updateStudioUI();
   navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
-  showToast('Modo Demonstração (7 Dias) liberado com sucesso! 💎');
+  showToast('Acesso VIP liberado com sucesso! 💎');
 }
 
 function logout() {
