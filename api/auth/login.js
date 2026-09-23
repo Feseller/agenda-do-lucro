@@ -22,22 +22,63 @@ export default async function handler(req, res) {
 
   const cleanEmail = email.toLowerCase().trim();
 
-  // 1. Acesso Mestre de Administrador / Demonstração
-  if (
-    (cleanEmail === 'admin@agendadolucro.com' && password === 'Lucro@2026') ||
-    (cleanEmail === 'araujofernando88@gmail.com' && (password === 'Nt0FMS2Jy2mAaotH' || password === 'Lucro@2026')) ||
-    (cleanEmail === 'demo@agendadolucro.com' && password === 'demo123')
-  ) {
+  // 1. Acesso Mestre de Administrador & Contas de Cliente/Teste VIP
+  const validAdmins = [
+    { email: 'admin@agendadolucro.com', pwd: ['lucro@2026', 'admin123'] },
+    { email: 'araujofernando88@gmail.com', pwd: ['nt0fms2jy2maaoth', 'lucro@2026'] }
+  ];
+
+  const validClients = [
+    { 
+      email: 'cliente@agendadolucro.com', 
+      pwd: ['cliente@2026', 'cliente2026', 'lucro@2026', 'vip2026'],
+      name: 'Camila Silva',
+      studioName: 'Studio Camila Sobrancelhas VIP',
+      studioPhone: '(11) 98765-4321',
+      plan: 'anual'
+    },
+    { 
+      email: 'teste@agendadolucro.com', 
+      pwd: ['teste@2026', 'teste2026', 'lucro@2026', '123456'],
+      name: 'Aluna Teste VIP',
+      studioName: 'Studio Beleza & Lucro',
+      studioPhone: '(11) 99999-8888',
+      plan: 'anual'
+    }
+  ];
+
+  const lowerPwd = (password || '').toLowerCase();
+
+  // Verificar admin
+  const adminMatch = validAdmins.find(a => a.email === cleanEmail && a.pwd.includes(lowerPwd));
+  if (adminMatch) {
     return res.status(200).json({
       success: true,
       user: {
         id: 'usr-admin',
         email: cleanEmail,
-        name: cleanEmail.includes('araujo') ? 'Fernando Araújo' : 'Designer VIP',
+        name: cleanEmail.includes('araujo') ? 'Fernando Araújo' : 'Designer VIP Admin',
         studioName: 'Studio Designer VIP',
         studioPhone: '(11) 98888-7777',
         plan: 'anual',
         role: 'admin'
+      }
+    });
+  }
+
+  // Verificar cliente teste
+  const clientMatch = validClients.find(c => c.email === cleanEmail && c.pwd.includes(lowerPwd));
+  if (clientMatch) {
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: 'usr-cliente-' + cleanEmail.split('@')[0],
+        email: clientMatch.email,
+        name: clientMatch.name,
+        studioName: clientMatch.studioName,
+        studioPhone: clientMatch.studioPhone,
+        plan: clientMatch.plan,
+        role: 'designer'
       }
     });
   }
