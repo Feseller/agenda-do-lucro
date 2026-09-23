@@ -15,36 +15,7 @@
 </head>
 <body>
 
-  <!-- BARRA DE CONTROLE SUPERIOR (Simulador Desktop / Web) -->
-  <header class="simulator-bar">
-    <div class="simulator-title">
-      <i class="fa-solid fa-chart-line"></i>
-      <span>AGENDA DO LUCRO</span>
-      <span class="brand-domain-tag" id="topBarDomainTag">agenda-do-lucro-app.vercel.app</span>
-    </div>
 
-    <div style="display: flex; gap: 6px; align-items: center;">
-      <button class="toggle-btn" style="color: #6B21A8; background: #F5EEFD;" onclick="requestNotificationPermission()" title="Ativar Notificações no Celular">
-        <i class="fa-solid fa-bell"></i>
-        <span>Ativar Notificações</span>
-      </button>
-      <button class="toggle-btn" style="color: #059669; background: #DCFCE7;" onclick="test30MinReminderNow()" title="Testar Lembrete de 30 Minutos">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>Testar 30 Min</span>
-      </button>
-    </div>
-
-    <div class="simulator-toggles">
-      <button class="toggle-btn active" id="btnModeApp" onclick="switchMainView('screenAgenda', this)">
-        <i class="fa-solid fa-mobile-screen"></i>
-        <span>App Profissional</span>
-      </button>
-      <button class="toggle-btn" id="btnModeOnline" onclick="switchMainView('screenLinkOnline', this)">
-        <i class="fa-solid fa-globe"></i>
-        <span>Link da Cliente</span>
-      </button>
-    </div>
-  </header>
 
   <!-- FRAME DO SMARTPHONE -->
   <main class="app-viewport-wrapper">
@@ -142,12 +113,6 @@
             <a href="javascript:void(0)" class="drawer-item" id="drawerItemRelatorios" onclick="navigateToScreen('screenRelatorios', this)">
               <i class="fa-solid fa-chart-line"></i>
               <span>Resumo Financeiro & Gastos</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" id="drawerItemLinkOnline" onclick="navigateToScreen('screenLinkOnline', this)">
-              <i class="fa-solid fa-link"></i>
-              <span>Sua Página & Link Online</span>
-              <span class="drawer-badge-new">Novo</span>
             </a>
 
             <!-- Seção de Configurações -->
@@ -261,7 +226,7 @@
               <button class="header-icon-btn" title="Buscar Agendamento" onclick="focusSearch()">
                 <i class="fa-solid fa-magnifying-glass"></i>
               </button>
-              <button class="header-icon-btn" title="Calendário" onclick="showToast('Mês de Setembro selecionado')">
+              <button class="header-icon-btn" title="Calendário Completo" onclick="openFullMonthCalendar()">
                 <i class="fa-regular fa-calendar-days"></i>
               </button>
             </div>
@@ -272,21 +237,24 @@
             <!-- Renderizado dinamicamente via app.js -->
           </div>
 
-          <!-- Carrossel dos Dias da Semana com Destaque em Vermelho -->
+          <!-- Carrossel dos Dias da Semana com Destaque em Vermelho no Dia Atual -->
           <div class="weekday-strip-container" id="weekdayStrip">
             <!-- Renderizado dinamicamente via app.js -->
           </div>
 
-          <!-- Subtítulo da Data -->
-          <div class="agenda-date-headline" id="agendaDateHeadline">
-            Hoje, Terça, 22 de Setembro, 2026
+          <!-- Barra de Data e Acesso ao Calendário Completo em Grade (Item 11) -->
+          <div class="agenda-toolbar-strip" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #FFFFFF; border-bottom: 1px solid #F3F4F6;">
+            <div class="agenda-date-headline" id="agendaDateHeadline" style="padding: 0; font-size: 13px; font-weight: 700; color: #374151;">
+              Hoje, Quarta, 23 de Setembro, 2026
+            </div>
+            <button type="button" class="btn-full-calendar-pill" onclick="openFullMonthCalendar()" title="Ver Mês Completo em Grade">
+              <i class="fa-solid fa-calendar-days"></i>
+              <span>Ver Mês Completo</span>
+            </button>
           </div>
 
           <!-- Faixa Cinza com Título -->
           <div class="agenda-section-header">Agendamentos</div>
-
-          <!-- Faixa Dinâmica de Lembrete 30 Minutos Antes -->
-          <div id="reminderContainer"></div>
 
           <!-- Grade de Linha do Tempo com Horários e Blocos Coloridos -->
           <div class="timeline-grid" id="timelineContainer">
@@ -897,61 +865,54 @@
 
 
   <!-- ====================================================================
-       MODAL: FICHA TÉCNICA DA CLIENTE (FOTOS ANTES E DEPOIS)
+       MODAL: FICHA DA CLIENTE (SEM FOTOS, 5 CAMPOS ESSENCIAIS CONFORME ITENS 8 E 9)
        ==================================================================== -->
   <div class="action-modal-overlay" id="clientRecordModal" onclick="closeClientRecordModal(event)">
     <div class="action-modal-card" style="max-height: 85vh; overflow-y: auto;" onclick="event.stopPropagation()">
-      <h3 style="font-size: 16px; font-weight: 800; color: #111827; margin-bottom: 2px;" id="clientRecordTitle">Ficha Técnica & Anamnese</h3>
-      <p style="font-size: 11px; color: #6B7280; margin-bottom: 12px;">Histórico, Visagismo e Fotos Antes & Depois</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 800; color: #111827; margin: 0;" id="clientRecordTitle">Ficha da Cliente</h3>
+          <p style="font-size: 11px; color: #6B7280; margin: 2px 0 0 0;">Dados cadastrais e histórico de atendimento</p>
+        </div>
+        <button type="button" class="btn-modal-link-close" onclick="closeClientRecordModalDirect()">Fechar</button>
+      </div>
 
       <input type="hidden" id="recordClientId">
 
+      <!-- 1. Nome da cliente -->
       <div style="margin-bottom: 10px;">
-        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome da Cliente</label>
-        <input type="text" id="recordClientName" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome da Cliente *</label>
+        <input type="text" id="recordClientName" placeholder="Ex: Larissa Silva" style="width: 100%; padding: 8px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
       </div>
 
+      <!-- 2. WhatsApp -->
       <div style="margin-bottom: 10px;">
-        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">WhatsApp</label>
-        <input type="tel" id="recordClientPhone" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">WhatsApp *</label>
+        <input type="tel" id="recordClientPhone" placeholder="(11) 98765-4321" style="width: 100%; padding: 8px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
       </div>
 
+      <!-- 3. Data de aniversário -->
       <div style="margin-bottom: 10px;">
-        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Anotações de Visagismo & Pele</label>
-        <textarea id="recordClientNotes" rows="2" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;"></textarea>
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Data de Aniversário</label>
+        <input type="date" id="recordClientBirthday" style="width: 100%; padding: 8px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
       </div>
 
-      <!-- Upload Antes e Depois -->
-      <label style="font-size: 11px; font-weight: 700; color: #4B5563; display: block; margin-bottom: 6px;">
-        <i class="fa-solid fa-camera" style="color: var(--purple-primary);"></i> Fotos de Alta Resolução (Antes & Depois):
-      </label>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
-        <!-- Antes -->
-        <div style="border: 2px dashed #CBD5E1; border-radius: 12px; padding: 10px; text-align: center; height: 130px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;" onclick="document.getElementById('fileBefore').click()">
-          <input type="file" id="fileBefore" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'before')">
-          <span style="position: absolute; top: 6px; left: 6px; background: #DC2626; color: #FFFFFF; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">ANTES</span>
-          <img src="" id="previewBefore" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;">
-          <div id="phBefore" style="color: #6B7280; font-size: 11px;">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 20px; color: var(--purple-primary); margin-bottom: 4px;"></i>
-            <div>Foto Antes</div>
-          </div>
-        </div>
-
-        <!-- Depois -->
-        <div style="border: 2px dashed #CBD5E1; border-radius: 12px; padding: 10px; text-align: center; height: 130px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;" onclick="document.getElementById('fileAfter').click()">
-          <input type="file" id="fileAfter" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'after')">
-          <span style="position: absolute; top: 6px; left: 6px; background: var(--purple-primary); color: #FFFFFF; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">DEPOIS</span>
-          <img src="" id="previewAfter" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;">
-          <div id="phAfter" style="color: #6B7280; font-size: 11px;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 20px; color: var(--purple-primary); margin-bottom: 4px;"></i>
-            <div>Foto Depois</div>
-          </div>
-        </div>
+      <!-- 4. Procedimento -->
+      <div style="margin-bottom: 10px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Procedimento</label>
+        <select id="recordClientService" style="width: 100%; padding: 8px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px; background: #fff;">
+          <!-- Populado via app.js -->
+        </select>
       </div>
 
-      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="saveClientRecord()">
-        Salvar Ficha & Fotos
+      <!-- 5. Anotações importantes -->
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Anotações Importantes</label>
+        <textarea id="recordClientNotes" rows="3" placeholder="Alergias, preferências, cor de henna favorita..." style="width: 100%; padding: 8px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;"></textarea>
+      </div>
+
+      <button type="button" class="btn-apt-save-primary" onclick="saveClientRecord()">
+        Salvar Ficha
       </button>
       <button type="button" class="btn-action-close" id="btnDeleteClientRecord" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; margin-bottom: 8px; display: none;" onclick="deleteClientRecord()">
         <i class="fa-regular fa-trash-can"></i>
@@ -1008,76 +969,176 @@
   </div>
 
   <!-- ====================================================================
-       MODAL: NOVO AGENDAMENTO MANUAL (07:00 ÀS 22:00)
+       MODAL: NOVO AGENDAMENTO VIP / RELÓGIO DINÂMICO (FOTO 2)
        ==================================================================== -->
   <div class="action-modal-overlay" id="newAppointmentModal" onclick="closeNewAppointmentModal(event)">
-    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
-      <div style="text-align: center; margin-bottom: 12px;">
-        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--purple-soft); color: var(--purple-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">
-          <i class="fa-solid fa-calendar-plus"></i>
-        </div>
-        <h3 style="font-size: 16px; font-weight: 800; color: #111827;">Novo Agendamento</h3>
-        <p style="font-size: 12px; color: #6B7280;">Agende um atendimento diretamente na sua grade</p>
-      </div>
-
-      <div style="margin-bottom: 10px;">
-        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome da Cliente *</label>
-        <input type="text" id="newAptClientName" placeholder="Ex: Larissa Silva" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
-      </div>
-
-      <div style="margin-bottom: 10px;">
-        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">WhatsApp da Cliente</label>
-        <input type="tel" id="newAptClientPhone" placeholder="(11) 98765-4321" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
-      </div>
-
-      <div style="margin-bottom: 10px;">
-        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Procedimento / Serviço</label>
-        <select id="newAptService" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px; background: #fff;">
-          <!-- Populado via app.js -->
-        </select>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Data</label>
-          <input type="date" id="newAptDate" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;">
-        </div>
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Horário</label>
-          <select id="newAptTime" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px; background: #fff;">
-            <!-- Populado via app.js das 07:00 às 22:00 -->
-          </select>
-        </div>
-      </div>
-
-      <!-- Disparo de Mensagem Pré-definida no WhatsApp -->
-      <div style="background: #F9FAFB; border: 1.5px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px;">
-        <label style="font-size: 11px; font-weight: 700; color: #374151; display: block; margin-bottom: 4px;">
-          <i class="fa-brands fa-whatsapp" style="color: #25D366; margin-right: 4px;"></i> Mensagem Pré-definida para Enviar:
-        </label>
-        <select id="newAptMsgTemplate" style="width: 100%; padding: 8px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-bottom: 8px; background: #fff;">
-          <option value="novaCliente">✨ Boas-vindas (Nova Cliente)</option>
-          <option value="lembrete" selected>🔔 Lembrete de Agendamento</option>
-          <option value="manutencao">🔄 Lembrete de Manutenção / Retorno</option>
-          <option value="retorno">💖 Pós-Atendimento & Retorno</option>
-          <option value="none">Nenhuma mensagem</option>
-        </select>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="newAptSendWhatsApp" checked style="width: 16px; height: 16px; accent-color: var(--purple-primary); cursor: pointer;">
-          <label for="newAptSendWhatsApp" style="font-size: 11px; font-weight: 700; color: #4B5563; cursor: pointer;">
-            Abrir WhatsApp para enviar confirmação agora
+    <div class="action-modal-card modern-apt-card" onclick="event.stopPropagation()">
+      
+      <!-- Topo: Fechar (roxo à esquerda) + Rádios Agendamento / Bloqueio à direita -->
+      <div class="apt-modal-header-row">
+        <button type="button" class="btn-apt-link-close" onclick="closeNewAppointmentModalDirect()">Fechar</button>
+        <div class="apt-type-radios">
+          <label class="apt-radio-label">
+            <input type="radio" name="aptTypeRadio" id="aptRadioAgendamento" value="agendamento" checked onchange="handleAptTypeToggle('agendamento')">
+            <span>Agendamento</span>
+          </label>
+          <label class="apt-radio-label">
+            <input type="radio" name="aptTypeRadio" id="aptRadioBloqueio" value="bloqueio" onchange="handleAptTypeToggle('bloqueio')">
+            <span>Bloqueio</span>
           </label>
         </div>
       </div>
 
-      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="saveManualAppointment()">
-        <i class="fa-solid fa-circle-check"></i>
-        <span>Confirmar Agendamento</span>
-      </button>
+      <!-- Linha do Intervalo Calculado & Sino -->
+      <div class="apt-interval-row">
+        <div class="apt-interval-badge-container">
+          <div class="apt-interval-badge" id="newAptIntervalBadge">19:55 - 20:20</div>
+        </div>
+        <button type="button" class="apt-bell-btn" title="Notificações e Lembretes" onclick="toggleAptNotificationSettings()">
+          <i class="fa-regular fa-bell"></i>
+        </button>
+      </div>
 
-      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeNewAppointmentModalDirect()">
-        Cancelar
-      </button>
+      <!-- Alerta de Conflito de Horário (Quando houver choque) -->
+      <div id="newAptConflictAlert" class="apt-conflict-alert hidden">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="newAptConflictText">Horário não disponível</span>
+      </div>
+
+      <!-- Linha: Data & Horário -->
+      <div class="apt-two-col-row">
+        <div class="apt-field-group">
+          <label class="apt-field-label">Data</label>
+          <div class="apt-select-wrapper">
+            <input type="date" id="newAptDate" class="apt-form-control" onchange="onAptDateOrTimeChange()">
+          </div>
+        </div>
+        <div class="apt-field-group">
+          <label class="apt-field-label">Horario</label>
+          <div class="apt-select-wrapper">
+            <input type="time" id="newAptTime" class="apt-form-control" step="60" onchange="onAptDateOrTimeChange()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Linha: Cliente (com Autocomplete) -->
+      <div class="apt-field-group" style="position: relative;" id="groupAptClient">
+        <label class="apt-field-label">Cliente</label>
+        <div class="apt-search-input-wrapper">
+          <input type="text" id="newAptClientName" class="apt-form-control apt-search-input" placeholder="Buscar..." autocomplete="off" oninput="onSearchClientInput(this.value)" onfocus="onSearchClientInput(this.value)">
+          <i class="fa-solid fa-magnifying-glass apt-search-icon"></i>
+        </div>
+        <!-- Dropdown com Clientes Salvas para Autocomplete -->
+        <div id="aptClientAutocompleteList" class="apt-autocomplete-dropdown hidden"></div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+          <button type="button" class="btn-apt-secondary-chip" onclick="openNewClientQuickModal()">
+            + Nova Cliente
+          </button>
+        </div>
+      </div>
+
+      <!-- Linha: Serviços -->
+      <div class="apt-field-group" id="groupAptServices">
+        <label class="apt-field-label">Serviços</label>
+        <div class="apt-search-input-wrapper">
+          <select id="newAptService" class="apt-form-control apt-select-control" onchange="onAptServiceChange()">
+            <!-- Populado via app.js -->
+          </select>
+          <i class="fa-solid fa-magnifying-glass apt-search-icon"></i>
+        </div>
+      </div>
+
+      <!-- Linha: Adicionar Item & Total R$ -->
+      <div class="apt-items-total-row" id="rowAptItemsTotal">
+        <button type="button" class="btn-apt-add-item" onclick="onAptAddItemClick()">
+          <i class="fa-solid fa-circle-plus"></i>
+          <span>Adicionar Item</span>
+        </button>
+        <div class="apt-total-text">
+          Total: <strong id="newAptTotalDisplay">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <!-- Linha: Duração (com cálculo de relógio em tempo real) -->
+      <div class="apt-field-group">
+        <label class="apt-field-label">Duração (Valor padrão baseado no serviço)</label>
+        <div class="apt-select-wrapper">
+          <select id="newAptDuration" class="apt-form-control apt-select-control" onchange="onAptDurationChange()">
+            <option value="15">15 min</option>
+            <option value="20">20 min</option>
+            <option value="25" selected>25 min</option>
+            <option value="30">30 min</option>
+            <option value="40">40 min</option>
+            <option value="45">45 min</option>
+            <option value="50">50 min</option>
+            <option value="60">60 min (1h)</option>
+            <option value="75">1h 15m (75 min)</option>
+            <option value="90">1h 30m (90 min)</option>
+            <option value="105">1h 45m (105 min)</option>
+            <option value="120">2h 00m (120 min)</option>
+            <option value="150">2h 30m</option>
+            <option value="180">3h 00m</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Linha: Repetir Agendamento -->
+      <div class="apt-field-group">
+        <label class="apt-field-label">Repetir Agendamento</label>
+        <div class="apt-select-wrapper">
+          <select id="newAptRepeat" class="apt-form-control apt-select-control">
+            <option value="none">Não Repetir &rsaquo;</option>
+            <option value="weekly">Semanalmente (a cada 7 dias)</option>
+            <option value="biweekly">Quinzenalmente (a cada 15 dias)</option>
+            <option value="monthly">Mensalmente (a cada 30 dias)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Gatilho Expansível: Mais campos (Observação, outros...) -->
+      <div class="apt-expand-trigger-row">
+        <a href="javascript:void(0)" class="apt-expand-trigger" onclick="toggleAptMoreFields()">
+          Mais campos (Observação, outros...)
+        </a>
+      </div>
+
+      <!-- Campos Extras Expansíveis (WhatsApp, template, observações) -->
+      <div id="aptMoreFieldsContainer" class="apt-more-fields-card hidden">
+        <div style="margin-bottom: 8px;">
+          <label class="apt-field-label">WhatsApp da Cliente</label>
+          <input type="tel" id="newAptClientPhone" class="apt-form-control" placeholder="(11) 98765-4321">
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label class="apt-field-label">Disparo de WhatsApp:</label>
+          <select id="newAptMsgTemplate" class="apt-form-control apt-select-control" style="margin-bottom: 6px;">
+            <option value="novaCliente">✨ Boas-vindas (Nova Cliente)</option>
+            <option value="lembrete" selected>🔔 Lembrete de Agendamento</option>
+            <option value="manutencao">🔄 Lembrete de Manutenção / Retorno</option>
+            <option value="retorno">💖 Pós-Atendimento & Retorno</option>
+            <option value="none">Nenhuma mensagem</option>
+          </select>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #4B5563; cursor: pointer;">
+            <input type="checkbox" id="newAptSendWhatsApp" checked style="accent-color: var(--purple-primary);">
+            Abrir WhatsApp para enviar confirmação agora
+          </label>
+        </div>
+        <div>
+          <label class="apt-field-label">Observações</label>
+          <textarea id="newAptNotes" class="apt-form-control" rows="2" placeholder="Preferências da cliente, detalhes do procedimento..."></textarea>
+        </div>
+      </div>
+
+      <!-- Botões de Ação na Base -->
+      <div class="apt-actions-row">
+        <button type="button" class="btn-apt-save-primary" onclick="saveManualAppointment()">
+          Salvar
+        </button>
+        <button type="button" class="btn-apt-multi-secondary" onclick="saveManualAppointment(true)">
+          Agendamento Múltiplo
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -1461,6 +1522,64 @@
           Voltar ao Login
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: CALENDÁRIO MENSAL COMPLETO EM GRADE (ITEM 11)
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="fullMonthCalendarModal" onclick="closeFullMonthCalendar(event)">
+    <div class="action-modal-card" style="max-height: 90vh; overflow-y: auto; padding: 18px;" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 800; color: #111827; margin: 0;">Calendário Mensal</h3>
+          <p style="font-size: 11px; color: #6B7280; margin: 2px 0 0 0;">Toque em qualquer dia para abrir a agenda</p>
+        </div>
+        <button type="button" class="btn-apt-link-close" onclick="closeFullMonthCalendarDirect()">Fechar</button>
+      </div>
+
+      <!-- Controles de Mês (Anterior / Próximo) -->
+      <div class="full-cal-nav-row">
+        <button type="button" class="full-cal-nav-btn" onclick="prevFullCalendarMonth()">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span class="full-cal-month-title" id="fullCalMonthYearTitle">Setembro 2026</span>
+        <button type="button" class="full-cal-nav-btn" onclick="nextFullCalendarMonth()">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Cabeçalho dos Dias da Semana (Dom a Sáb) -->
+      <div class="full-cal-weekdays-header">
+        <span>Dom</span>
+        <span>Seg</span>
+        <span>Ter</span>
+        <span>Qua</span>
+        <span>Qui</span>
+        <span>Sex</span>
+        <span>Sáb</span>
+      </div>
+
+      <!-- Grade dos Dias (7 colunas) -->
+      <div class="full-cal-grid" id="fullCalGridContainer">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+
+      <!-- Legenda explicativa -->
+      <div class="full-cal-legend">
+        <div class="full-cal-legend-item">
+          <span class="full-cal-legend-dot dot-today"></span>
+          <span>Hoje (Vermelho)</span>
+        </div>
+        <div class="full-cal-legend-item">
+          <span class="full-cal-legend-dot dot-selected"></span>
+          <span>Selecionado (Roxo)</span>
+        </div>
+        <div class="full-cal-legend-item">
+          <span class="full-cal-legend-dot dot-has-apt"></span>
+          <span>Com Agendamentos</span>
+        </div>
+      </div>
     </div>
   </div>
 

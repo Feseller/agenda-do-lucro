@@ -380,16 +380,36 @@ body {
   border-radius: 8px;
 }
 
-/* Dia Ativo no Estilo Vermelho da Imagem 3 */
-.weekday-col.active .weekday-number {
-  background: var(--red-badge);
-  color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+/* Dia de HOJE: SEMPRE EM VERMELHO CONFORME ITEM 7 */
+.weekday-col.is-today .weekday-number {
+  background: var(--red-badge) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.45) !important;
+  font-weight: 800;
+}
+.weekday-col.is-today .weekday-name {
+  color: var(--red-badge) !important;
+  font-weight: 800;
 }
 
-.weekday-col.active .weekday-name {
-  color: var(--red-badge);
+/* Dia SELECIONADO (quando não for hoje): DESTAQUE ROXO */
+.weekday-col.active:not(.is-today) .weekday-number {
+  background: var(--purple-primary);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+}
+.weekday-col.active:not(.is-today) .weekday-name {
+  color: var(--purple-primary);
   font-weight: 800;
+}
+
+/* Dia SELECIONADO quando for o próprio dia de HOJE: Fundo vermelho com anel de foco */
+.weekday-col.active.is-today {
+  background: #FEE2E2;
+}
+.weekday-col.active.is-today .weekday-number {
+  outline: 2px solid var(--purple-primary);
+  outline-offset: 2px;
 }
 
 /* Subtítulo com a Data de Hoje */
@@ -2351,6 +2371,461 @@ body {
 .appointment-block.custom-colored:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   MODAL DE AGENDAMENTO VIP ESTILO RELÓGIO (CONFORME FOTO 2)
+   ========================================================================== */
+.modern-apt-card {
+  max-width: 440px !important;
+  border-radius: 20px !important;
+  padding: 18px 20px !important;
+}
+
+.apt-modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.btn-apt-link-close {
+  background: transparent;
+  border: none;
+  color: var(--purple-primary, #7C3AED);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.btn-apt-link-close:hover {
+  text-decoration: underline;
+}
+
+.apt-type-radios {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.apt-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1F2937;
+  cursor: pointer;
+}
+.apt-radio-label input[type="radio"] {
+  accent-color: var(--purple-primary, #7C3AED);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.apt-interval-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.apt-interval-badge-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.apt-interval-badge {
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  position: relative;
+  letter-spacing: 0.5px;
+}
+.apt-interval-badge::after {
+  content: '';
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 0;
+  height: 0;
+  border-bottom: 7px solid var(--purple-primary, #7C3AED);
+  border-left: 7px solid transparent;
+}
+
+.apt-bell-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #6B7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+.apt-bell-btn:hover {
+  color: var(--purple-primary, #7C3AED);
+}
+
+.apt-conflict-alert {
+  background: #FEE2E2;
+  border: 1.5px solid #F87171;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #B91C1C;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.apt-two-col-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.apt-field-group {
+  margin-bottom: 10px;
+}
+
+.apt-field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  margin-bottom: 4px;
+}
+
+.apt-form-control {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  background: #FFFFFF;
+  color: #1F2937;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.apt-form-control:focus {
+  border-color: var(--purple-primary, #7C3AED);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.apt-select-wrapper {
+  position: relative;
+}
+
+.apt-search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.apt-search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+  pointer-events: none;
+  font-size: 13px;
+}
+
+.apt-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 60;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.apt-autocomplete-item {
+  padding: 9px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid #F3F4F6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.apt-autocomplete-item:hover {
+  background: #FAF5FF;
+  color: var(--purple-primary, #7C3AED);
+}
+
+.btn-apt-secondary-chip {
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  color: #B45309;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-apt-secondary-chip:hover {
+  background: #FDE68A;
+}
+
+.apt-items-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0 10px 0;
+}
+
+.btn-apt-add-item {
+  background: transparent;
+  border: none;
+  color: #059669;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+.btn-apt-add-item i {
+  font-size: 15px;
+}
+.btn-apt-add-item:hover {
+  color: #047857;
+}
+
+.apt-total-text {
+  font-size: 13px;
+  color: #4B5563;
+}
+.apt-total-text strong {
+  font-size: 15px;
+  color: #111827;
+  font-weight: 800;
+}
+
+.apt-expand-trigger-row {
+  text-align: center;
+  margin: 10px 0 12px 0;
+}
+.apt-expand-trigger {
+  color: var(--purple-primary, #7C3AED);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.apt-expand-trigger:hover {
+  text-decoration: underline;
+}
+
+.apt-more-fields-card {
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.apt-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-apt-save-primary {
+  background: var(--purple-primary, #7C3AED);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s, transform 0.1s;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+  text-align: center;
+}
+.btn-apt-save-primary:hover {
+  filter: brightness(0.95);
+}
+.btn-apt-save-primary:active {
+  transform: scale(0.99);
+}
+
+.btn-apt-multi-secondary {
+  background: #F5F3FF;
+  color: var(--purple-primary, #7C3AED);
+  border: 1.5px solid #DDD6FE;
+  border-radius: 10px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+  text-align: center;
+}
+.btn-apt-multi-secondary:hover {
+  background: #EDE9FE;
+  border-color: #C4B5FD;
+}
+
+/* ==========================================================================
+   MODAL DE CALENDÁRIO MENSAL EM GRADE (ITEM 11)
+   ========================================================================== */
+.full-cal-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+.full-cal-nav-btn {
+  background: #F3F4F6;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.full-cal-nav-btn:hover {
+  background: #E5E7EB;
+}
+.full-cal-month-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.full-cal-weekdays-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9CA3AF;
+  margin-bottom: 8px;
+}
+
+.full-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.full-cal-day-cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  position: relative;
+  transition: all 0.15s;
+}
+.full-cal-day-cell.empty {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+.full-cal-day-cell:hover:not(.empty) {
+  background: #FAF5FF;
+  border-color: #C4B5FD;
+}
+
+/* Dia de Hoje na Grade Mensal: Sempre Vermelho */
+.full-cal-day-cell.is-today {
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+  border-color: #DC2626 !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+/* Dia Selecionado na Grade Mensal: Roxo */
+.full-cal-day-cell.is-selected:not(.is-today) {
+  background: var(--purple-primary, #7C3AED);
+  color: #FFFFFF;
+  border-color: var(--purple-primary, #7C3AED);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.35);
+}
+
+/* Dia Selecionado quando é Hoje */
+.full-cal-day-cell.is-selected.is-today {
+  outline: 2px solid var(--purple-primary, #7C3AED);
+  outline-offset: 2px;
+}
+
+.full-cal-day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--purple-primary, #7C3AED);
+  position: absolute;
+  bottom: 4px;
+}
+.full-cal-day-cell.is-today .full-cal-day-dot {
+  background: #FFFFFF;
+}
+
+.full-cal-legend {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 14px;
+  font-size: 11px;
+  color: #6B7280;
+  flex-wrap: wrap;
+}
+.full-cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.full-cal-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot-today {
+  background: #DC2626;
+}
+.dot-selected {
+  background: var(--purple-primary, #7C3AED);
+}
+.dot-has-apt {
+  background: #E5E7EB;
+  border: 2px solid var(--purple-primary, #7C3AED);
 }
 
 

@@ -152,6 +152,9 @@ function getDaysForMonth(year, monthIndex) {
   return daysList;
 }
 
+// Data Atual Real (Hoje) para a primeira visão da profissional (Item 4)
+const _realNowDate = new Date();
+
 // Estado Geral da Aplicação
 let appState = {
   currentUser: null,
@@ -162,15 +165,15 @@ let appState = {
     designerEmail: 'araujofernando88@gmail.com'
   },
   currentScreen: 'screenAgenda',
-  selectedDay: 22,
-  selectedMonth: 8, // Setembro
-  selectedYear: 2026,
-  reportsMonth: 8, // Setembro
-  reportsYear: 2026,
+  selectedDay: _realNowDate.getDate(),
+  selectedMonth: _realNowDate.getMonth(),
+  selectedYear: _realNowDate.getFullYear(),
+  reportsMonth: _realNowDate.getMonth(),
+  reportsYear: _realNowDate.getFullYear(),
   selectedOnlineService: DEFAULT_SERVICES[0],
   selectedOnlineSlot: '08:00',
-  selectedOnlineYear: 2026,
-  selectedOnlineMonthIndex: 8, // Setembro
+  selectedOnlineYear: _realNowDate.getFullYear(),
+  selectedOnlineMonthIndex: _realNowDate.getMonth(),
   selectedOnlineDayIndex: 0,
   currentActionAppointment: null,
   clientSearchQuery: '',
@@ -526,14 +529,19 @@ function renderAgendaDays() {
   const m = appState.selectedMonth !== undefined ? appState.selectedMonth : 8;
   const totalDays = new Date(y, m + 1, 0).getDate();
 
+  const realNow = new Date();
+  const isCurrentMonthYear = (y === realNow.getFullYear() && m === realNow.getMonth());
+  const realTodayDay = realNow.getDate();
+
   let html = '';
   for (let d = 1; d <= totalDays; d++) {
     const dateObj = new Date(y, m, d);
     const shortDay = WEEKDAYS_SHORT_PT[dateObj.getDay()];
-    const isActive = d === appState.selectedDay;
+    const isActive = (d === appState.selectedDay);
+    const isToday = isCurrentMonthYear && (d === realTodayDay);
 
     html += `
-      <div class="weekday-col ${isActive ? 'active' : ''}" id="weekdayCol-${d}" onclick="selectAgendaDay(${d}, this)">
+      <div class="weekday-col ${isActive ? 'active' : ''} ${isToday ? 'is-today' : ''}" id="weekdayCol-${d}" onclick="selectAgendaDay(${d}, this)">
         <span class="weekday-name">${shortDay}</span>
         <span class="weekday-number">${d}</span>
       </div>
@@ -569,7 +577,7 @@ function selectAgendaDay(dayNumber, el) {
   updateAgendaHeadline();
   renderTimeline();
 
-  const mName = MONTHS_NAMES_PT[appState.selectedMonth] || 'Setembro';
+  const mName = MONTHS_NAMES_PT[appState.selectedMonth] || 'Mês';
   showToast(`Dia ${dayNumber} de ${mName} selecionado`);
 }
 
@@ -582,9 +590,12 @@ function updateAgendaHeadline() {
   const d = appState.selectedDay || 1;
   const dateObj = new Date(y, m, d);
   const weekdayName = WEEKDAYS_PT[dateObj.getDay()] || 'Segunda';
-  const monthName = MONTHS_NAMES_PT[m] || 'Setembro';
+  const monthName = MONTHS_NAMES_PT[m] || 'Mês';
 
-  headline.innerText = `${weekdayName}, ${d} de ${monthName}, ${y}`;
+  const realNow = new Date();
+  const isToday = (y === realNow.getFullYear() && m === realNow.getMonth() && d === realNow.getDate());
+
+  headline.innerText = `${isToday ? 'Hoje, ' : ''}${weekdayName}, ${d} de ${monthName}, ${y}`;
 }
 
 function renderTimeline() {
@@ -795,15 +806,17 @@ function renderClientesCRM() {
     `;
 
     grouped[letter].forEach(client => {
-      const hasPhotos = client.beforeImg || client.afterImg;
       const ltvVal = typeof client.ltv === 'number' ? client.ltv : (parseFloat(client.ltv) || 0);
+      const bdayText = client.birthday ? `🎂 Aniversário: ${client.birthday.split('-').reverse().join('/')}` : '';
+      const srvText = client.service ? `✨ ${client.service}` : '';
+      const detailInfo = [bdayText, srvText].filter(Boolean).join(' • ') || 'Cliente VIP';
       html += `
         <div class="client-crm-card" onclick="openClientRecordModal('${client.id}')">
           <div class="client-crm-info">
             <h4>${client.name}</h4>
             <p>${client.phone || 'Sem telefone'} • ${client.visits || 1} ${(client.visits || 1) === 1 ? 'atendimento' : 'atendimentos'}</p>
-            <p style="font-size: 10px; color: var(--purple-primary); margin-top: 2px;">
-              ${hasPhotos ? '📸 Fotos Antes e Depois Salvas' : '📷 Sem fotos cadastradas'}
+            <p style="font-size: 11px; color: var(--purple-primary); margin-top: 2px;">
+              ${detailInfo}
             </p>
           </div>
           <div class="client-crm-badge">
@@ -817,43 +830,36 @@ function renderClientesCRM() {
   container.innerHTML = html;
 }
 
+function populateClientRecordServices(selectedServiceName = '') {
+  const select = document.getElementById('recordClientService');
+  if (!select) return;
+  const services = appState.services || [];
+  let html = '<option value="">Selecione um procedimento</option>';
+  services.forEach(s => {
+    const isSel = (s.name === selectedServiceName || s.id === selectedServiceName) ? 'selected' : '';
+    html += `<option value="${s.name}" ${isSel}>${s.name}</option>`;
+  });
+  select.innerHTML = html;
+}
+
 function openClientRecordModal(clientId) {
   const client = (appState.clients || []).find(c => c.id === clientId);
   if (!client) return;
 
   document.getElementById('recordClientId').value = client.id;
-  document.getElementById('clientRecordTitle').innerText = `Ficha Técnica: ${client.name}`;
-  document.getElementById('recordClientName').value = client.name;
+  document.getElementById('clientRecordTitle').innerText = `Ficha da Cliente: ${client.name}`;
+  document.getElementById('recordClientName').value = client.name || '';
   document.getElementById('recordClientPhone').value = client.phone || '';
+  
+  const bdayInput = document.getElementById('recordClientBirthday');
+  if (bdayInput) bdayInput.value = client.birthday || '';
+  
+  populateClientRecordServices(client.service || '');
+  
   document.getElementById('recordClientNotes').value = client.notes || '';
 
   const btnDelete = document.getElementById('btnDeleteClientRecord');
   if (btnDelete) btnDelete.style.display = 'block';
-
-  // Configurar Preview Fotos
-  const pBefore = document.getElementById('previewBefore');
-  const phBefore = document.getElementById('phBefore');
-  if (client.beforeImg) {
-    pBefore.src = client.beforeImg;
-    pBefore.style.display = 'block';
-    phBefore.style.display = 'none';
-  } else {
-    pBefore.src = '';
-    pBefore.style.display = 'none';
-    phBefore.style.display = 'flex';
-  }
-
-  const pAfter = document.getElementById('previewAfter');
-  const phAfter = document.getElementById('phAfter');
-  if (client.afterImg) {
-    pAfter.src = client.afterImg;
-    pAfter.style.display = 'block';
-    phAfter.style.display = 'none';
-  } else {
-    pAfter.src = '';
-    pAfter.style.display = 'none';
-    phAfter.style.display = 'flex';
-  }
 
   document.getElementById('clientRecordModal').classList.add('active');
 }
@@ -863,15 +869,16 @@ function openNewClientModal() {
   document.getElementById('clientRecordTitle').innerText = 'Nova Ficha de Cliente';
   document.getElementById('recordClientName').value = '';
   document.getElementById('recordClientPhone').value = '';
+  
+  const bdayInput = document.getElementById('recordClientBirthday');
+  if (bdayInput) bdayInput.value = '';
+  
+  populateClientRecordServices();
+  
   document.getElementById('recordClientNotes').value = '';
 
   const btnDelete = document.getElementById('btnDeleteClientRecord');
   if (btnDelete) btnDelete.style.display = 'none';
-
-  document.getElementById('previewBefore').style.display = 'none';
-  document.getElementById('phBefore').style.display = 'flex';
-  document.getElementById('previewAfter').style.display = 'none';
-  document.getElementById('phAfter').style.display = 'flex';
 
   document.getElementById('clientRecordModal').classList.add('active');
 }
@@ -884,34 +891,15 @@ function closeClientRecordModalDirect() {
   document.getElementById('clientRecordModal').classList.remove('active');
 }
 
-function handleImageUpload(e, type) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const dataUrl = evt.target.result;
-    if (type === 'before') {
-      document.getElementById('previewBefore').src = dataUrl;
-      document.getElementById('previewBefore').style.display = 'block';
-      document.getElementById('phBefore').style.display = 'none';
-    } else {
-      document.getElementById('previewAfter').src = dataUrl;
-      document.getElementById('previewAfter').style.display = 'block';
-      document.getElementById('phAfter').style.display = 'none';
-    }
-    showToast(`Foto de ${type === 'before' ? 'Antes' : 'Depois'} anexada!`);
-  };
-  reader.readAsDataURL(file);
-}
-
 function saveClientRecord() {
   const id = document.getElementById('recordClientId').value;
   const name = document.getElementById('recordClientName').value.trim();
   const phone = document.getElementById('recordClientPhone').value.trim();
+  const bdayInput = document.getElementById('recordClientBirthday');
+  const birthday = bdayInput ? bdayInput.value : '';
+  const srvSelect = document.getElementById('recordClientService');
+  const service = srvSelect ? srvSelect.value : '';
   const notes = document.getElementById('recordClientNotes').value.trim();
-  const beforeImg = document.getElementById('previewBefore').src || '';
-  const afterImg = document.getElementById('previewAfter').src || '';
 
   if (!name) {
     alert('Informe o nome da cliente.');
@@ -923,19 +911,19 @@ function saveClientRecord() {
   if (client) {
     client.name = name;
     client.phone = phone;
+    client.birthday = birthday;
+    client.service = service;
     client.notes = notes;
-    if (beforeImg) client.beforeImg = beforeImg;
-    if (afterImg) client.afterImg = afterImg;
   } else {
     client = {
       id: id,
       name: name,
       phone: phone,
+      birthday: birthday,
+      service: service,
       notes: notes,
       visits: 1,
-      ltv: 0.00,
-      beforeImg: beforeImg,
-      afterImg: afterImg
+      ltv: 0.00
     };
     appState.clients.unshift(client);
   }
@@ -1503,13 +1491,20 @@ function confirmOnlineBooking() {
 }
 
 // ==========================================================================
-// MODAL: NOVO AGENDAMENTO MANUAL PELA DESIGNER (07:00 ÀS 22:00)
+// MODAL: NOVO AGENDAMENTO VIP / RELÓGIO DINÂMICO (FOTO 2 & ITENS 2, 3, 5, 6)
 // ==========================================================================
-function openNewAppointmentModal(preHour) {
+let currentAptType = 'agendamento';
+
+function openNewAppointmentModal(preHourOrTime) {
   const modal = document.getElementById('newAppointmentModal');
   if (!modal) return;
 
-  // Preencher procedimentos
+  currentAptType = 'agendamento';
+  const radioApt = document.getElementById('aptRadioAgendamento');
+  if (radioApt) radioApt.checked = true;
+  handleAptTypeToggle('agendamento');
+
+  // Preencher procedimentos no seletor
   const selectService = document.getElementById('newAptService');
   if (selectService) {
     selectService.innerHTML = (appState.services || []).map(s => `
@@ -1517,31 +1512,52 @@ function openNewAppointmentModal(preHour) {
     `).join('');
   }
 
-  // Preencher horários de hora em hora das 07:00 às 22:00
-  const selectTime = document.getElementById('newAptTime');
-  if (selectTime) {
-    const slots = [
-      '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
-      '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
-      '19:00', '20:00', '21:00', '22:00'
-    ];
-    selectTime.innerHTML = slots.map(h => `
-      <option value="${h}">${h}</option>
-    `).join('');
-    if (preHour) {
-      const match = slots.find(s => s.startsWith(preHour.split(':')[0]));
-      if (match) selectTime.value = match;
+  // Preencher data padrão (selecionada na agenda ou hoje)
+  const dateInput = document.getElementById('newAptDate');
+  if (dateInput) {
+    const y = appState.selectedYear || _realNowDate.getFullYear();
+    const m = String((appState.selectedMonth !== undefined ? appState.selectedMonth : _realNowDate.getMonth()) + 1).padStart(2, '0');
+    const d = String(appState.selectedDay || _realNowDate.getDate()).padStart(2, '0');
+    dateInput.value = `${y}-${m}-${d}`;
+  }
+
+  // Preencher horário inicial (permite qualquer minuto: 08:30, 08:40, 09:10, 09:45...)
+  const timeInput = document.getElementById('newAptTime');
+  if (timeInput) {
+    if (preHourOrTime) {
+      timeInput.value = preHourOrTime.includes(':') ? preHourOrTime : `${preHourOrTime}:00`;
+    } else {
+      const curH = String(new Date().getHours()).padStart(2, '0');
+      timeInput.value = `${curH}:00`;
     }
   }
 
-  // Preencher data atual
-  const dateInput = document.getElementById('newAptDate');
-  if (dateInput) {
-    const y = appState.selectedYear || 2026;
-    const m = String((appState.selectedMonth || 8) + 1).padStart(2, '0');
-    const d = String(appState.selectedDay || 22).padStart(2, '0');
-    dateInput.value = `${y}-${m}-${d}`;
+  // Preencher duração inicial padrão (25 min conforme foto 2)
+  const durationSelect = document.getElementById('newAptDuration');
+  if (durationSelect) {
+    durationSelect.value = '25';
   }
+
+  // Resetar campos de cliente e observações
+  const nameInput = document.getElementById('newAptClientName');
+  if (nameInput) nameInput.value = '';
+  const phoneInput = document.getElementById('newAptClientPhone');
+  if (phoneInput) phoneInput.value = '';
+  const notesInput = document.getElementById('newAptNotes');
+  if (notesInput) notesInput.value = '';
+
+  const conflictAlert = document.getElementById('newAptConflictAlert');
+  if (conflictAlert) conflictAlert.classList.add('hidden');
+
+  const moreContainer = document.getElementById('aptMoreFieldsContainer');
+  if (moreContainer) moreContainer.classList.add('hidden');
+
+  const autocompleteList = document.getElementById('aptClientAutocompleteList');
+  if (autocompleteList) autocompleteList.classList.add('hidden');
+
+  // Atualizar badge do relógio e total em R$
+  onAptServiceChange();
+  updateCalculatedInterval();
 
   modal.classList.add('active');
 }
@@ -1549,6 +1565,8 @@ function openNewAppointmentModal(preHour) {
 function closeNewAppointmentModalDirect() {
   const modal = document.getElementById('newAppointmentModal');
   if (modal) modal.classList.remove('active');
+  const autocompleteList = document.getElementById('aptClientAutocompleteList');
+  if (autocompleteList) autocompleteList.classList.add('hidden');
 }
 
 function closeNewAppointmentModal(e) {
@@ -1556,35 +1574,290 @@ function closeNewAppointmentModal(e) {
   if (modal) modal.classList.remove('active');
 }
 
-function saveManualAppointment() {
-  const nameInput = document.getElementById('newAptClientName');
-  const phoneInput = document.getElementById('newAptClientPhone');
+function handleAptTypeToggle(type) {
+  currentAptType = type;
+  const clientGroup = document.getElementById('groupAptClient');
+  const servicesGroup = document.getElementById('groupAptServices');
+  const itemsTotalRow = document.getElementById('rowAptItemsTotal');
+  const totalDisplay = document.getElementById('newAptTotalDisplay');
+
+  if (type === 'bloqueio') {
+    if (clientGroup) clientGroup.style.display = 'none';
+    if (servicesGroup) servicesGroup.style.display = 'none';
+    if (itemsTotalRow) itemsTotalRow.style.display = 'none';
+    if (totalDisplay) totalDisplay.innerText = 'R$ 0,00';
+  } else {
+    if (clientGroup) clientGroup.style.display = 'block';
+    if (servicesGroup) servicesGroup.style.display = 'block';
+    if (itemsTotalRow) itemsTotalRow.style.display = 'flex';
+    onAptServiceChange();
+  }
+  updateCalculatedInterval();
+}
+
+function onAptDateOrTimeChange() {
+  updateCalculatedInterval();
+}
+
+function onAptDurationChange() {
+  updateCalculatedInterval();
+}
+
+function onAptServiceChange() {
   const serviceSelect = document.getElementById('newAptService');
-  const timeSelect = document.getElementById('newAptTime');
+  const totalDisplay = document.getElementById('newAptTotalDisplay');
+  const durationSelect = document.getElementById('newAptDuration');
+  if (!serviceSelect) return;
+
+  const s = (appState.services || []).find(srv => srv.id === serviceSelect.value) || (appState.services && appState.services[0]);
+  if (s) {
+    if (totalDisplay) totalDisplay.innerText = `R$ ${s.price.toFixed(2).replace('.', ',')}`;
+    if (s.duration && durationSelect) {
+      const durStr = String(s.duration);
+      const exists = Array.from(durationSelect.options).some(o => o.value === durStr);
+      if (exists) durationSelect.value = durStr;
+    }
+  }
+  updateCalculatedInterval();
+}
+
+function onAptAddItemClick() {
+  showToast('Adicione múltiplos serviços escolhendo outro item ou criando combo! ✨');
+}
+
+function toggleAptMoreFields() {
+  const container = document.getElementById('aptMoreFieldsContainer');
+  if (container) {
+    container.classList.toggle('hidden');
+  }
+}
+
+function toggleAptNotificationSettings() {
+  showToast('Lembretes e notificações ativadas para este atendimento! 🔔');
+}
+
+function openNewClientQuickModal() {
+  closeNewAppointmentModalDirect();
+  openNewClientModal();
+}
+
+// Cálculo do Intervalo [HH:MM - HH:MM] em Tempo Real (Item 3)
+function updateCalculatedInterval() {
+  const timeInput = document.getElementById('newAptTime');
+  const durationSelect = document.getElementById('newAptDuration');
+  const badge = document.getElementById('newAptIntervalBadge');
   const dateInput = document.getElementById('newAptDate');
-  const templateSelect = document.getElementById('newAptMsgTemplate');
-  const sendWhatsAppCheck = document.getElementById('newAptSendWhatsApp');
 
-  const clientName = nameInput ? nameInput.value.trim() : '';
-  const clientPhone = phoneInput ? phoneInput.value.trim() : '';
-  const serviceId = serviceSelect ? serviceSelect.value : '';
-  const timeStart = timeSelect ? timeSelect.value : '08:00';
-  const selectedDate = dateInput && dateInput.value ? dateInput.value : '';
+  const timeStart = (timeInput && timeInput.value) ? timeInput.value : '09:00';
+  const durationMin = parseInt((durationSelect && durationSelect.value) ? durationSelect.value : '25', 10);
 
-  if (!clientName) {
-    alert('Informe o nome da cliente.');
+  const [h, m] = timeStart.split(':').map(Number);
+  const totalMin = (h || 0) * 60 + (m || 0) + durationMin;
+  const endH = Math.floor(totalMin / 60) % 24;
+  const endM = totalMin % 60;
+  const timeEnd = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+
+  if (badge) {
+    badge.innerText = `${timeStart} - ${timeEnd}`;
+  }
+
+  // Verificação de conflito em tempo real
+  if (dateInput && dateInput.value) {
+    const conflict = checkAppointmentCollision(dateInput.value, timeStart, timeEnd);
+    const alertBox = document.getElementById('newAptConflictAlert');
+    const alertText = document.getElementById('newAptConflictText');
+    if (conflict.conflict) {
+      if (alertBox) alertBox.classList.remove('hidden');
+      if (alertText) alertText.innerText = `Horário não disponível: Conflito com ${conflict.conflictingApt.clientName} (${conflict.conflictingApt.timeStart} às ${conflict.conflictingApt.timeEnd})`;
+    } else {
+      if (alertBox) alertBox.classList.add('hidden');
+    }
+  }
+
+  return { timeStart, timeEnd };
+}
+
+// Verificação de Choque de Horários (Item 6: Bloquear sobreposição)
+function checkAppointmentCollision(dateStr, startStr, endStr, excludeAptId = null) {
+  if (!dateStr || !startStr || !endStr) return { conflict: false };
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return { conflict: false };
+
+  const y = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10) - 1;
+  const d = parseInt(parts[2], 10);
+
+  const [sH, sM] = startStr.split(':').map(Number);
+  const [eH, eM] = endStr.split(':').map(Number);
+  const startMin = (sH || 0) * 60 + (sM || 0);
+  let endMin = (eH || 0) * 60 + (eM || 0);
+  if (endMin <= startMin) endMin += 24 * 60;
+
+  const sameDayApts = (appState.appointments || []).filter(a => {
+    if (excludeAptId && a.id === excludeAptId) return false;
+    const aptDay = a.day !== undefined ? parseInt(a.day, 10) : -1;
+    const aptMonth = a.month !== undefined ? parseInt(a.month, 10) : -1;
+    const aptYear = a.year !== undefined ? parseInt(a.year, 10) : -1;
+    return (aptDay === d && aptMonth === m && aptYear === y);
+  });
+
+  for (const apt of sameDayApts) {
+    const [asH, asM] = (apt.timeStart || '08:00').split(':').map(Number);
+    const [aeH, aeM] = (apt.timeEnd || `${(asH || 8) + 1}:00`).split(':').map(Number);
+    const aptStartMin = (asH || 0) * 60 + (asM || 0);
+    let aptEndMin = (aeH || 0) * 60 + (aeM || 0);
+    if (aptEndMin <= aptStartMin) aptEndMin += 24 * 60;
+
+    // Condição de colisão entre dois intervalos: start1 < end2 && start2 < end1
+    if (startMin < aptEndMin && aptStartMin < endMin) {
+      return { conflict: true, conflictingApt: apt };
+    }
+  }
+
+  return { conflict: false };
+}
+
+// Autocomplete e Busca Inteligente de Clientes (Item 2)
+function onSearchClientInput(val) {
+  const list = document.getElementById('aptClientAutocompleteList');
+  if (!list) return;
+
+  const q = (val || '').trim().toLowerCase();
+  const clients = appState.clients || [];
+
+  if (!q) {
+    const recent = clients.slice(0, 5);
+    if (recent.length === 0) {
+      list.classList.add('hidden');
+      return;
+    }
+    list.innerHTML = `
+      <div style="padding: 6px 12px; font-size: 10px; font-weight: 700; color: #9CA3AF; text-transform: uppercase;">
+        Clientes Cadastradas (${recent.length})
+      </div>
+    ` + recent.map(c => `
+      <div class="apt-autocomplete-item" onclick="selectAutocompleteClient('${c.id}')">
+        <div>
+          <strong>${c.name}</strong>
+          <div style="font-size: 11px; color: #6B7280;">${c.phone || 'Sem telefone'}</div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #9CA3AF; font-size: 11px;"></i>
+      </div>
+    `).join('');
+    list.classList.remove('hidden');
     return;
   }
 
-  const s = (appState.services || []).find(srv => srv.id === serviceId) || (appState.services && appState.services[0]) || { name: 'Procedimento VIP', price: 100, color: '#8B5CF6' };
-  const colorHex = s.color || s.colorHex || '#8B5CF6';
-  
-  // Calcular hora final (1 hora de duração padrão)
-  const hourNum = parseInt(timeStart.split(':')[0], 10);
-  const endHour = String(Math.min(23, hourNum + 1)).padStart(2, '0');
-  const timeEnd = `${endHour}:00`;
-  const hourSlot = String(hourNum).padStart(2, '0');
+  const matches = clients.filter(c => 
+    c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))
+  ).slice(0, 8);
 
+  if (matches.length === 0) {
+    list.innerHTML = `
+      <div style="padding: 10px 12px; font-size: 12px; color: #6B7280; text-align: center;">
+        Nenhuma cliente com "<strong>${val}</strong>".<br>
+        <span style="font-size: 11px; color: var(--purple-primary); font-weight: 700;">Será cadastrada automaticamente!</span>
+      </div>
+    `;
+    list.classList.remove('hidden');
+    return;
+  }
+
+  list.innerHTML = matches.map(c => `
+    <div class="apt-autocomplete-item" onclick="selectAutocompleteClient('${c.id}')">
+      <div>
+        <strong>${c.name}</strong>
+        <div style="font-size: 11px; color: #6B7280;">${c.phone || 'Sem telefone'} ${c.service ? '• ' + c.service : ''}</div>
+      </div>
+      <i class="fa-solid fa-check" style="color: var(--purple-primary); font-size: 12px;"></i>
+    </div>
+  `).join('');
+  list.classList.remove('hidden');
+}
+
+function selectAutocompleteClient(clientId) {
+  const client = (appState.clients || []).find(c => c.id === clientId);
+  if (!client) return;
+
+  const nameInput = document.getElementById('newAptClientName');
+  const phoneInput = document.getElementById('newAptClientPhone');
+  const serviceSelect = document.getElementById('newAptService');
+
+  if (nameInput) nameInput.value = client.name;
+  if (phoneInput && client.phone) phoneInput.value = client.phone;
+
+  if (serviceSelect && client.service) {
+    for (let i = 0; i < serviceSelect.options.length; i++) {
+      if (serviceSelect.options[i].text.includes(client.service)) {
+        serviceSelect.selectedIndex = i;
+        onAptServiceChange();
+        break;
+      }
+    }
+  }
+
+  const list = document.getElementById('aptClientAutocompleteList');
+  if (list) list.classList.add('hidden');
+}
+
+// Fechar autocomplete ao clicar fora
+document.addEventListener('click', function(e) {
+  const searchWrap = document.getElementById('groupAptClient');
+  const list = document.getElementById('aptClientAutocompleteList');
+  if (list && searchWrap && !searchWrap.contains(e.target)) {
+    list.classList.add('hidden');
+  }
+});
+
+// Salvar Agendamento Manual (com bloqueio de conflito e agendamento múltiplo)
+function saveManualAppointment(isMultiple = false) {
+  const nameInput = document.getElementById('newAptClientName');
+  const phoneInput = document.getElementById('newAptClientPhone');
+  const serviceSelect = document.getElementById('newAptService');
+  const timeInput = document.getElementById('newAptTime');
+  const dateInput = document.getElementById('newAptDate');
+  const durationSelect = document.getElementById('newAptDuration');
+  const templateSelect = document.getElementById('newAptMsgTemplate');
+  const sendWhatsAppCheck = document.getElementById('newAptSendWhatsApp');
+  const notesInput = document.getElementById('newAptNotes');
+
+  const isBlock = currentAptType === 'bloqueio';
+  let clientName = nameInput ? nameInput.value.trim() : '';
+  const clientPhone = phoneInput ? phoneInput.value.trim() : '';
+  const serviceId = serviceSelect ? serviceSelect.value : '';
+  const timeStart = (timeInput && timeInput.value) ? timeInput.value : '09:00';
+  const selectedDate = dateInput && dateInput.value ? dateInput.value : '';
+  const durationMin = parseInt((durationSelect && durationSelect.value) ? durationSelect.value : '25', 10);
+  const notes = notesInput ? notesInput.value.trim() : '';
+
+  if (isBlock) {
+    clientName = 'Bloqueio de Horário';
+  } else {
+    if (!clientName) {
+      alert('Por favor, informe o nome da cliente.');
+      if (nameInput) nameInput.focus();
+      return;
+    }
+  }
+
+  // Calcular horário final exato
+  const [h, m] = timeStart.split(':').map(Number);
+  const totalMin = (h || 0) * 60 + (m || 0) + durationMin;
+  const endH = Math.floor(totalMin / 60) % 24;
+  const endM = totalMin % 60;
+  const timeEnd = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+  const hourSlot = String(h || 0).padStart(2, '0');
+
+  // Checar colisão de horário (Item 6)
+  const collision = checkAppointmentCollision(selectedDate, timeStart, timeEnd);
+  if (collision.conflict) {
+    const alertBox = document.getElementById('newAptConflictAlert');
+    if (alertBox) alertBox.classList.remove('hidden');
+    alert(`Horário não disponível!\n\nJá existe um agendamento marcado para este horário com:\n👤 ${collision.conflictingApt.clientName}\n⏰ Das ${collision.conflictingApt.timeStart} às ${collision.conflictingApt.timeEnd}\n\nPor favor, escolha outro horário ou dia.`);
+    return;
+  }
+
+  // Decompor data
   let day = appState.selectedDay;
   let month = appState.selectedMonth;
   let year = appState.selectedYear;
@@ -1598,102 +1871,110 @@ function saveManualAppointment() {
     }
   }
 
+  const s = (appState.services || []).find(srv => srv.id === serviceId) || (appState.services && appState.services[0]) || { name: 'Procedimento VIP', price: 100, color: '#8B5CF6' };
+  const colorHex = isBlock ? '#6B7280' : (s.color || s.colorHex || '#8B5CF6');
+
   const newApt = {
     id: 'apt-' + Date.now(),
     timeStart,
     timeEnd,
     hourSlot,
+    durationMin,
     clientName,
     clientPhone: clientPhone || '(11) 98888-7777',
-    serviceName: s.name,
-    serviceId: s.id,
-    price: s.price,
+    serviceName: isBlock ? 'Horário Bloqueado' : s.name,
+    serviceId: isBlock ? 'block' : s.id,
+    price: isBlock ? 0 : s.price,
     colorHex: colorHex,
     day,
     month,
     year,
-    color: 'yellow',
-    statusTag: 'Confirmado',
-    isBirthday: false
+    color: 'purple',
+    statusTag: isBlock ? 'Bloqueado' : 'Confirmado',
+    isBirthday: false,
+    notes: notes,
+    isBlock: isBlock
   };
 
+  if (!appState.appointments) appState.appointments = [];
   appState.appointments.unshift(newApt);
 
-  // Adicionar ou atualizar no ciclo de manutenção da cliente
-  const returnDays = s.returnDays ? parseInt(s.returnDays, 10) : 30;
-  const serviceDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  if (!appState.maintenanceList) appState.maintenanceList = [];
-  const existingMaintIdx = appState.maintenanceList.findIndex(m => m.clientName.toLowerCase() === clientName.toLowerCase());
-  const maintItem = {
-    id: existingMaintIdx >= 0 ? appState.maintenanceList[existingMaintIdx].id : 'maint-' + Date.now(),
-    clientName,
-    clientPhone: clientPhone || '(11) 98888-7777',
-    serviceName: s.name,
-    serviceDate: serviceDateStr,
-    returnDays: returnDays
-  };
-  if (existingMaintIdx >= 0) {
-    appState.maintenanceList[existingMaintIdx] = maintItem;
-  } else {
-    appState.maintenanceList.unshift(maintItem);
+  // Adicionar ou atualizar ciclo de manutenção
+  if (!isBlock) {
+    const returnDays = s.returnDays ? parseInt(s.returnDays, 10) : 30;
+    const serviceDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    if (!appState.maintenanceList) appState.maintenanceList = [];
+    const existingMaintIdx = appState.maintenanceList.findIndex(m => m.clientName.toLowerCase() === clientName.toLowerCase());
+    const maintItem = {
+      id: existingMaintIdx >= 0 ? appState.maintenanceList[existingMaintIdx].id : 'maint-' + Date.now(),
+      clientName,
+      clientPhone: clientPhone || '(11) 98888-7777',
+      serviceName: s.name,
+      serviceDate: serviceDateStr,
+      returnDays: returnDays
+    };
+    if (existingMaintIdx >= 0) {
+      appState.maintenanceList[existingMaintIdx] = maintItem;
+    } else {
+      appState.maintenanceList.unshift(maintItem);
+    }
   }
 
-  // Adicionar ou atualizar cadastro da cliente no CRM
-  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
-  if (!appState.clients) appState.clients = [];
-  const existingCli = appState.clients.find(c => c.name.toLowerCase() === clientName.toLowerCase() || (clientPhone && c.phone === clientPhone));
-  let clientToSave;
-  if (existingCli) {
-    existingCli.visits = (existingCli.visits || 1) + 1;
-    existingCli.ltv = (existingCli.ltv || 0) + s.price;
-    if (clientPhone && !existingCli.phone) existingCli.phone = clientPhone;
-    clientToSave = existingCli;
-  } else {
-    clientToSave = {
-      id: 'cli-' + Date.now(),
-      name: clientName,
-      phone: clientPhone || '',
-      notes: `Atendimento de ${s.name}`,
-      visits: 1,
-      ltv: s.price,
-      beforeImg: '',
-      afterImg: '',
-      designerEmail: targetEmail
-    };
-    appState.clients.unshift(clientToSave);
+  // Item 2: Salvar dados da cliente para autocompletar na próxima sessão
+  const targetEmail = (appState.studioConfig && appState.studioConfig.designerEmail) || (appState.currentUser ? appState.currentUser.email : '');
+  let clientToSave = null;
+  if (!isBlock) {
+    if (!appState.clients) appState.clients = [];
+    const existingCli = appState.clients.find(c => 
+      c.name.toLowerCase() === clientName.toLowerCase() || (clientPhone && c.phone === clientPhone)
+    );
+    if (existingCli) {
+      existingCli.visits = (existingCli.visits || 1) + 1;
+      existingCli.ltv = (existingCli.ltv || 0) + s.price;
+      if (clientPhone && !existingCli.phone) existingCli.phone = clientPhone;
+      if (s.name) existingCli.service = s.name;
+      clientToSave = existingCli;
+    } else {
+      clientToSave = {
+        id: 'cli-' + Date.now(),
+        name: clientName,
+        phone: clientPhone || '',
+        service: s.name,
+        notes: notes || `Atendimento de ${s.name}`,
+        visits: 1,
+        ltv: s.price,
+        designerEmail: targetEmail
+      };
+      appState.clients.unshift(clientToSave);
+    }
   }
 
   saveData();
-  closeNewAppointmentModalDirect();
 
-  // Sincronizar com MongoDB
+  // Sincronizar com Nuvem
   fetch('/api/appointments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...newApt,
-      designerEmail: targetEmail
-    })
+    body: JSON.stringify({ ...newApt, designerEmail: targetEmail })
   }).catch(() => {});
 
-  fetch('/api/clients', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...clientToSave,
-      designerEmail: targetEmail
-    })
-  }).catch(() => {});
+  if (clientToSave) {
+    fetch('/api/clients', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...clientToSave, designerEmail: targetEmail })
+    }).catch(() => {});
+  }
 
-  // Disparo de mensagem pré-definida no WhatsApp da cliente
+  // Disparo WhatsApp
   const shouldSendWA = sendWhatsAppCheck ? sendWhatsAppCheck.checked : false;
   const templateKey = templateSelect ? templateSelect.value : 'none';
 
-  if (shouldSendWA && templateKey !== 'none' && clientPhone) {
+  if (!isBlock && shouldSendWA && templateKey !== 'none' && clientPhone) {
     const rawTemplates = appState.msgTemplates || DEFAULT_MSG_TEMPLATES;
     let tplText = rawTemplates[templateKey] || rawTemplates.lembrete;
     const dateFormatted = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${year}`;
-    const studioName = appState.studioConfig.studioName || 'Studio de Sobrancelha VIP';
+    const studioName = appState.studioConfig.studioName || 'Studio VIP';
     
     let msg = tplText
       .replace(/{cliente}/g, clientName)
@@ -1708,16 +1989,148 @@ function saveManualAppointment() {
     window.open(waUrl, '_blank');
   }
 
-  // Limpar formulário
-  if (nameInput) nameInput.value = '';
-  if (phoneInput) phoneInput.value = '';
+  // Se o agendamento foi em outro dia ou mês, navegar a timeline para aquele dia
+  if (appState.selectedDay !== day || appState.selectedMonth !== month || appState.selectedYear !== year) {
+    appState.selectedDay = day;
+    appState.selectedMonth = month;
+    appState.selectedYear = year;
+    renderAgendaDays();
+  }
 
   renderTimeline();
   renderClientesCRM();
   renderManutencao();
   renderMeusPagamentos();
   renderResumoFinanceiro();
-  showToast(`Agendamento de ${clientName} salvo para às ${timeStart}! ✨`);
+
+  if (isMultiple) {
+    // Agendamento Múltiplo: avança o horário de início para o fim do agendamento atual
+    if (timeInput) timeInput.value = timeEnd;
+    if (nameInput) nameInput.value = '';
+    if (phoneInput) phoneInput.value = '';
+    updateCalculatedInterval();
+    showToast(`Agendamento de ${clientName} salvo! Você já pode agendar o próximo horário (${timeEnd}). ✨`);
+  } else {
+    closeNewAppointmentModalDirect();
+    showToast(`Agendamento de ${clientName} salvo com sucesso! ✨`);
+    highlightAndScrollToAppointment(newApt.id);
+  }
+}
+
+// ==========================================================================
+// MODAL: CALENDÁRIO MENSAL COMPLETO EM GRADE (ITEM 11)
+// ==========================================================================
+let fullCalYear = 2026;
+let fullCalMonth = 8;
+
+function openFullMonthCalendar() {
+  fullCalYear = appState.selectedYear || _realNowDate.getFullYear();
+  fullCalMonth = appState.selectedMonth !== undefined ? appState.selectedMonth : _realNowDate.getMonth();
+  renderFullMonthCalendar();
+  const modal = document.getElementById('fullMonthCalendarModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeFullMonthCalendarDirect() {
+  const modal = document.getElementById('fullMonthCalendarModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function closeFullMonthCalendar(e) {
+  const modal = document.getElementById('fullMonthCalendarModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function prevFullCalendarMonth() {
+  fullCalMonth--;
+  if (fullCalMonth < 0) {
+    fullCalMonth = 11;
+    fullCalYear--;
+  }
+  renderFullMonthCalendar();
+}
+
+function nextFullCalendarMonth() {
+  fullCalMonth++;
+  if (fullCalMonth > 11) {
+    fullCalMonth = 0;
+    fullCalYear++;
+  }
+  renderFullMonthCalendar();
+}
+
+function renderFullMonthCalendar() {
+  const titleEl = document.getElementById('fullCalMonthYearTitle');
+  const container = document.getElementById('fullCalGridContainer');
+  if (!container) return;
+
+  if (titleEl) {
+    titleEl.innerText = `${MONTHS_NAMES_PT[fullCalMonth]} ${fullCalYear}`;
+  }
+
+  const firstDayOfWeek = new Date(fullCalYear, fullCalMonth, 1).getDay(); // 0 = Dom, 6 = Sáb
+  const totalDays = new Date(fullCalYear, fullCalMonth + 1, 0).getDate();
+
+  const realNow = new Date();
+  const isRealMonth = (fullCalYear === realNow.getFullYear() && fullCalMonth === realNow.getMonth());
+  const realToday = realNow.getDate();
+
+  let html = '';
+
+  // Dias vazios no início para alinhar com o dia da semana
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    html += '<div class="full-cal-day-cell empty"></div>';
+  }
+
+  // Células de cada dia do mês
+  for (let d = 1; d <= totalDays; d++) {
+    const isToday = isRealMonth && (d === realToday);
+    const isSelected = (fullCalYear === appState.selectedYear && fullCalMonth === appState.selectedMonth && d === appState.selectedDay);
+    
+    const hasAppointments = (appState.appointments || []).some(a => {
+      const aptDay = a.day !== undefined ? parseInt(a.day, 10) : -1;
+      const aptMonth = a.month !== undefined ? parseInt(a.month, 10) : -1;
+      const aptYear = a.year !== undefined ? parseInt(a.year, 10) : -1;
+      return (aptDay === d && aptMonth === fullCalMonth && aptYear === fullCalYear);
+    });
+
+    const classes = [
+      'full-cal-day-cell',
+      isToday ? 'is-today' : '',
+      isSelected ? 'is-selected' : ''
+    ].filter(Boolean).join(' ');
+
+    html += `
+      <div class="${classes}" onclick="selectFullCalendarDay(${d})">
+        <span>${d}</span>
+        ${hasAppointments ? '<span class="full-cal-day-dot"></span>' : ''}
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function selectFullCalendarDay(d) {
+  appState.selectedYear = fullCalYear;
+  appState.selectedMonth = fullCalMonth;
+  appState.selectedDay = d;
+
+  closeFullMonthCalendarDirect();
+
+  // Atualizar abas de meses da agenda
+  document.querySelectorAll('#agendaMonthTabs .month-tab-btn').forEach(btn => btn.classList.remove('active'));
+  const currentTab = document.getElementById(`agendaMonthTab-${fullCalYear}-${fullCalMonth}`);
+  if (currentTab) {
+    currentTab.classList.add('active');
+    currentTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  renderAgendaDays();
+  updateAgendaHeadline();
+  renderTimeline();
+
+  showToast(`Dia ${d} de ${MONTHS_NAMES_PT[fullCalMonth]} selecionado! ✨`);
 }
 
 // ==========================================================================
@@ -3154,6 +3567,25 @@ function handleSaveStudioSettings(e) {
 window.selectAgendaMonth = selectAgendaMonth;
 window.selectAgendaDay = selectAgendaDay;
 window.onReportsMonthChange = onReportsMonthChange;
+window.openFullMonthCalendar = openFullMonthCalendar;
+window.closeFullMonthCalendar = closeFullMonthCalendar;
+window.closeFullMonthCalendarDirect = closeFullMonthCalendarDirect;
+window.prevFullCalendarMonth = prevFullCalendarMonth;
+window.nextFullCalendarMonth = nextFullCalendarMonth;
+window.selectFullCalendarDay = selectFullCalendarDay;
+window.openNewAppointmentModal = openNewAppointmentModal;
+window.closeNewAppointmentModal = closeNewAppointmentModal;
+window.closeNewAppointmentModalDirect = closeNewAppointmentModalDirect;
+window.saveManualAppointment = saveManualAppointment;
+window.handleAptTypeToggle = handleAptTypeToggle;
+window.onAptDateOrTimeChange = onAptDateOrTimeChange;
+window.onAptDurationChange = onAptDurationChange;
+window.onAptServiceChange = onAptServiceChange;
+window.onSearchClientInput = onSearchClientInput;
+window.selectAutocompleteClient = selectAutocompleteClient;
+window.toggleAptMoreFields = toggleAptMoreFields;
+window.openNewClientQuickModal = openNewClientQuickModal;
+window.closeClientRecordModalDirect = closeClientRecordModalDirect;
 
 document.addEventListener('DOMContentLoaded', () => {
   initDefaultData();
@@ -3173,8 +3605,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateClock();
   setInterval(updateClock, 30000);
 
-  // Iniciar verificação de lembretes de 30 minutos a cada 20 segundos
-  setInterval(check30MinReminders, 20000);
+  // Lembrete constante de 30 minutos desativado conforme Item 10
 
   // Sincronizar com Nuvem Vercel + MongoDB
   syncWithCloudBackend();
