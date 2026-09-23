@@ -1,0 +1,22 @@
+{
+  "name": "Agenda do Lucro VIP",
+  "short_name": "Agenda VIP",
+  "description": "Sistema de Gestão & Agendamento para Designers de Sobrancelha e Beleza",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#7C3AED",
+  "icons": [
+    {
+      "src": "assets/banner-sobrancelha.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "assets/banner-sobrancelha.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
