@@ -1441,7 +1441,7 @@ function confirmOnlineBooking() {
   saveData();
   closeOnlineBookingModalDirect();
 
-  // Sincronizar com Nuvem (MongoDB + Disparo Resend)
+  // Sincronizar com Nuvem (MongoDB)
   fetch('/api/appointments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1449,10 +1449,6 @@ function confirmOnlineBooking() {
       ...newApt,
       designerEmail: targetEmail
     })
-  }).then(r => r.json()).then(res => {
-    if (res && res.emailSent) {
-      console.log('✅ Notificação de e-mail enviada para a Designer via Resend!');
-    }
   }).catch(err => console.warn('Aviso API agendamentos:', err));
 
   fetch('/api/clients', {

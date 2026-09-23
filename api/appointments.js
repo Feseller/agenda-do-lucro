@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Dados incompletos para agendamento' });
     }
 
-    const targetEmail = (apt.designerEmail || apt.userEmail || 'araujofernando88@gmail.com').toLowerCase().trim();
+    const targetEmail = (apt.designerEmail || apt.userEmail || '').toLowerCase().trim();
 
     const newAppointment = {
       ...apt,
@@ -75,26 +75,12 @@ export default async function handler(req, res) {
       }
     }
 
-    // Disparar e-mail de notificação para a Designer via Resend
-    let emailResult = { simulated: true };
-    try {
-      emailResult = await sendBookingNotificationEmail({
-        clientName: newAppointment.clientName,
-        clientPhone: newAppointment.clientPhone,
-        serviceName: newAppointment.serviceName,
-        price: newAppointment.price,
-        dateText: newAppointment.dateText || 'Hoje',
-        timeStart: newAppointment.timeStart
-      });
-    } catch (err) {
-      console.warn('Erro ao disparar Resend:', err.message);
-    }
-
+    // Notificação por e-mail de agendamento desativada (usuário não precisa receber)
     return res.status(201).json({
       success: true,
       data: newAppointment,
       dbSaved,
-      emailSent: emailResult.success !== false
+      emailSent: false
     });
   }
 
