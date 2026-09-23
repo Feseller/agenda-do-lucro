@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   const { db, isConnected } = await connectToDatabase();
 
   // =========================================================================
-  // GET: Listar Clientes
+  // GET: Listar Clientes (Filtrado por Designer / Compradora)
   // =========================================================================
   if (req.method === 'GET') {
     if (!isConnected) {
@@ -21,7 +21,23 @@ export default async function handler(req, res) {
     }
 
     try {
-      const clients = await db.collection('clients').find({}).sort({ name: 1 }).toArray();
+      const userEmail = (req.query.userEmail || req.query.designerEmail || req.query.email || '').toLowerCase().trim();
+      
+      // Se não informou e-mail de filtro, retorna lista vazia para garantir isolamento total
+      if (!userEmail) {
+        return res.status(200).json({ success: true, source: 'mongodb', data: [] });
+      }
+
+      const clients = await db.collection('clients')
+        .find({
+          $or: [
+            { designerEmail: userEmail },
+            { userEmail: userEmail }
+          ]
+        })
+        .sort({ name: 1 })
+        .toArray();
+
       return res.status(200).json({ success: true, source: 'mongodb', data: clients });
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
@@ -38,9 +54,12 @@ export default async function handler(req, res) {
     }
 
     const clientId = client.id || 'cli-' + Date.now();
+    const designerEmail = (client.designerEmail || client.userEmail || '').toLowerCase().trim();
+
     const clientRecord = {
       ...client,
       id: clientId,
+      designerEmail: designerEmail,
       updatedAt: new Date().toISOString()
     };
 

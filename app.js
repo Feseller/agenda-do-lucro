@@ -116,57 +116,8 @@ const DEFAULT_MSG_TEMPLATES = {
   lembrete: 'Olá, {cliente}! Lembrando que você tem horário marcado no {estudio} para *{procedimento}* no dia *{data} às {horario}*. Caso precise remarcar, nos avise com antecedência. Te esperamos! ✨'
 };
 
-// Histórico de Manutenção das Clientes
-const DEFAULT_MAINTENANCE = [
-  {
-    id: 'maint-1',
-    clientName: 'Amanda Silveira',
-    clientPhone: '(11) 98111-2233',
-    serviceName: 'Design com Henna Ombré Premium',
-    serviceDate: '2026-08-20',
-    returnDays: 20
-  },
-  {
-    id: 'maint-2',
-    clientName: 'Bruna',
-    clientPhone: '(11) 98222-3344',
-    serviceName: 'Nanoblading Fio a Fio Realista (Micro)',
-    serviceDate: '2026-08-22',
-    returnDays: 30
-  },
-  {
-    id: 'maint-3',
-    clientName: 'Carla',
-    clientPhone: '(11) 98333-4455',
-    serviceName: 'Design com Henna Ombré Premium',
-    serviceDate: '2026-09-08',
-    returnDays: 20
-  },
-  {
-    id: 'maint-4',
-    clientName: 'Dayane',
-    clientPhone: '(11) 98444-5566',
-    serviceName: 'Brow Lamination & Nutrição Profunda',
-    serviceDate: '2026-09-15',
-    returnDays: 30
-  },
-  {
-    id: 'maint-5',
-    clientName: 'Juliana Mendes',
-    clientPhone: '(11) 98888-9900',
-    serviceName: 'Combo VIP: Lamination + Design + Tintura',
-    serviceDate: '2026-09-01',
-    returnDays: 25
-  },
-  {
-    id: 'maint-6',
-    clientName: 'Gabriela',
-    clientPhone: '(11) 98666-7788',
-    serviceName: 'Micropigmentação Shadow Line Luxo',
-    serviceDate: '2026-08-18',
-    returnDays: 30
-  }
-];
+// Histórico de Manutenção das Clientes (Inicia 100% zerado para novas usuárias)
+const DEFAULT_MAINTENANCE = [];
 
 // Nomes em português para dias da semana e meses
 const WEEKDAYS_PT = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -285,17 +236,36 @@ function initDefaultData() {
   if (storedMaint) {
     try { appState.maintenanceList = JSON.parse(storedMaint); } catch(e){}
   }
-  if (!appState.maintenanceList || !appState.maintenanceList.length) {
-    appState.maintenanceList = [...DEFAULT_MAINTENANCE];
+  if (!appState.maintenanceList) {
+    appState.maintenanceList = [];
   }
+  appState.maintenanceList = appState.maintenanceList.filter(m => !String(m.id).match(/^maint-([1-9]|10)$/));
 
   const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
       // Limpar agendamentos mockados antigos para garantir que a agenda inicie 100% zerada
-      appState.appointments = (parsed.appointments || []).filter(a => !String(a.id).startsWith('apt-1') && !String(a.id).startsWith('apt-2') && !String(a.id).startsWith('apt-3') && !String(a.id).startsWith('apt-4') && !String(a.id).startsWith('apt-5') && !String(a.id).startsWith('apt-6') && !String(a.id).startsWith('apt-7') && !String(a.id).startsWith('apt-8') && !String(a.id).startsWith('apt-9') && !String(a.id).startsWith('apt-10'));
-      appState.clients = parsed.clients || [];
+      appState.appointments = (parsed.appointments || []).filter(a => {
+        const idStr = String(a.id);
+        if (idStr.match(/^apt-([1-9]|10)$/)) return false;
+        return true;
+      });
+
+      // Limpar clientes de demonstração antigos (cli-1 a cli-10) para usuárias iniciarem com lista zerada
+      appState.clients = (parsed.clients || []).filter(c => {
+        const idStr = String(c.id);
+        if (idStr.match(/^cli-([1-9]|10)$/)) return false;
+        return true;
+      });
+
+      // Limpar lista de manutenção antiga de demonstração
+      appState.maintenanceList = (parsed.maintenanceList || []).filter(m => {
+        const idStr = String(m.id);
+        if (idStr.match(/^maint-([1-9]|10)$/)) return false;
+        return true;
+      });
+
       appState.services = (parsed.services && parsed.services.length) ? parsed.services : [...DEFAULT_SERVICES];
       
       // Garantir cores e prazos nos serviços carregados
@@ -312,121 +282,22 @@ function initDefaultData() {
       if (parsed.expenses && parsed.expenses.length) appState.expenses = parsed.expenses;
       if (parsed.professionals && parsed.professionals.length) appState.professionals = parsed.professionals;
       if (parsed.msgTemplates) appState.msgTemplates = { ...DEFAULT_MSG_TEMPLATES, ...parsed.msgTemplates };
-      if (parsed.maintenanceList && parsed.maintenanceList.length) appState.maintenanceList = parsed.maintenanceList;
+      if (parsed.maintenanceList && parsed.maintenanceList.length) {
+        appState.maintenanceList = parsed.maintenanceList.filter(m => !String(m.id).match(/^maint-([1-9]|10)$/));
+      }
 
       appState.selectedOnlineService = appState.services[0];
+      saveData();
       return;
     } catch (e) {
       console.warn('Recriando banco local...', e);
     }
   }
 
-  // Clientes A-Z com Fotos e Histórico
-  const defaultClients = [
-    {
-      id: 'cli-1',
-      name: 'Amanda Silveira',
-      phone: '(11) 98111-2233',
-      notes: 'Gosta de início esfumado e arqueamento sutil.',
-      visits: 4,
-      ltv: 680.00,
-      beforeImg: 'assets/banner-sobrancelha.jpg',
-      afterImg: 'assets/banner-sobrancelha.jpg'
-    },
-    {
-      id: 'cli-2',
-      name: 'Bruna',
-      phone: '(11) 98222-3344',
-      notes: 'Nanoblading Fio a Fio com retoque agendado.',
-      visits: 3,
-      ltv: 760.00,
-      beforeImg: '',
-      afterImg: ''
-    },
-    {
-      id: 'cli-3',
-      name: 'Carla',
-      phone: '(11) 98333-4455',
-      notes: 'Design de sobrancelhas clássico a cada 20 dias.',
-      visits: 6,
-      ltv: 510.00,
-      beforeImg: 'assets/banner-sobrancelha.jpg',
-      afterImg: 'assets/banner-sobrancelha.jpg'
-    },
-    {
-      id: 'cli-4',
-      name: 'Dayane',
-      phone: '(11) 98444-5566',
-      notes: 'Comanda ativa de pacote de sessões.',
-      visits: 5,
-      ltv: 890.00,
-      beforeImg: '',
-      afterImg: ''
-    },
-    {
-      id: 'cli-5',
-      name: 'Fernanda',
-      phone: '(11) 98555-6677',
-      notes: 'Epilação na linha 100% algodão.',
-      visits: 2,
-      ltv: 270.00,
-      beforeImg: '',
-      afterImg: ''
-    },
-    {
-      id: 'cli-6',
-      name: 'Gabriela',
-      phone: '(11) 98666-7788',
-      notes: 'Micropigmentação Shadow Line e Brow Lamination.',
-      visits: 4,
-      ltv: 980.00,
-      beforeImg: 'assets/banner-sobrancelha.jpg',
-      afterImg: 'assets/banner-sobrancelha.jpg'
-    },
-    {
-      id: 'cli-7',
-      name: 'Juliana Mendes',
-      phone: '(11) 98888-9900',
-      notes: 'Aniversariante do dia! 🎂 Combo VIP Completo.',
-      visits: 7,
-      ltv: 1450.00,
-      beforeImg: 'assets/banner-sobrancelha.jpg',
-      afterImg: 'assets/banner-sobrancelha.jpg'
-    },
-    {
-      id: 'cli-8',
-      name: 'Larissa Meireles',
-      phone: '(11) 98999-0011',
-      notes: 'Retoque Nanoblading semestral.',
-      visits: 4,
-      ltv: 760.00,
-      beforeImg: '',
-      afterImg: ''
-    },
-    {
-      id: 'cli-9',
-      name: 'Mariana Siqueira',
-      phone: '(11) 99111-1223',
-      notes: 'Design Personalizado com Visagismo Áureo.',
-      visits: 8,
-      ltv: 1840.00,
-      beforeImg: 'assets/banner-sobrancelha.jpg',
-      afterImg: 'assets/banner-sobrancelha.jpg'
-    },
-    {
-      id: 'cli-10',
-      name: 'Raíssa',
-      phone: '(11) 99222-2334',
-      notes: 'Atendimento de estética facial e sobrancelha.',
-      visits: 2,
-      ltv: 380.00,
-      beforeImg: '',
-      afterImg: ''
-    }
-  ];
-
-  appState.clients = defaultClients;
-  appState.appointments = []; // ZERADO! Começa 100% limpo sem replicar agendamentos para quem compra
+  // 100% ZERADO: Novos clientes começam com lista de clientes, agenda e retornos vazios!
+  appState.clients = [];
+  appState.appointments = [];
+  appState.maintenanceList = [];
   saveData();
 }
 
@@ -700,9 +571,27 @@ function renderClientesCRM() {
   const container = document.getElementById('clientsAlphaList');
   if (!container) return;
 
-  let list = [...appState.clients];
+  let list = [...(appState.clients || [])];
   if (appState.clientSearchQuery) {
-    list = list.filter(c => c.name.toLowerCase().includes(appState.clientSearchQuery) || c.phone.includes(appState.clientSearchQuery));
+    list = list.filter(c => c.name.toLowerCase().includes(appState.clientSearchQuery) || (c.phone && c.phone.includes(appState.clientSearchQuery)));
+  }
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px 16px; color: #9CA3AF;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: #F5EEFD; color: var(--purple-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 24px;">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <strong style="font-size: 14px; color: #111827; display: block; margin-bottom: 4px;">Nenhuma cliente cadastrada ainda</strong>
+        <p style="font-size: 12px; color: #6B7280; max-width: 260px; margin: 0 auto 16px; line-height: 1.4;">
+          Sua lista está limpa e pronta para você cadastrar e organizar suas próprias clientes!
+        </p>
+        <button type="button" class="btn-action-close" style="background: var(--purple-primary); max-width: 220px; margin: 0 auto; padding: 10px 16px; font-size: 12px;" onclick="openNewClientModal()">
+          <i class="fa-solid fa-user-plus"></i> + Cadastrar Primeira Cliente
+        </button>
+      </div>
+    `;
+    return;
   }
 
   list.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
@@ -710,7 +599,7 @@ function renderClientesCRM() {
   // Agrupar por letra inicial
   const grouped = {};
   list.forEach(client => {
-    const letter = client.name.charAt(0).toUpperCase();
+    const letter = (client.name && client.name.charAt(0).toUpperCase()) || '#';
     if (!grouped[letter]) grouped[letter] = [];
     grouped[letter].push(client);
   });
@@ -726,17 +615,18 @@ function renderClientesCRM() {
 
     grouped[letter].forEach(client => {
       const hasPhotos = client.beforeImg || client.afterImg;
+      const ltvVal = typeof client.ltv === 'number' ? client.ltv : (parseFloat(client.ltv) || 0);
       html += `
         <div class="client-crm-card" onclick="openClientRecordModal('${client.id}')">
           <div class="client-crm-info">
             <h4>${client.name}</h4>
-            <p>${client.phone} • ${client.visits} atendimentos</p>
+            <p>${client.phone || 'Sem telefone'} • ${client.visits || 1} ${(client.visits || 1) === 1 ? 'atendimento' : 'atendimentos'}</p>
             <p style="font-size: 10px; color: var(--purple-primary); margin-top: 2px;">
               ${hasPhotos ? '📸 Fotos Antes e Depois Salvas' : '📷 Sem fotos cadastradas'}
             </p>
           </div>
           <div class="client-crm-badge">
-            R$ ${client.ltv.toFixed(2).replace('.', ',')}
+            R$ ${ltvVal.toFixed(2).replace('.', ',')}
           </div>
         </div>
       `;
@@ -747,14 +637,17 @@ function renderClientesCRM() {
 }
 
 function openClientRecordModal(clientId) {
-  const client = appState.clients.find(c => c.id === clientId);
+  const client = (appState.clients || []).find(c => c.id === clientId);
   if (!client) return;
 
   document.getElementById('recordClientId').value = client.id;
   document.getElementById('clientRecordTitle').innerText = `Ficha Técnica: ${client.name}`;
   document.getElementById('recordClientName').value = client.name;
-  document.getElementById('recordClientPhone').value = client.phone;
+  document.getElementById('recordClientPhone').value = client.phone || '';
   document.getElementById('recordClientNotes').value = client.notes || '';
+
+  const btnDelete = document.getElementById('btnDeleteClientRecord');
+  if (btnDelete) btnDelete.style.display = 'block';
 
   // Configurar Preview Fotos
   const pBefore = document.getElementById('previewBefore');
@@ -790,6 +683,9 @@ function openNewClientModal() {
   document.getElementById('recordClientName').value = '';
   document.getElementById('recordClientPhone').value = '';
   document.getElementById('recordClientNotes').value = '';
+
+  const btnDelete = document.getElementById('btnDeleteClientRecord');
+  if (btnDelete) btnDelete.style.display = 'none';
 
   document.getElementById('previewBefore').style.display = 'none';
   document.getElementById('phBefore').style.display = 'flex';
@@ -841,6 +737,7 @@ function saveClientRecord() {
     return;
   }
 
+  if (!appState.clients) appState.clients = [];
   let client = appState.clients.find(c => c.id === id);
   if (client) {
     client.name = name;
@@ -855,17 +752,45 @@ function saveClientRecord() {
       phone: phone,
       notes: notes,
       visits: 1,
-      ltv: 250.00,
+      ltv: 0.00,
       beforeImg: beforeImg,
       afterImg: afterImg
     };
-    appState.clients.push(client);
+    appState.clients.unshift(client);
   }
 
   saveData();
   closeClientRecordModalDirect();
   renderClientesCRM();
-  showToast('Ficha técnica da cliente salva com sucesso!');
+
+  // Sincronizar com MongoDB exclusivo desta designer
+  const targetEmail = (appState.studioConfig && appState.studioConfig.designerEmail) || (appState.currentUser ? appState.currentUser.email : '');
+  fetch('/api/clients', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...client,
+      designerEmail: targetEmail
+    })
+  }).catch(() => {});
+
+  showToast(`Ficha de ${name} salva com sucesso! ✨`);
+}
+
+function deleteClientRecord() {
+  const id = document.getElementById('recordClientId').value;
+  if (!id) return;
+  if (confirm('Deseja realmente excluir o cadastro desta cliente?')) {
+    appState.clients = (appState.clients || []).filter(c => c.id !== id);
+    saveData();
+    closeClientRecordModalDirect();
+    renderClientesCRM();
+    showToast('Cliente excluída com sucesso.');
+
+    fetch(`/api/clients?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    }).catch(() => {});
+  }
 }
 
 // ==========================================================================
@@ -1291,11 +1216,12 @@ function confirmOnlineBooking() {
   appState.appointments.unshift(newApt);
 
   // 2. Atualizar ou cadastrar cliente na base A-Z
-  let existingClient = appState.clients.find(c => c.name.toLowerCase() === name.toLowerCase() || c.phone === phone);
+  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
+  let existingClient = appState.clients.find(c => c.name.toLowerCase() === name.toLowerCase() || (phone && c.phone === phone));
   let clientToSave;
   if (existingClient) {
-    existingClient.visits += 1;
-    existingClient.ltv += s.price;
+    existingClient.visits = (existingClient.visits || 1) + 1;
+    existingClient.ltv = (existingClient.ltv || 0) + s.price;
     clientToSave = existingClient;
   } else {
     clientToSave = {
@@ -1306,16 +1232,35 @@ function confirmOnlineBooking() {
       visits: 1,
       ltv: s.price,
       beforeImg: '',
-      afterImg: ''
+      afterImg: '',
+      designerEmail: targetEmail
     };
-    appState.clients.push(clientToSave);
+    appState.clients.unshift(clientToSave);
+  }
+
+  // Adicionar ou atualizar no ciclo de manutenção da cliente
+  const returnDays = s.returnDays ? parseInt(s.returnDays, 10) : 30;
+  const serviceDateStr = `${curDay.year}-${String(curDay.monthIndex + 1).padStart(2, '0')}-${String(curDay.day).padStart(2, '0')}`;
+  if (!appState.maintenanceList) appState.maintenanceList = [];
+  const existingMaintIdx = appState.maintenanceList.findIndex(m => m.clientName.toLowerCase() === name.toLowerCase());
+  const maintItem = {
+    id: existingMaintIdx >= 0 ? appState.maintenanceList[existingMaintIdx].id : 'maint-' + Date.now(),
+    clientName: name,
+    clientPhone: phone,
+    serviceName: s.name,
+    serviceDate: serviceDateStr,
+    returnDays: returnDays
+  };
+  if (existingMaintIdx >= 0) {
+    appState.maintenanceList[existingMaintIdx] = maintItem;
+  } else {
+    appState.maintenanceList.unshift(maintItem);
   }
 
   saveData();
   closeOnlineBookingModalDirect();
 
   // Sincronizar com Nuvem (MongoDB + Disparo Resend)
-  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
   fetch('/api/appointments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1332,7 +1277,10 @@ function confirmOnlineBooking() {
   fetch('/api/clients', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(clientToSave)
+    body: JSON.stringify({
+      ...clientToSave,
+      designerEmail: targetEmail
+    })
   }).catch(() => {});
 
   // Limpar campos
@@ -1513,16 +1461,49 @@ function saveManualAppointment() {
     appState.maintenanceList.unshift(maintItem);
   }
 
+  // Adicionar ou atualizar cadastro da cliente no CRM
+  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
+  if (!appState.clients) appState.clients = [];
+  const existingCli = appState.clients.find(c => c.name.toLowerCase() === clientName.toLowerCase() || (clientPhone && c.phone === clientPhone));
+  let clientToSave;
+  if (existingCli) {
+    existingCli.visits = (existingCli.visits || 1) + 1;
+    existingCli.ltv = (existingCli.ltv || 0) + s.price;
+    if (clientPhone && !existingCli.phone) existingCli.phone = clientPhone;
+    clientToSave = existingCli;
+  } else {
+    clientToSave = {
+      id: 'cli-' + Date.now(),
+      name: clientName,
+      phone: clientPhone || '',
+      notes: `Atendimento de ${s.name}`,
+      visits: 1,
+      ltv: s.price,
+      beforeImg: '',
+      afterImg: '',
+      designerEmail: targetEmail
+    };
+    appState.clients.unshift(clientToSave);
+  }
+
   saveData();
   closeNewAppointmentModalDirect();
 
   // Sincronizar com MongoDB
-  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
   fetch('/api/appointments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ...newApt,
+      designerEmail: targetEmail
+    })
+  }).catch(() => {});
+
+  fetch('/api/clients', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...clientToSave,
       designerEmail: targetEmail
     })
   }).catch(() => {});
@@ -1555,6 +1536,7 @@ function saveManualAppointment() {
   if (phoneInput) phoneInput.value = '';
 
   renderTimeline();
+  renderClientesCRM();
   renderManutencao();
   renderMeusPagamentos();
   renderResumoFinanceiro();
@@ -2554,22 +2536,17 @@ async function syncWithCloudBackend() {
     }
   } catch (e) {}
 
-  // 3. Carregar Clientes
+  // 3. Carregar Clientes (Apenas da designer logada)
   try {
-    const cliRes = await fetch('/api/clients');
-    if (cliRes.ok) {
-      const cliJson = await cliRes.json();
-      if (cliJson.success && Array.isArray(cliJson.data) && cliJson.data.length > 0) {
-        const existingClientIds = new Set(appState.clients.map(c => c.id));
-        let addedCli = 0;
-        cliJson.data.forEach(remoteCli => {
-          if (!existingClientIds.has(remoteCli.id)) {
-            appState.clients.push(remoteCli);
-            existingClientIds.add(remoteCli.id);
-            addedCli++;
+    const designerEmail = (appState.studioConfig && appState.studioConfig.designerEmail) || (appState.currentUser ? appState.currentUser.email : '');
+    if (designerEmail) {
+      const cliRes = await fetch(`/api/clients?designerEmail=${encodeURIComponent(designerEmail)}`);
+      if (cliRes.ok) {
+        const cliJson = await cliRes.json();
+        if (cliJson.success && Array.isArray(cliJson.data)) {
+          if (cliJson.data.length > 0) {
+            appState.clients = cliJson.data;
           }
-        });
-        if (addedCli > 0) {
           saveData();
           renderClientesCRM();
         }
@@ -2701,10 +2678,19 @@ async function handleLoginSubmit(event) {
 
     updateStudioUI();
     
-    // Limpar agenda para não herdar agendamentos de outros logins
+    // Limpar agenda, clientes e retornos para iniciar 100% zerada para a usuária
     appState.appointments = [];
+    appState.clients = [];
+    appState.maintenanceList = [];
+    saveData();
     renderTimeline();
-    loadServerData();
+    renderClientesCRM();
+    renderManutencao();
+    renderMeusPagamentos();
+    renderResumoFinanceiro();
+
+    // Sincronizar dados exclusivos desta usuária na nuvem
+    syncWithCloudBackend();
 
     navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
     showToast(`Bem-vinda, ${data.user.name || 'Designer'}! ✨`);
@@ -2732,6 +2718,18 @@ function loginAsGuest() {
   appState.currentUser = guestUser;
   localStorage.setItem(SESSION_KEY, JSON.stringify(guestUser));
   updateStudioUI();
+
+  // Limpar agenda, clientes e retornos para iniciar 100% zerada
+  appState.appointments = [];
+  appState.clients = [];
+  appState.maintenanceList = [];
+  saveData();
+  renderTimeline();
+  renderClientesCRM();
+  renderManutencao();
+  renderMeusPagamentos();
+  renderResumoFinanceiro();
+
   navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
   showToast('Acesso VIP liberado com sucesso! 💎');
 }
@@ -2740,11 +2738,20 @@ function logout() {
   closeDrawer();
   if (confirm('Deseja realmente sair da sua conta?')) {
     localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('AGENDA_DO_LUCRO_MAINTENANCE');
     appState.currentUser = null;
+    appState.appointments = [];
+    appState.clients = [];
+    appState.maintenanceList = [];
+    saveData();
     const emailInput = document.getElementById('loginEmail');
     const pwdInput = document.getElementById('loginPassword');
     if (emailInput) emailInput.value = '';
     if (pwdInput) pwdInput.value = '';
+    renderTimeline();
+    renderClientesCRM();
+    renderManutencao();
     navigateToScreen('screenLogin', null);
     showToast('Sessão encerrada com sucesso.');
   }
