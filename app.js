@@ -123,7 +123,7 @@ let appState = {
   selectedMonth: 8, // Setembro
   selectedYear: 2026,
   selectedOnlineService: DEFAULT_SERVICES[0],
-  selectedOnlineSlot: '14:00',
+  selectedOnlineSlot: '08:00',
   selectedOnlineYear: 2026,
   selectedOnlineMonthIndex: 8, // Setembro
   selectedOnlineDayIndex: 0,
@@ -161,11 +161,12 @@ function initDefaultData() {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      appState.appointments = parsed.appointments || [];
+      // Limpar agendamentos mockados antigos para garantir que a agenda inicie 100% zerada
+      appState.appointments = (parsed.appointments || []).filter(a => !String(a.id).startsWith('apt-1') && !String(a.id).startsWith('apt-2') && !String(a.id).startsWith('apt-3') && !String(a.id).startsWith('apt-4') && !String(a.id).startsWith('apt-5') && !String(a.id).startsWith('apt-6') && !String(a.id).startsWith('apt-7') && !String(a.id).startsWith('apt-8') && !String(a.id).startsWith('apt-9') && !String(a.id).startsWith('apt-10'));
       appState.clients = parsed.clients || [];
       appState.services = (parsed.services && parsed.services.length) ? parsed.services : [...DEFAULT_SERVICES];
       appState.selectedOnlineService = appState.services[0];
-      if (appState.appointments.length && appState.clients.length) return;
+      return;
     } catch (e) {
       console.warn('Recriando banco local...', e);
     }
@@ -410,7 +411,7 @@ function initDefaultData() {
   ];
 
   appState.clients = defaultClients;
-  appState.appointments = defaultAppointments;
+  appState.appointments = []; // ZERADO! Começa 100% limpo sem replicar agendamentos para quem compra
   saveData();
 }
 
@@ -499,23 +500,33 @@ function renderTimeline() {
   const container = document.getElementById('timelineContainer');
   if (!container) return;
 
-  const hours = ['08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
+  const hours = [
+    '07', '08', '09', '10', '11', '12', '13', '14',
+    '15', '16', '17', '18', '19', '20', '21', '22'
+  ];
 
   let html = '';
   hours.forEach(hour => {
     // Buscar agendamentos que caem nesta hora
-    const aptsInHour = appState.appointments.filter(a => a.hourSlot === hour);
+    const aptsInHour = appState.appointments.filter(a => {
+      const slot = a.hourSlot || (a.timeStart ? a.timeStart.split(':')[0] : '');
+      return slot === hour;
+    });
 
     html += `
       <div class="timeline-hour-row">
-        <div class="timeline-hour-label">${hour}</div>
-        <div class="timeline-hour-content">
-          ${aptsInHour.map(apt => {
+        <div class="timeline-hour-label">${hour}:00</div>
+        <div class="timeline-hour-content" onclick="openNewAppointmentModal('${hour}:00')">
+          ${aptsInHour.length === 0 ? `
+            <div class="timeline-empty-hint">
+              <span>+ Agendar às ${hour}:00</span>
+            </div>
+          ` : aptsInHour.map(apt => {
             const birthdayIcon = apt.isBirthday ? '<i class="fa-solid fa-cake-candles" style="color: #6B21A8; margin-left: 4px;"></i>' : '';
             return `
-              <div class="appointment-block ${apt.color}" id="apt-block-${apt.id}" onclick="openActionModal('${apt.id}')">
+              <div class="appointment-block ${apt.color || 'blue'}" id="apt-block-${apt.id}" onclick="event.stopPropagation(); openActionModal('${apt.id}')">
                 <div class="apt-time-row">
-                  <span>${apt.timeStart} - ${apt.timeEnd}</span>
+                  <span>${apt.timeStart} - ${apt.timeEnd || apt.timeStart}</span>
                   ${apt.statusTag ? `<span class="apt-status-tag"><i class="fa-solid fa-tag"></i> ${apt.statusTag}</span>` : ''}
                 </div>
                 <div class="apt-client-row">
@@ -1117,11 +1128,20 @@ function renderOnlineSlots() {
   const grid = document.getElementById('onlineSlotsGrid');
   if (!grid) return;
 
-  const slots = ['09:00', '10:30', '14:00', '15:30', '17:00', '18:30'];
+  const slots = [
+    '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
+    '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
+    '19:00', '20:00', '21:00', '22:00'
+  ];
+
+  if (!appState.selectedOnlineSlot || !slots.includes(appState.selectedOnlineSlot)) {
+    appState.selectedOnlineSlot = '08:00';
+  }
+
   grid.innerHTML = slots.map(time => {
     const isSelected = appState.selectedOnlineSlot === time;
     return `
-      <button class="online-slot-btn ${isSelected ? 'selected' : ''}" onclick="selectOnlineSlot('${time}')">
+      <button type="button" class="online-slot-btn ${isSelected ? 'selected' : ''}" onclick="selectOnlineSlot('${time}')">
         <i class="fa-regular fa-clock" style="font-size: 10px;"></i>
         <span>${time}</span>
       </button>
@@ -1291,6 +1311,139 @@ function confirmOnlineBooking() {
     const url = `https://wa.me/${cleanStudioPhone}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   }, 1000);
+}
+
+// ==========================================================================
+// MODAL: NOVO AGENDAMENTO MANUAL PELA DESIGNER (07:00 ÀS 22:00)
+// ==========================================================================
+function openNewAppointmentModal(preHour) {
+  const modal = document.getElementById('newAppointmentModal');
+  if (!modal) return;
+
+  // Preencher procedimentos
+  const selectService = document.getElementById('newAptService');
+  if (selectService) {
+    selectService.innerHTML = (appState.services || []).map(s => `
+      <option value="${s.id}">${s.name} — R$ ${s.price.toFixed(2).replace('.', ',')}</option>
+    `).join('');
+  }
+
+  // Preencher horários de hora em hora das 07:00 às 22:00
+  const selectTime = document.getElementById('newAptTime');
+  if (selectTime) {
+    const slots = [
+      '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
+      '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
+      '19:00', '20:00', '21:00', '22:00'
+    ];
+    selectTime.innerHTML = slots.map(h => `
+      <option value="${h}">${h}</option>
+    `).join('');
+    if (preHour) {
+      const match = slots.find(s => s.startsWith(preHour.split(':')[0]));
+      if (match) selectTime.value = match;
+    }
+  }
+
+  // Preencher data atual
+  const dateInput = document.getElementById('newAptDate');
+  if (dateInput) {
+    const y = appState.selectedYear || 2026;
+    const m = String((appState.selectedMonth || 8) + 1).padStart(2, '0');
+    const d = String(appState.selectedDay || 22).padStart(2, '0');
+    dateInput.value = `${y}-${m}-${d}`;
+  }
+
+  modal.classList.add('active');
+}
+
+function closeNewAppointmentModalDirect() {
+  const modal = document.getElementById('newAppointmentModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function closeNewAppointmentModal(e) {
+  const modal = document.getElementById('newAppointmentModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function saveManualAppointment() {
+  const nameInput = document.getElementById('newAptClientName');
+  const phoneInput = document.getElementById('newAptClientPhone');
+  const serviceSelect = document.getElementById('newAptService');
+  const timeSelect = document.getElementById('newAptTime');
+  const dateInput = document.getElementById('newAptDate');
+
+  const clientName = nameInput ? nameInput.value.trim() : '';
+  const clientPhone = phoneInput ? phoneInput.value.trim() : '';
+  const serviceId = serviceSelect ? serviceSelect.value : '';
+  const timeStart = timeSelect ? timeSelect.value : '08:00';
+  const selectedDate = dateInput && dateInput.value ? dateInput.value : '';
+
+  if (!clientName) {
+    alert('Informe o nome da cliente.');
+    return;
+  }
+
+  const s = appState.services.find(srv => srv.id === serviceId) || appState.services[0] || { name: 'Procedimento VIP', price: 100 };
+  
+  // Calcular hora final (1 hora de duração padrão)
+  const hourNum = parseInt(timeStart.split(':')[0], 10);
+  const endHour = String(Math.min(23, hourNum + 1)).padStart(2, '0');
+  const timeEnd = `${endHour}:00`;
+  const hourSlot = String(hourNum).padStart(2, '0');
+
+  let day = appState.selectedDay;
+  let month = appState.selectedMonth;
+  let year = appState.selectedYear;
+
+  if (selectedDate) {
+    const parts = selectedDate.split('-');
+    if (parts.length === 3) {
+      year = parseInt(parts[0], 10);
+      month = parseInt(parts[1], 10) - 1;
+      day = parseInt(parts[2], 10);
+    }
+  }
+
+  const newApt = {
+    id: 'apt-' + Date.now(),
+    timeStart,
+    timeEnd,
+    hourSlot,
+    clientName,
+    clientPhone: clientPhone || '(11) 98888-7777',
+    serviceName: s.name,
+    price: s.price,
+    day,
+    month,
+    year,
+    color: 'yellow',
+    statusTag: 'Confirmado',
+    isBirthday: false
+  };
+
+  appState.appointments.unshift(newApt);
+  saveData();
+  closeNewAppointmentModalDirect();
+
+  // Sincronizar com MongoDB
+  const targetEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
+  fetch('/api/appointments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...newApt,
+      designerEmail: targetEmail
+    })
+  }).catch(() => {});
+
+  // Limpar formulário
+  if (nameInput) nameInput.value = '';
+  if (phoneInput) phoneInput.value = '';
+
+  renderTimeline();
+  showToast(`Agendamento de ${clientName} salvo para às ${timeStart}! ✨`);
 }
 
 // ==========================================================================
@@ -1554,12 +1707,13 @@ async function syncWithCloudBackend() {
     }
   } catch (e) {}
 
-  // 2. Carregar Agendamentos
+  // 2. Carregar Agendamentos (Apenas da designer logada)
   try {
-    const aptRes = await fetch('/api/appointments');
+    const designerEmail = appState.studioConfig.designerEmail || (appState.currentUser ? appState.currentUser.email : '');
+    const aptRes = await fetch(`/api/appointments?designerEmail=${encodeURIComponent(designerEmail)}`);
     if (aptRes.ok) {
       const aptJson = await aptRes.json();
-      if (aptJson.success && Array.isArray(aptJson.data) && aptJson.data.length > 0) {
+      if (aptJson.success && Array.isArray(aptJson.data)) {
         const existingIds = new Set(appState.appointments.map(a => a.id));
         let added = 0;
         aptJson.data.forEach(remoteApt => {
@@ -1723,6 +1877,12 @@ async function handleLoginSubmit(event) {
     localStorage.setItem(STUDIO_KEY, JSON.stringify(appState.studioConfig));
 
     updateStudioUI();
+    
+    // Limpar agenda para não herdar agendamentos de outros logins
+    appState.appointments = [];
+    renderTimeline();
+    loadServerData();
+
     navigateToScreen('screenAgenda', document.getElementById('drawerItemAgenda'));
     showToast(`Bem-vinda, ${data.user.name || 'Designer'}! ✨`);
   } catch (err) {

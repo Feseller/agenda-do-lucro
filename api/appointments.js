@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const { db, isConnected } = await connectToDatabase();
 
   // =========================================================================
-  // GET: Listar Agendamentos
+  // GET: Listar Agendamentos (Filtrado por Designer / Compradora)
   // =========================================================================
   if (req.method === 'GET') {
     if (!isConnected) {
@@ -22,7 +22,23 @@ export default async function handler(req, res) {
     }
 
     try {
-      const appointments = await db.collection('appointments').find({}).sort({ createdAt: -1 }).toArray();
+      const userEmail = (req.query.userEmail || req.query.designerEmail || req.query.email || '').toLowerCase().trim();
+      
+      // Se não informou e-mail de filtro, retorna vazio para não replicar agendamentos entre contas
+      if (!userEmail) {
+        return res.status(200).json({ success: true, source: 'mongodb', data: [] });
+      }
+
+      const appointments = await db.collection('appointments')
+        .find({ 
+          $or: [
+            { designerEmail: userEmail },
+            { userEmail: userEmail }
+          ] 
+        })
+        .sort({ createdAt: -1 })
+        .toArray();
+
       return res.status(200).json({ success: true, source: 'mongodb', data: appointments });
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
@@ -39,9 +55,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Dados incompletos para agendamento' });
     }
 
+    const targetEmail = (apt.designerEmail || apt.userEmail || 'araujofernando88@gmail.com').toLowerCase().trim();
+
     const newAppointment = {
       ...apt,
       id: apt.id || 'apt-' + Date.now(),
+      designerEmail: targetEmail,
       statusTag: apt.statusTag || 'Agendado Online',
       createdAt: new Date().toISOString()
     };
