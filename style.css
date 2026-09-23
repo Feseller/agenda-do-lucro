@@ -284,37 +284,50 @@ body {
 /* ==========================================================================
    TELA 1: AGENDA (LINHA DO TEMPO DIÁRIA CONFORME IMAGEM 3)
    ========================================================================== */
-/* Seletor de Meses ("Setembro | Outubro") */
+/* Seletor de Meses com Rolagem Horizontal */
 .month-tabs-strip {
   display: flex;
-  border-bottom: 1px solid #E5E7EB;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 6px;
+  padding: 0 12px;
+  border-bottom: 1.5px solid #F3F4F6;
   background: #FFFFFF;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  user-select: none;
+}
+
+.month-tabs-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .month-tab-btn {
-  flex: 1;
-  padding: 10px 0;
+  flex: 0 0 auto;
+  padding: 10px 14px;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #6B7280;
   background: none;
   border: none;
   cursor: pointer;
   position: relative;
+  transition: all 0.2s ease;
 }
 
 .month-tab-btn.active {
   color: var(--purple-primary);
+  font-weight: 800;
 }
 
 .month-tab-btn.active::after {
   content: '';
   position: absolute;
-  bottom: -1px;
-  left: 30%;
-  right: 30%;
-  height: 2px;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 2.5px;
   background: var(--purple-primary);
   border-radius: var(--radius-pill);
 }
@@ -760,25 +773,50 @@ body {
   padding: 14px 16px 80px;
 }
 
-/* Seletor de Mês */
-.reports-month-picker {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  border-radius: var(--radius-md);
+/* Seletor de Mês (Dropdown com Seta) */
+.reports-month-picker-wrap {
+  position: relative;
   margin-bottom: 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #374151;
 }
 
-/* Abas de Tipos de Relatórios (Ícones de Pizza, Tabela, Barras) */
+.reports-month-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 10px 38px 10px 14px;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  color: #1F2937;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: var(--transition);
+}
+
+.reports-month-select:focus {
+  border-color: var(--purple-primary);
+  box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.12);
+}
+
+.reports-month-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--purple-primary);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Abas de Tipos de Relatórios (Apenas Gráfico de Pizza) */
 .reports-view-tabs {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
   background: #FFFFFF;
   border: 1px solid #E5E7EB;
   border-radius: var(--radius-md);
@@ -791,7 +829,7 @@ body {
   border: none;
   font-size: 17px;
   color: #9CA3AF;
-  padding: 6px 18px;
+  padding: 6px 20px;
   border-radius: 6px;
   cursor: pointer;
   transition: var(--transition);

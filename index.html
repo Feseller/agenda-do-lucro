@@ -267,50 +267,14 @@
             </div>
           </div>
 
-          <!-- Seletor de Meses ("Setembro | Outubro") -->
-          <div class="month-tabs-strip">
-            <button class="month-tab-btn active" id="tabMonthSep">Setembro</button>
-            <button class="month-tab-btn" id="tabMonthOct">Outubro</button>
+          <!-- Seletor de Meses com Arraste Horizontal -->
+          <div class="month-tabs-strip" id="agendaMonthTabs">
+            <!-- Renderizado dinamicamente via app.js -->
           </div>
 
           <!-- Carrossel dos Dias da Semana com Destaque em Vermelho -->
           <div class="weekday-strip-container" id="weekdayStrip">
-            <div class="weekday-col active" onclick="selectAgendaDay(22, this)">
-              <span class="weekday-name">Ter</span>
-              <span class="weekday-number">22</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(23, this)">
-              <span class="weekday-name">Qua</span>
-              <span class="weekday-number">23</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(24, this)">
-              <span class="weekday-name">Qui</span>
-              <span class="weekday-number">24</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(25, this)">
-              <span class="weekday-name">Sex</span>
-              <span class="weekday-number">25</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(26, this)">
-              <span class="weekday-name">Sáb</span>
-              <span class="weekday-number">26</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(27, this)">
-              <span class="weekday-name">Dom</span>
-              <span class="weekday-number">27</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(28, this)">
-              <span class="weekday-name">Seg</span>
-              <span class="weekday-number">28</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(29, this)">
-              <span class="weekday-name">Ter</span>
-              <span class="weekday-number">29</span>
-            </div>
-            <div class="weekday-col" onclick="selectAgendaDay(30, this)">
-              <span class="weekday-name">Qua</span>
-              <span class="weekday-number">30</span>
-            </div>
+            <!-- Renderizado dinamicamente via app.js -->
           </div>
 
           <!-- Subtítulo da Data -->
@@ -354,22 +318,18 @@
 
           <div class="reports-container">
             
-            <!-- Seletor de Mês -->
-            <div class="reports-month-picker">
-              <span>Setembro de 2026</span>
-              <i class="fa-solid fa-chevron-down" style="color: var(--purple-primary);"></i>
+            <!-- Seletor de Mês (Dropdown com Todos os Meses) -->
+            <div class="reports-month-picker-wrap">
+              <select id="reportsMonthSelect" class="reports-month-select" onchange="onReportsMonthChange(this.value)">
+                <!-- Populado dinamicamente via app.js -->
+              </select>
+              <i class="fa-solid fa-chevron-down reports-month-arrow"></i>
             </div>
 
-            <!-- Abas de Tipos de Relatórios -->
-            <div class="reports-view-tabs">
-              <button class="reports-tab-btn active" title="Gráfico de Pizza">
+            <!-- Abas de Tipos de Relatórios (Apenas Gráfico de Pizza) -->
+            <div class="reports-view-tabs" style="justify-content: center;">
+              <button class="reports-tab-btn active" title="Gráfico de Pizza" style="cursor: default;">
                 <i class="fa-solid fa-chart-pie"></i>
-              </button>
-              <button class="reports-tab-btn" title="Tabela" onclick="showToast('Modo tabela financeira')">
-                <i class="fa-solid fa-table-cells"></i>
-              </button>
-              <button class="reports-tab-btn" title="Gráfico de Barras" onclick="showToast('Modo gráfico de barras')">
-                <i class="fa-solid fa-chart-column"></i>
               </button>
             </div>
 
@@ -462,7 +422,7 @@
               
               <div class="donut-chart-layout">
                 <div class="donut-svg-wrap">
-                  <svg viewBox="0 0 36 36" class="donut-svg">
+                  <svg viewBox="0 0 36 36" class="donut-svg" id="donutSvg">
                     <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#E5E7EB" stroke-width="4"></circle>
                     <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#8B5CF6" stroke-width="4" stroke-dasharray="45 55" stroke-dashoffset="25"></circle>
                     <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#EC4899" stroke-width="4" stroke-dasharray="30 70" stroke-dashoffset="80"></circle>

@@ -121,24 +121,21 @@ const DEFAULT_MAINTENANCE = [];
 
 // Nomes em português para dias da semana e meses
 const WEEKDAYS_PT = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+const WEEKDAYS_SHORT_PT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const MONTHS_NAMES_PT = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
 
-// Gerador dinâmico de dias para qualquer mês e ano
+// Gerador dinâmico de dias para qualquer mês e ano (começando sempre no dia 1)
 function getDaysForMonth(year, monthIndex) {
   const totalDays = new Date(year, monthIndex + 1, 0).getDate();
   const daysList = [];
 
-  let startDay = 1;
-  if (year === 2026 && monthIndex === 8) {
-    startDay = 22;
-  }
-
-  for (let d = startDay; d <= totalDays; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     const dateObj = new Date(year, monthIndex, d);
     const weekday = WEEKDAYS_PT[dateObj.getDay()];
+    const weekdayShort = WEEKDAYS_SHORT_PT[dateObj.getDay()];
     const monthName = MONTHS_NAMES_PT[monthIndex];
     const dayStr = d < 10 ? '0' + d : String(d);
     daysList.push({
@@ -147,6 +144,7 @@ function getDaysForMonth(year, monthIndex) {
       monthIndex: monthIndex,
       year: year,
       weekday: weekday,
+      weekdayShort: weekdayShort,
       full: `${weekday}, ${dayStr} de ${monthName}`
     });
   }
@@ -167,6 +165,8 @@ let appState = {
   selectedDay: 22,
   selectedMonth: 8, // Setembro
   selectedYear: 2026,
+  reportsMonth: 8, // Setembro
+  reportsYear: 2026,
   selectedOnlineService: DEFAULT_SERVICES[0],
   selectedOnlineSlot: '08:00',
   selectedOnlineYear: 2026,
@@ -373,6 +373,9 @@ function navigateToScreen(screenId, menuItem) {
 
   // Re-renderizar conteúdo específico da tela
   if (screenId === 'screenAgenda') {
+    renderAgendaMonths();
+    renderAgendaDays();
+    updateAgendaHeadline();
     renderTimeline();
   } else if (screenId === 'screenClientes') {
     renderClientesCRM();
@@ -387,6 +390,7 @@ function navigateToScreen(screenId, menuItem) {
   } else if (screenId === 'screenMensagens') {
     renderMensagens();
   } else if (screenId === 'screenRelatorios') {
+    initReportsMonths();
     renderResumoFinanceiro();
   }
 }
@@ -398,8 +402,191 @@ function switchMainView(screenId, btn) {
 }
 
 // ==========================================================================
-// TELA 1: AGENDA EM LINHA DO TEMPO (CONFORME IMAGEM 3)
+// TELA 1: AGENDA EM LINHA DO TEMPO (MULTI-MÊS COM ROLAGEM HORIZONTAL)
 // ==========================================================================
+const AGENDA_MONTHS_LIST = [
+  { name: 'Janeiro', monthIndex: 0, year: 2026 },
+  { name: 'Fevereiro', monthIndex: 1, year: 2026 },
+  { name: 'Março', monthIndex: 2, year: 2026 },
+  { name: 'Abril', monthIndex: 3, year: 2026 },
+  { name: 'Maio', monthIndex: 4, year: 2026 },
+  { name: 'Junho', monthIndex: 5, year: 2026 },
+  { name: 'Julho', monthIndex: 6, year: 2026 },
+  { name: 'Agosto', monthIndex: 7, year: 2026 },
+  { name: 'Setembro', monthIndex: 8, year: 2026 },
+  { name: 'Outubro', monthIndex: 9, year: 2026 },
+  { name: 'Novembro', monthIndex: 10, year: 2026 },
+  { name: 'Dezembro', monthIndex: 11, year: 2026 },
+  { name: 'Janeiro', monthIndex: 0, year: 2027 },
+  { name: 'Fevereiro', monthIndex: 1, year: 2027 },
+  { name: 'Março', monthIndex: 2, year: 2027 },
+  { name: 'Abril', monthIndex: 3, year: 2027 },
+  { name: 'Maio', monthIndex: 4, year: 2027 },
+  { name: 'Junho', monthIndex: 5, year: 2027 },
+  { name: 'Julho', monthIndex: 6, year: 2027 },
+  { name: 'Agosto', monthIndex: 7, year: 2027 },
+  { name: 'Setembro', monthIndex: 8, year: 2027 },
+  { name: 'Outubro', monthIndex: 9, year: 2027 },
+  { name: 'Novembro', monthIndex: 10, year: 2027 },
+  { name: 'Dezembro', monthIndex: 11, year: 2027 }
+];
+
+function enableDragScroll(el) {
+  if (!el || el.dataset.dragScrollInit) return;
+  el.dataset.dragScrollInit = 'true';
+
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  el.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+
+  el.addEventListener('mouseleave', () => {
+    isDown = false;
+  });
+
+  el.addEventListener('mouseup', () => {
+    isDown = false;
+  });
+
+  el.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    if (Math.abs(walk) > 4) {
+      el.scrollLeft = scrollLeft - walk;
+    }
+  });
+}
+
+function renderAgendaMonths() {
+  const container = document.getElementById('agendaMonthTabs');
+  if (!container) return;
+
+  const currentM = appState.selectedMonth !== undefined ? appState.selectedMonth : 8;
+  const currentY = appState.selectedYear !== undefined ? appState.selectedYear : 2026;
+
+  container.innerHTML = AGENDA_MONTHS_LIST.map(m => {
+    const isActive = m.monthIndex === currentM && m.year === currentY;
+    const label = m.year === 2026 ? m.name : `${m.name} ${m.year}`;
+    return `
+      <button 
+        type="button" 
+        class="month-tab-btn ${isActive ? 'active' : ''}" 
+        id="agendaMonthTab-${m.year}-${m.monthIndex}" 
+        onclick="selectAgendaMonth(${m.monthIndex}, ${m.year})">
+        ${label}
+      </button>
+    `;
+  }).join('');
+
+  setTimeout(() => {
+    const activeBtn = container.querySelector('.month-tab-btn.active');
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, 100);
+
+  enableDragScroll(container);
+}
+
+function selectAgendaMonth(monthIndex, year) {
+  appState.selectedMonth = parseInt(monthIndex, 10);
+  appState.selectedYear = parseInt(year, 10);
+
+  document.querySelectorAll('#agendaMonthTabs .month-tab-btn').forEach(btn => btn.classList.remove('active'));
+  const currentTab = document.getElementById(`agendaMonthTab-${year}-${monthIndex}`);
+  if (currentTab) {
+    currentTab.classList.add('active');
+    currentTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  const totalDays = new Date(appState.selectedYear, appState.selectedMonth + 1, 0).getDate();
+  if (appState.selectedDay > totalDays) {
+    appState.selectedDay = 1;
+  }
+
+  renderAgendaDays();
+  updateAgendaHeadline();
+  renderTimeline();
+
+  const mName = MONTHS_NAMES_PT[appState.selectedMonth] || 'Mês';
+  showToast(`Mês de ${mName} de ${appState.selectedYear} selecionado`);
+}
+
+function renderAgendaDays() {
+  const container = document.getElementById('weekdayStrip');
+  if (!container) return;
+
+  const y = appState.selectedYear || 2026;
+  const m = appState.selectedMonth !== undefined ? appState.selectedMonth : 8;
+  const totalDays = new Date(y, m + 1, 0).getDate();
+
+  let html = '';
+  for (let d = 1; d <= totalDays; d++) {
+    const dateObj = new Date(y, m, d);
+    const shortDay = WEEKDAYS_SHORT_PT[dateObj.getDay()];
+    const isActive = d === appState.selectedDay;
+
+    html += `
+      <div class="weekday-col ${isActive ? 'active' : ''}" id="weekdayCol-${d}" onclick="selectAgendaDay(${d}, this)">
+        <span class="weekday-name">${shortDay}</span>
+        <span class="weekday-number">${d}</span>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+
+  setTimeout(() => {
+    const activeCol = container.querySelector('.weekday-col.active') || document.getElementById(`weekdayCol-${appState.selectedDay}`);
+    if (activeCol) {
+      activeCol.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, 100);
+
+  enableDragScroll(container);
+}
+
+function selectAgendaDay(dayNumber, el) {
+  appState.selectedDay = parseInt(dayNumber, 10);
+  document.querySelectorAll('.weekday-col').forEach(c => c.classList.remove('active'));
+  if (el) {
+    el.classList.add('active');
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  } else {
+    const col = document.getElementById(`weekdayCol-${dayNumber}`);
+    if (col) {
+      col.classList.add('active');
+      col.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }
+
+  updateAgendaHeadline();
+  renderTimeline();
+
+  const mName = MONTHS_NAMES_PT[appState.selectedMonth] || 'Setembro';
+  showToast(`Dia ${dayNumber} de ${mName} selecionado`);
+}
+
+function updateAgendaHeadline() {
+  const headline = document.getElementById('agendaDateHeadline');
+  if (!headline) return;
+
+  const y = appState.selectedYear || 2026;
+  const m = appState.selectedMonth !== undefined ? appState.selectedMonth : 8;
+  const d = appState.selectedDay || 1;
+  const dateObj = new Date(y, m, d);
+  const weekdayName = WEEKDAYS_PT[dateObj.getDay()] || 'Segunda';
+  const monthName = MONTHS_NAMES_PT[m] || 'Setembro';
+
+  headline.innerText = `${weekdayName}, ${d} de ${monthName}, ${y}`;
+}
+
 function renderTimeline() {
   const container = document.getElementById('timelineContainer');
   if (!container) return;
@@ -409,12 +596,22 @@ function renderTimeline() {
     '15', '16', '17', '18', '19', '20', '21', '22'
   ];
 
+  const curDay = appState.selectedDay;
+  const curMonth = appState.selectedMonth !== undefined ? appState.selectedMonth : 8;
+  const curYear = appState.selectedYear || 2026;
+
   let html = '';
   hours.forEach(hour => {
-    // Buscar agendamentos que caem nesta hora
-    const aptsInHour = appState.appointments.filter(a => {
+    // Buscar agendamentos que caem nesta hora e no dia/mês/ano selecionados
+    const aptsInHour = (appState.appointments || []).filter(a => {
       const slot = a.hourSlot || (a.timeStart ? a.timeStart.split(':')[0] : '');
-      return slot === hour;
+      const matchHour = slot === hour;
+      
+      const aptDay = a.day !== undefined ? parseInt(a.day, 10) : curDay;
+      const aptMonth = a.month !== undefined ? parseInt(a.month, 10) : curMonth;
+      const aptYear = a.year !== undefined ? parseInt(a.year, 10) : curYear;
+
+      return matchHour && (aptDay === curDay) && (aptMonth === curMonth) && (aptYear === curYear);
     });
 
     html += `
@@ -453,22 +650,6 @@ function renderTimeline() {
   });
 
   container.innerHTML = html;
-}
-
-function selectAgendaDay(dayNumber, el) {
-  appState.selectedDay = dayNumber;
-  document.querySelectorAll('.weekday-col').forEach(c => c.classList.remove('active'));
-  if (el) el.classList.add('active');
-
-  const headline = document.getElementById('agendaDateHeadline');
-  if (headline) {
-    const days = getDaysForMonth(appState.selectedYear, appState.selectedMonth);
-    const found = days.find(d => d.day === dayNumber);
-    const weekdayName = found ? found.weekday : 'Segunda';
-    const monthName = MONTHS_NAMES_PT[appState.selectedMonth] || 'Setembro';
-    headline.innerText = `${weekdayName}, ${dayNumber} de ${monthName}, ${appState.selectedYear}`;
-  }
-  showToast(`Agenda de ${dayNumber}/${String(appState.selectedMonth + 1).padStart(2, '0')} carregada`);
 }
 
 // ==========================================================================
@@ -2082,22 +2263,122 @@ function renderMeusPagamentos() {
 }
 
 // ==========================================================================
-// TELA: RESUMO FINANCEIRO & GASTOS DO ESTÚDIO
+// TELA: RESUMO FINANCEIRO & GASTOS DO ESTÚDIO (SELETOR DE TODOS OS MESES)
 // ==========================================================================
+function initReportsMonths() {
+  const sel = document.getElementById('reportsMonthSelect');
+  if (!sel) return;
+
+  const currentYear = appState.reportsYear || 2026;
+  const currentMonth = appState.reportsMonth !== undefined ? appState.reportsMonth : 8;
+
+  const monthsToRender = [
+    { year: 2026, month: 0, label: 'Janeiro de 2026' },
+    { year: 2026, month: 1, label: 'Fevereiro de 2026' },
+    { year: 2026, month: 2, label: 'Março de 2026' },
+    { year: 2026, month: 3, label: 'Abril de 2026' },
+    { year: 2026, month: 4, label: 'Maio de 2026' },
+    { year: 2026, month: 5, label: 'Junho de 2026' },
+    { year: 2026, month: 6, label: 'Julho de 2026' },
+    { year: 2026, month: 7, label: 'Agosto de 2026' },
+    { year: 2026, month: 8, label: 'Setembro de 2026' },
+    { year: 2026, month: 9, label: 'Outubro de 2026' },
+    { year: 2026, month: 10, label: 'Novembro de 2026' },
+    { year: 2026, month: 11, label: 'Dezembro de 2026' },
+    { year: 2027, month: 0, label: 'Janeiro de 2027' },
+    { year: 2027, month: 1, label: 'Fevereiro de 2027' },
+    { year: 2027, month: 2, label: 'Março de 2027' },
+    { year: 2027, month: 3, label: 'Abril de 2027' },
+    { year: 2027, month: 4, label: 'Maio de 2027' },
+    { year: 2027, month: 5, label: 'Junho de 2027' },
+    { year: 2027, month: 6, label: 'Julho de 2027' },
+    { year: 2027, month: 7, label: 'Agosto de 2027' },
+    { year: 2027, month: 8, label: 'Setembro de 2027' },
+    { year: 2027, month: 9, label: 'Outubro de 2027' },
+    { year: 2027, month: 10, label: 'Novembro de 2027' },
+    { year: 2027, month: 11, label: 'Dezembro de 2027' }
+  ];
+
+  sel.innerHTML = monthsToRender.map(m => `
+    <option value="${m.year}-${m.month}" ${m.year === currentYear && m.month === currentMonth ? 'selected' : ''}>
+      ${m.label}
+    </option>
+  `).join('');
+}
+
+function onReportsMonthChange(val) {
+  if (!val) return;
+  const parts = val.split('-');
+  appState.reportsYear = parseInt(parts[0], 10);
+  appState.reportsMonth = parseInt(parts[1], 10);
+  renderResumoFinanceiro();
+  showToast(`Relatório de ${MONTHS_NAMES_PT[appState.reportsMonth]} de ${appState.reportsYear} carregado`);
+}
+
+function updateDonutChartSvg(monthApts, services) {
+  const svg = document.getElementById('donutSvg');
+  if (!svg) return;
+
+  if (!monthApts || monthApts.length === 0) {
+    svg.innerHTML = `
+      <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#F3F4F6" stroke-width="4"></circle>
+      <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#E5E7EB" stroke-width="4" stroke-dasharray="100 0"></circle>
+    `;
+    return;
+  }
+
+  const total = monthApts.length;
+  const counts = {};
+  monthApts.forEach(a => {
+    const key = a.serviceName || 'Outro';
+    counts[key] = (counts[key] || 0) + 1;
+  });
+
+  let currentOffset = 25;
+  let circlesHtml = `<circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#F3F4F6" stroke-width="4"></circle>`;
+
+  const palette = ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#6366F1'];
+  let colorIdx = 0;
+
+  Object.entries(counts).forEach(([srvName, count]) => {
+    const pct = Math.max(1, Math.round((count / total) * 100));
+    const srv = (services || []).find(s => s.name === srvName);
+    const color = (srv && (srv.color || srv.colorHex)) || palette[colorIdx % palette.length];
+    colorIdx++;
+
+    circlesHtml += `
+      <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="${color}" stroke-width="4" stroke-dasharray="${pct} ${100 - pct}" stroke-dashoffset="${currentOffset}"></circle>
+    `;
+    currentOffset -= pct;
+  });
+
+  svg.innerHTML = circlesHtml;
+}
+
 function renderResumoFinanceiro() {
   const expensesList = document.getElementById('expensesList');
   const expenses = appState.expenses || [];
   const apts = appState.appointments || [];
   const services = appState.services || DEFAULT_SERVICES;
 
-  // 1. Receita Bruta dos atendimentos
-  const grossRevenue = apts.reduce((acc, a) => acc + (parseFloat(a.price) || 0), 0);
+  const selMonth = appState.reportsMonth !== undefined ? appState.reportsMonth : 8;
+  const selYear = appState.reportsYear !== undefined ? appState.reportsYear : 2026;
+
+  // Filtrar agendamentos do mês e ano selecionados
+  const monthApts = apts.filter(a => {
+    const aMonth = a.month !== undefined ? parseInt(a.month, 10) : 8;
+    const aYear = a.year !== undefined ? parseInt(a.year, 10) : 2026;
+    return aMonth === selMonth && aYear === selYear;
+  });
+
+  // 1. Receita Bruta dos atendimentos no mês
+  const grossRevenue = monthApts.reduce((acc, a) => acc + (parseFloat(a.price) || 0), 0);
 
   // 2. Gastos Fixos cadastrados
   const totalExpenses = expenses.reduce((acc, e) => acc + (parseFloat(e.amount) || 0), 0);
 
   // 3. Custos de Materiais
-  const totalMaterialCosts = apts.reduce((acc, a) => {
+  const totalMaterialCosts = monthApts.reduce((acc, a) => {
     const s = services.find(srv => srv.name === a.serviceName || srv.id === a.serviceId);
     return acc + (s && s.cost ? parseFloat(s.cost) : 15);
   }, 0);
@@ -2115,7 +2396,7 @@ function renderResumoFinanceiro() {
   const totExpEl = document.getElementById('totalExpensesVal');
 
   if (kpiRev) kpiRev.innerText = `R$ ${grossRevenue.toFixed(2).replace('.', ',')}`;
-  if (kpiRevApts) kpiRevApts.innerText = `${apts.length} agendamentos`;
+  if (kpiRevApts) kpiRevApts.innerText = `${monthApts.length} agendamentos`;
   if (kpiExp) kpiExp.innerText = `R$ ${totalExpenses.toFixed(2).replace('.', ',')}`;
   if (kpiExpCount) kpiExpCount.innerText = `${expenses.length} contas cadastradas`;
   if (kpiProf) kpiProf.innerText = `R$ ${Math.max(0, grossRevenue - totalMaterialCosts).toFixed(2).replace('.', ',')}`;
@@ -2186,19 +2467,30 @@ function renderResumoFinanceiro() {
   const topList = document.getElementById('reportTopServicesList');
   if (topList) {
     const srvStats = services.map(s => {
-      const count = apts.filter(a => a.serviceName === s.name || a.serviceId === s.id).length;
+      const count = monthApts.filter(a => a.serviceName === s.name || a.serviceId === s.id).length;
       const total = count * (typeof s.price === 'number' ? s.price : (parseFloat(s.price) || 0));
       return { ...s, count, total };
-    }).sort((a, b) => b.total - a.total).slice(0, 3);
+    }).filter(item => item.count > 0).sort((a, b) => b.total - a.total);
 
-    topList.innerHTML = srvStats.map(item => `
-      <div class="donut-legend-item">
-        <span class="legend-color-dot" style="background: ${item.color || '#8B5CF6'};"></span>
-        <span class="legend-label">${item.name} (${item.count})</span>
-        <span class="legend-pct">R$ ${item.total.toFixed(2).replace('.', ',')}</span>
-      </div>
-    `).join('');
+    if (srvStats.length === 0) {
+      topList.innerHTML = `
+        <div style="font-size: 11px; color: #9CA3AF; text-align: center; padding: 12px 6px;">
+          Nenhum atendimento neste mês ainda.
+        </div>
+      `;
+    } else {
+      topList.innerHTML = srvStats.slice(0, 4).map(item => `
+        <div class="donut-legend-item">
+          <span class="legend-color-dot" style="background: ${item.color || '#8B5CF6'};"></span>
+          <span class="legend-label">${item.name} (${item.count})</span>
+          <span class="legend-pct">R$ ${item.total.toFixed(2).replace('.', ',')}</span>
+        </div>
+      `).join('');
+    }
   }
+
+  // Atualizar Gráfico de Pizza SVG dinamicamente
+  updateDonutChartSvg(monthApts, services);
 }
 
 function openAddExpenseModal() {
@@ -2863,9 +3155,17 @@ function handleSaveStudioSettings(e) {
 // ==========================================================================
 // INICIALIZAÇÃO
 // ==========================================================================
+window.selectAgendaMonth = selectAgendaMonth;
+window.selectAgendaDay = selectAgendaDay;
+window.onReportsMonthChange = onReportsMonthChange;
+
 document.addEventListener('DOMContentLoaded', () => {
   initDefaultData();
+  renderAgendaMonths();
+  renderAgendaDays();
+  updateAgendaHeadline();
   renderTimeline();
+  initReportsMonths();
   renderClientesCRM();
   renderOnlinePortal();
   renderManutencao();
