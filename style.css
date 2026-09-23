@@ -1,7 +1,6 @@
 /* ==========================================================================
-   MINHA AGENDA APP — DESIGNER DE SOBRANCELHA (EDICAO OFICIAL MINHA AGENDA)
-   Reprodução Fiel às Telas Oficiais do App Minha Agenda
-   Identidade: portal.minhaagendaapp.com.br/agenda
+   AGENDA DO LUCRO — DESIGNER DE SOBRANCELHA & BELEZA VIP
+   Gestão Inteligente, Retornos de Clientes, Lucro Líquido & Agenda Online
    Paleta: Roxo Real Oficial (#6B21A8 / #7C3AED), Branco Puro e Acentos Coloridos
    ========================================================================== */
 
@@ -2123,6 +2122,197 @@ body {
   color: #A78BFA;
   margin: 0;
   line-height: 1.4;
+}
+
+/* ==========================================================================
+   NOVOS COMPONENTES: MANUTENÇÃO, PAGAMENTOS, PROFISSIONAIS & GASTOS
+   ========================================================================== */
+
+/* Seletor de Cores Rápidas */
+.color-swatch-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.color-swatch-circle:hover {
+  transform: scale(1.15);
+}
+
+/* Filtros da Manutenção */
+.maint-filter-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1.5px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #4B5563;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.maint-filter-pill.active {
+  background: var(--purple-primary);
+  border-color: var(--purple-primary);
+  color: #FFFFFF;
+}
+.maint-filter-pill.danger.active {
+  background: #DC2626;
+  border-color: #DC2626;
+  color: #FFFFFF;
+}
+.maint-filter-pill.warning.active {
+  background: #D97706;
+  border-color: #D97706;
+  color: #FFFFFF;
+}
+.maint-filter-pill.success.active {
+  background: #059669;
+  border-color: #059669;
+  color: #FFFFFF;
+}
+
+/* Cards de Manutenção */
+.maintenance-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.maintenance-card:hover {
+  border-color: #DDD6FE;
+  box-shadow: 0 4px 12px rgba(107, 33, 168, 0.08);
+}
+.maint-status-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.maint-status-pill.overdue {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+}
+.maint-status-pill.warning {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+.maint-status-pill.ok {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+}
+
+/* Ações Rápidas no Card de Manutenção */
+.maint-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.btn-maint-whatsapp {
+  flex: 1;
+  background: #25D366;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.btn-maint-whatsapp:hover {
+  background: #1EBE5D;
+}
+.btn-maint-schedule {
+  background: #F5EEFD;
+  color: var(--purple-primary);
+  border: 1px solid #DDD6FE;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+.btn-maint-schedule:hover {
+  background: #EDE4FB;
+}
+
+/* Card de Meus Pagamentos / Procedimento */
+.payment-item-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Card de Profissional */
+.staff-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Linha de Gasto / Despesa */
+.expense-item-row {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 9px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.expense-item-row.paid {
+  border-left: 3px solid #10B981;
+}
+.expense-item-row.pending {
+  border-left: 3px solid #F59E0B;
+}
+
+/* Bloco de Agendamento Customizado por Cor */
+.appointment-block.custom-colored {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.appointment-block.custom-colored:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 

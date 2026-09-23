@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda do Lucro — Designer de Sobrancelha | portal.minhaagendaapp.com.br/agenda</title>
+  <title>Agenda do Lucro — Gestão VIP para Designer de Sobrancelha</title>
   
   <!-- Fontes & Ícones -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,7 @@
     <div class="simulator-title">
       <i class="fa-solid fa-chart-line"></i>
       <span>AGENDA DO LUCRO</span>
-      <span class="brand-domain-tag">portal.minhaagendaapp.com.br/agenda</span>
+      <span class="brand-domain-tag" id="topBarDomainTag">agenda-do-lucro-app.vercel.app</span>
     </div>
 
     <div style="display: flex; gap: 6px; align-items: center;">
@@ -109,48 +109,39 @@
           <!-- Lista de Itens do Menu com Ícones Roxos -->
           <div class="drawer-items-scroll">
             <a href="javascript:void(0)" class="drawer-item active" id="drawerItemAgenda" onclick="navigateToScreen('screenAgenda', this)">
-              <i class="fa-solid fa-book-open"></i>
+              <i class="fa-solid fa-calendar-days"></i>
               <span>Agenda</span>
             </a>
             
-            <a href="javascript:void(0)" class="drawer-item" id="drawerItemCobrancas" onclick="navigateToScreen('screenComandas', this)">
-              <i class="fa-solid fa-file-invoice-dollar"></i>
-              <span>Cobranças</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" id="drawerItemComandas" onclick="navigateToScreen('screenComandas', this)">
-              <i class="fa-solid fa-clipboard-list"></i>
-              <span>Comandas</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="showPreDefinedMsgsModal()">
-              <i class="fa-solid fa-comment-dots"></i>
-              <span>Msgs Pre-definidas</span>
-            </a>
-
             <a href="javascript:void(0)" class="drawer-item" id="drawerItemClientes" onclick="navigateToScreen('screenClientes', this)">
-              <i class="fa-solid fa-user-group"></i>
-              <span>Clientes & Anamnese</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenLinkOnline', this)">
-              <i class="fa-solid fa-briefcase"></i>
-              <span>Serviços & Pacotes</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="showToast('Controle de estoque e produtos')">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span>Produtos & Estoque</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenRelatorios', this)">
-              <i class="fa-solid fa-hand-holding-dollar"></i>
-              <span>Despesas</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="showToast('Comissões de designers configuradas')">
               <i class="fa-solid fa-users"></i>
+              <span>Clientes</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemManutencao" onclick="navigateToScreen('screenManutencao', this)">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span>Manutenção</span>
+              <span class="drawer-badge-new" style="background: #EF4444;">Retorno</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemMeusPagamentos" onclick="navigateToScreen('screenMeusPagamentos', this)">
+              <i class="fa-solid fa-wallet"></i>
+              <span>Meus Pagamentos</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemProfissionais" onclick="navigateToScreen('screenProfissionais', this)">
+              <i class="fa-solid fa-user-tie"></i>
               <span>Profissionais & Comissão</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemMensagens" onclick="navigateToScreen('screenMensagens', this)">
+              <i class="fa-solid fa-comment-dots"></i>
+              <span>Mensagens Pré-definidas</span>
+            </a>
+
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemRelatorios" onclick="navigateToScreen('screenRelatorios', this)">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Resumo Financeiro & Gastos</span>
             </a>
 
             <a href="javascript:void(0)" class="drawer-item" id="drawerItemLinkOnline" onclick="navigateToScreen('screenLinkOnline', this)">
@@ -159,35 +150,18 @@
               <span class="drawer-badge-new">Novo</span>
             </a>
 
-            <!-- Seção de Relatórios -->
-            <div class="drawer-section-title">Relatórios</div>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenRelatorios', this)">
-              <i class="fa-solid fa-gauge-high"></i>
-              <span>Performance</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" id="drawerItemRelatorios" onclick="navigateToScreen('screenRelatorios', this)">
-              <i class="fa-solid fa-chart-column"></i>
-              <span>Resumo Financeiro</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="navigateToScreen('screenClientes', this)">
-              <i class="fa-solid fa-user-tie"></i>
-              <span>Melhores Clientes</span>
-            </a>
-
-            <a href="javascript:void(0)" class="drawer-item" onclick="openCloudStatusModal()">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <span>Status Nuvem & Banco</span>
-              <span class="drawer-badge-new" style="background: #10B981;">Online</span>
-            </a>
+            <!-- Seção de Configurações -->
+            <div class="drawer-section-title">Ajustes & Conta</div>
 
             <a href="javascript:void(0)" class="drawer-item" onclick="openStudioSettingsModal()">
               <i class="fa-solid fa-sliders"></i>
               <span>Configurações do Estúdio</span>
             </a>
 
+            <a href="javascript:void(0)" class="drawer-item" onclick="openTrialModal()">
+              <i class="fa-solid fa-crown" style="color: #F59E0B;"></i>
+              <span>Assinatura VIP Anual</span>
+            </a>
             <a href="javascript:void(0)" class="drawer-item exit" onclick="logout()">
               <i class="fa-solid fa-arrow-right-from-bracket"></i>
               <span>Sair da Conta</span>
@@ -362,7 +336,7 @@
         </section>
 
         <!-- ------------------------------------------------------------------
-             TELA 2: RELATÓRIOS / RESUMO FINANCEIRO (CONFORME IMAGEM 2)
+             TELA 2: RESUMO FINANCEIRO & GASTOS DO ESTÚDIO
              ------------------------------------------------------------------ -->
         <section class="app-screen hidden" id="screenRelatorios">
           
@@ -371,8 +345,11 @@
               <button class="btn-hamburger" onclick="openDrawer()">
                 <i class="fa-solid fa-bars"></i>
               </button>
-              <h1 class="header-title">Relatórios</h1>
+              <h1 class="header-title">Resumo Financeiro & Gastos</h1>
             </div>
+            <button class="header-icon-btn" onclick="openAddExpenseModal()" title="Adicionar Gasto">
+              <i class="fa-solid fa-plus"></i>
+            </button>
           </div>
 
           <div class="reports-container">
@@ -383,12 +360,12 @@
               <i class="fa-solid fa-chevron-down" style="color: var(--purple-primary);"></i>
             </div>
 
-            <!-- Abas de Tipos de Relatórios (Pizza, Tabela, Barras) -->
+            <!-- Abas de Tipos de Relatórios -->
             <div class="reports-view-tabs">
               <button class="reports-tab-btn active" title="Gráfico de Pizza">
                 <i class="fa-solid fa-chart-pie"></i>
               </button>
-              <button class="reports-tab-btn" title="Tabela" onclick="showToast('Modo tabela detalhada')">
+              <button class="reports-tab-btn" title="Tabela" onclick="showToast('Modo tabela financeira')">
                 <i class="fa-solid fa-table-cells"></i>
               </button>
               <button class="reports-tab-btn" title="Gráfico de Barras" onclick="showToast('Modo gráfico de barras')">
@@ -396,22 +373,64 @@
               </button>
             </div>
 
-            <!-- 3 Cards de KPIs (Receita, Gastos, Lucro) -->
+            <!-- 3 Cards de KPIs (Receita Bruta, Gastos Mensais, Lucro Líquido) -->
             <div class="kpi-summary-row">
               <div>
-                <div class="kpi-box-title">Receita</div>
-                <div class="kpi-box-val revenue" id="kpiRevenueVal">R$ 4.850,00</div>
-                <div class="kpi-box-diff up">↑ +36,0%</div>
+                <div class="kpi-box-title">Receita Bruta</div>
+                <div class="kpi-box-val revenue" id="kpiRevenueVal">R$ 0,00</div>
+                <div class="kpi-box-diff up" id="kpiRevenueApts">0 agendamentos</div>
               </div>
               <div style="border-left: 1px solid #F3F4F6; border-right: 1px solid #F3F4F6;">
-                <div class="kpi-box-title">Gastos</div>
-                <div class="kpi-box-val expenses">R$ 518,34</div>
-                <div class="kpi-box-diff sub">contra o mês ant.</div>
+                <div class="kpi-box-title">Gastos Fixos</div>
+                <div class="kpi-box-val expenses" id="kpiExpensesVal">R$ 0,00</div>
+                <div class="kpi-box-diff sub" id="kpiExpensesCount">Despesas estúdio</div>
               </div>
               <div>
-                <div class="kpi-box-title">Lucro</div>
-                <div class="kpi-box-val profit" id="kpiProfitVal">R$ 4.331,66</div>
-                <div class="kpi-box-diff up">↑ +42,8%</div>
+                <div class="kpi-box-title">Lucro Líquido</div>
+                <div class="kpi-box-val profit" id="kpiProfitVal">R$ 0,00</div>
+                <div class="kpi-box-diff up">Livre de custos</div>
+              </div>
+            </div>
+
+            <!-- Card Destaque: Lucro Líquido Real Calculado -->
+            <div class="net-profit-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1.5px solid #A7F3D0; border-radius: 12px; padding: 14px; margin: 14px 0; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 11px; font-weight: 800; color: #065F46; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+                  <i class="fa-solid fa-circle-check"></i> Lucro Líquido Real do Estúdio
+                </span>
+                <div style="font-size: 24px; font-weight: 900; color: #047857; margin-top: 3px;" id="netRealProfitVal">
+                  R$ 0,00
+                </div>
+                <div style="font-size: 10px; color: #065F46; margin-top: 2px;">
+                  (Faturamento dos Atendimentos – Gastos Fixos Cadastrados)
+                </div>
+              </div>
+              <div style="width: 46px; height: 46px; border-radius: 50%; background: #10B981; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);">
+                <i class="fa-solid fa-sack-dollar"></i>
+              </div>
+            </div>
+
+            <!-- Seção de Gastos & Despesas Mensais (Água, Luz, Aluguel, etc.) -->
+            <div class="monthly-expenses-card" style="margin-bottom: 16px; background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 14px; box-shadow: var(--shadow-card);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                  <h3 style="font-size: 14px; font-weight: 800; color: #111827;">Gastos Mensais do Estúdio</h3>
+                  <p style="font-size: 11px; color: #6B7280;">Água, luz, aluguel, internet e outros custos fixos</p>
+                </div>
+                <button type="button" class="btn-manage-services-header" onclick="openAddExpenseModal()" style="font-size: 11px; padding: 6px 10px;">
+                  <i class="fa-solid fa-plus"></i> + Novo Gasto
+                </button>
+              </div>
+
+              <!-- Lista de Despesas Renderizadas via app.js -->
+              <div id="expensesList" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Populado dinamicamente -->
+              </div>
+
+              <!-- Totalizador de Despesas -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #E5E7EB; font-size: 13px;">
+                <strong style="color: #4B5563;">Total de Gastos no Mês:</strong>
+                <strong style="color: #DC2626; font-size: 16px;" id="totalExpensesVal">R$ 0,00</strong>
               </div>
             </div>
 
@@ -420,171 +439,277 @@
               <div class="payment-col">
                 <i class="fa-solid fa-money-bill-wave"></i>
                 <div class="pay-name">Dinheiro/PIX</div>
-                <div class="pay-val">R$ 3.460,00</div>
-                <div class="pay-pct">71,4%</div>
+                <div class="pay-val" id="payValPix">R$ 0,00</div>
+                <div class="pay-pct">PIX</div>
               </div>
               <div class="payment-col">
                 <i class="fa-regular fa-credit-card"></i>
                 <div class="pay-name">Crédito</div>
-                <div class="pay-val">R$ 785,00</div>
-                <div class="pay-pct">16,2%</div>
+                <div class="pay-val" id="payValCredito">R$ 0,00</div>
+                <div class="pay-pct">Cartão</div>
               </div>
               <div class="payment-col">
                 <i class="fa-solid fa-credit-card"></i>
                 <div class="pay-name">Débito</div>
-                <div class="pay-val">R$ 450,00</div>
-                <div class="pay-pct">9,3%</div>
-              </div>
-              <div class="payment-col">
-                <i class="fa-solid fa-money-check"></i>
-                <div class="pay-name">Cheque</div>
-                <div class="pay-val">R$ 155,00</div>
-                <div class="pay-pct">3,0%</div>
-              </div>
-              <div class="payment-col">
-                <i class="fa-solid fa-building-columns"></i>
-                <div class="pay-name">Bancária</div>
-                <div class="pay-val">R$ 0,00</div>
-                <div class="pay-pct">0,0%</div>
+                <div class="pay-val" id="payValDebito">R$ 0,00</div>
+                <div class="pay-pct">Débito</div>
               </div>
             </div>
 
-            <!-- Card: Top 5 Receita por Serviço com Gráfico Donut da Imagem 2 -->
+            <!-- Card: Top Procedimentos por Receita -->
             <div class="donut-report-card">
-              <div class="donut-card-title">Top 5 Receita Por Serviço</div>
+              <div class="donut-card-title">Top Procedimentos Mais Lucrativos</div>
               
               <div class="donut-chart-layout">
-                <!-- SVG Donut Chart Interativo -->
                 <div class="donut-svg-wrap">
                   <svg viewBox="0 0 36 36" class="donut-svg">
                     <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#E5E7EB" stroke-width="4"></circle>
-                    <!-- Fatias com porcentagens proporcionais: 38% Azul, 20% Verde, 13% Amarelo, 11% Rosa, 10% Verde-Oliva -->
-                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#2563EB" stroke-width="4" stroke-dasharray="38 62" stroke-dashoffset="25"></circle>
-                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#10B981" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="87"></circle>
-                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#F59E0B" stroke-width="4" stroke-dasharray="13 87" stroke-dashoffset="67"></circle>
-                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#EC4899" stroke-width="4" stroke-dasharray="11 89" stroke-dashoffset="54"></circle>
-                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#84CC16" stroke-width="4" stroke-dasharray="10 90" stroke-dashoffset="43"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#8B5CF6" stroke-width="4" stroke-dasharray="45 55" stroke-dashoffset="25"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#EC4899" stroke-width="4" stroke-dasharray="30 70" stroke-dashoffset="80"></circle>
+                    <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#10B981" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="50"></circle>
                   </svg>
                 </div>
 
-                <!-- Legenda do Gráfico -->
-                <div class="donut-legend-list">
-                  <div class="donut-legend-item">
-                    <div class="legend-color-dot" style="background-color: #2563EB;"></div>
-                    <div class="legend-text">
-                      <strong>Nanoblading Fio a Fio (38%)</strong>
-                      <span>Receita: R$ 1.843,00</span>
-                    </div>
-                  </div>
-                  <div class="donut-legend-item">
-                    <div class="legend-color-dot" style="background-color: #10B981;"></div>
-                    <div class="legend-text">
-                      <strong>Brow Lamination & Nutrição (20%)</strong>
-                      <span>Receita: R$ 970,00</span>
-                    </div>
-                  </div>
-                  <div class="donut-legend-item">
-                    <div class="legend-color-dot" style="background-color: #F59E0B;"></div>
-                    <div class="legend-text">
-                      <strong>Design de Sobrancelhas (13%)</strong>
-                      <span>Receita: R$ 630,00</span>
-                    </div>
-                  </div>
-                  <div class="donut-legend-item">
-                    <div class="legend-color-dot" style="background-color: #EC4899;"></div>
-                    <div class="legend-text">
-                      <strong>Shadow Line Luxo (11%)</strong>
-                      <span>Receita: R$ 533,50</span>
-                    </div>
-                  </div>
-                  <div class="donut-legend-item">
-                    <div class="legend-color-dot" style="background-color: #84CC16;"></div>
-                    <div class="legend-text">
-                      <strong>Epilação Egípcia Facial (10%)</strong>
-                      <span>Receita: R$ 485,00</span>
-                    </div>
-                  </div>
+                <div class="donut-legend-list" id="reportTopServicesList">
+                  <!-- Populado dinamicamente via app.js -->
                 </div>
               </div>
-
-              <button class="btn-view-all-reports" onclick="showToast('Exibindo histórico completo de procedimentos...')">
-                Ver todos
-              </button>
             </div>
 
           </div>
         </section>
 
         <!-- ------------------------------------------------------------------
-             TELA 3: COMANDAS (CONFORME IMAGEM 4)
+             TELA 3: MANUTENÇÃO (ACOMPANHAMENTO DE RETORNO DAS CLIENTES)
              ------------------------------------------------------------------ -->
-        <section class="app-screen hidden" id="screenComandas">
+        <section class="app-screen hidden" id="screenManutencao">
           
           <div class="app-header">
             <div class="header-left">
               <button class="btn-hamburger" onclick="openDrawer()">
                 <i class="fa-solid fa-bars"></i>
               </button>
-              <h1 class="header-title">Comandas</h1>
+              <h1 class="header-title">Manutenção & Retornos</h1>
             </div>
-            <button class="header-icon-btn" onclick="openNewComandaModal()" title="Nova Comanda">
+            <button class="header-icon-btn" onclick="openAddMaintenanceModal()" title="Registrar Retorno">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
 
-          <div class="comandas-container">
-            <div class="comandas-tabs-bar">
-              <button class="comanda-tab-btn active" id="tabComandasAbertas">Comandas Abertas</button>
-              <button class="comanda-tab-btn" id="tabComandasFechadas">Comandas Fechadas</button>
+          <div class="maintenance-container" style="padding: 14px 16px;">
+            <!-- Banner Informativo -->
+            <div style="background: #F5EEFD; border: 1.5px solid #DDD6FE; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 12px; align-items: center;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--purple-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </div>
+              <div style="font-size: 11px; color: #4C1D95; line-height: 1.4;">
+                <strong style="font-size: 12px; display: block; margin-bottom: 2px;">Ciclo de Retorno das Clientes:</strong>
+                Saiba exatamente quem precisa retocar (ex: Henna 20 dias, Micro 30 dias) e chame com 1 toque no WhatsApp!
+              </div>
             </div>
 
-            <div id="comandasList">
-              <!-- Cards de Comandas -->
-              <div class="comanda-card" onclick="openComandaModal('Dayane', 'Pacote Sobrancelha & Lamination', '400,00', '150,00', '250,00')">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <div>
-                    <strong style="font-size: 14px; color: #111827;">Dayane</strong>
-                    <div style="font-size: 12px; color: var(--purple-primary); font-weight: 700; margin-top: 2px;">
-                      Pacote Sobrancelha & Lamination
-                    </div>
-                    <div style="font-size: 11px; color: #6B7280; margin-top: 4px;">
-                      Atendimentos: 6 de 10 realizados
-                    </div>
-                  </div>
-                  <div style="text-align: right;">
-                    <div style="font-size: 14px; font-weight: 800; color: #111827;">R$ 400,00</div>
-                    <span style="font-size: 10px; font-weight: 800; color: #DC2626; background: #FEE2E2; padding: 2px 6px; border-radius: 4px;">
-                      Deve: R$ 250,00
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <!-- Filtros de Status -->
+            <div class="maint-filters-strip" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;">
+              <button type="button" class="maint-filter-pill active" onclick="filterMaintenance('all', this)">
+                Todas (<span id="countMaintAll">0</span>)
+              </button>
+              <button type="button" class="maint-filter-pill danger" onclick="filterMaintenance('overdue', this)">
+                🔴 Vencidas (<span id="countMaintOverdue">0</span>)
+              </button>
+              <button type="button" class="maint-filter-pill warning" onclick="filterMaintenance('warning', this)">
+                🟡 Próximas (<span id="countMaintWarning">0</span>)
+              </button>
+              <button type="button" class="maint-filter-pill success" onclick="filterMaintenance('ok', this)">
+                🟢 No Prazo (<span id="countMaintOk">0</span>)
+              </button>
+            </div>
 
-              <div class="comanda-card" onclick="openComandaModal('Juliana Mendes', 'Nanoblading Fio a Fio', '380,00', '190,00', '190,00')">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <div>
-                    <strong style="font-size: 14px; color: #111827;">Juliana Mendes</strong>
-                    <div style="font-size: 12px; color: var(--purple-primary); font-weight: 700; margin-top: 2px;">
-                      Nanoblading Fio a Fio (Sinal PIX Pago)
-                    </div>
-                    <div style="font-size: 11px; color: #6B7280; margin-top: 4px;">
-                      Sessão inicial agendada
-                    </div>
-                  </div>
-                  <div style="text-align: right;">
-                    <div style="font-size: 14px; font-weight: 800; color: #111827;">R$ 380,00</div>
-                    <span style="font-size: 10px; font-weight: 800; color: #059669; background: #DCFCE7; padding: 2px 6px; border-radius: 4px;">
-                      Sinal 50% OK
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <!-- Lista de Clientes em Manutenção -->
+            <div id="maintenanceList" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Populado via app.js -->
             </div>
           </div>
         </section>
 
         <!-- ------------------------------------------------------------------
-             TELA 4: CLIENTES & ANAMNESE (CRM A-Z COM ANTES E DEPOIS)
+             TELA 4: MEUS PAGAMENTOS (GANHOS E LUCRO POR PROCEDIMENTO)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenMeusPagamentos">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Meus Pagamentos</h1>
+            </div>
+            <button class="header-icon-btn" onclick="openNewServiceModal()" title="Novo Procedimento">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
+          <div class="payments-screen-container" style="padding: 14px 16px;">
+            <!-- Resumo Rápido -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+              <div style="background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-card);">
+                <div style="font-size: 11px; font-weight: 700; color: #6B7280; text-transform: uppercase;">Previsão a Receber</div>
+                <div style="font-size: 20px; font-weight: 900; color: var(--purple-primary); margin-top: 4px;" id="pmtTotalRevenue">R$ 0,00</div>
+                <div style="font-size: 10px; color: #059669; font-weight: 700; margin-top: 2px;" id="pmtAptCount">0 atendimentos</div>
+              </div>
+              <div style="background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-card);">
+                <div style="font-size: 11px; font-weight: 700; color: #6B7280; text-transform: uppercase;">Lucro Líquido Previsto</div>
+                <div style="font-size: 20px; font-weight: 900; color: #059669; margin-top: 4px;" id="pmtNetProfit">R$ 0,00</div>
+                <div style="font-size: 10px; color: #6B7280; margin-top: 2px;">Livre de custos</div>
+              </div>
+            </div>
+
+            <!-- Título da Seção -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <h3 style="font-size: 13px; font-weight: 800; color: #111827;">Quanto você recebe por procedimento:</h3>
+              <span style="font-size: 10px; color: var(--purple-primary); font-weight: 700;">Margem Real</span>
+            </div>
+
+            <!-- Lista de Procedimentos com Preço, Custo e Lucro Líquido -->
+            <div id="paymentsProcedureList" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Populado via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 5: PROFISSIONAIS & COMISSÃO
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenProfissionais">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Profissionais & Comissão</h1>
+            </div>
+            <button class="header-icon-btn" onclick="openNewProfessionalModal()" title="Cadastrar Profissional">
+              <i class="fa-solid fa-user-plus"></i>
+            </button>
+          </div>
+
+          <div class="staff-screen-container" style="padding: 14px 16px;">
+            <!-- Card Informativo -->
+            <div style="background: #FDF2F8; border: 1.5px solid #FBCFE8; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 12px; align-items: center;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #EC4899; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fa-solid fa-percent"></i>
+              </div>
+              <div style="font-size: 11px; color: #831843; line-height: 1.4;">
+                <strong style="font-size: 12px; display: block; margin-bottom: 2px;">Divisão de Ganhos da Equipe:</strong>
+                Configure a porcentagem de comissão de cada profissional e veja o valor total a repassar no final do mês.
+              </div>
+            </div>
+
+            <!-- Lista de Profissionais -->
+            <div id="staffList" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Populado via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 6: MENSAGENS PRÉ-DEFINIDAS
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenMensagens">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Mensagens Pré-definidas</h1>
+            </div>
+            <button class="header-icon-btn" onclick="saveMsgTemplatesFromScreen()" title="Salvar Mensagens">
+              <i class="fa-solid fa-floppy-disk"></i>
+            </button>
+          </div>
+
+          <div class="messages-screen-container" style="padding: 14px 16px;">
+            <!-- Guia de Variáveis -->
+            <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #1E40AF; line-height: 1.5;">
+              <strong>Tags Automáticas Personalizadas:</strong>
+              <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 5px;">
+                <span style="background: #DBEAFE; padding: 2px 7px; border-radius: 6px; font-weight: 700;">{cliente}</span>
+                <span style="background: #DBEAFE; padding: 2px 7px; border-radius: 6px; font-weight: 700;">{procedimento}</span>
+                <span style="background: #DBEAFE; padding: 2px 7px; border-radius: 6px; font-weight: 700;">{data}</span>
+                <span style="background: #DBEAFE; padding: 2px 7px; border-radius: 6px; font-weight: 700;">{horario}</span>
+                <span style="background: #DBEAFE; padding: 2px 7px; border-radius: 6px; font-weight: 700;">{estudio}</span>
+              </div>
+            </div>
+
+            <!-- Modelos de Mensagens -->
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <!-- 1. Nova Cliente -->
+              <div class="template-card" style="background: #fff; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 14px; box-shadow: var(--shadow-card);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-sparkles" style="color: #8B5CF6;"></i>
+                    <strong style="font-size: 13px; color: #111827;">1. Nova Cliente (Boas-vindas)</strong>
+                  </div>
+                  <button type="button" class="btn-copy-template" onclick="testMsgTemplate('novaCliente')" style="border: 1px solid #25D366; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+                    <i class="fa-brands fa-whatsapp"></i> Testar
+                  </button>
+                </div>
+                <textarea id="tplNovaCliente" rows="3" style="width: 100%; border: 1.5px solid #D1D5DB; border-radius: 8px; padding: 10px; font-size: 12px; font-family: var(--font-main); outline: none; resize: vertical;"></textarea>
+              </div>
+
+              <!-- 2. Manutenção -->
+              <div class="template-card" style="background: #fff; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 14px; box-shadow: var(--shadow-card);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-arrows-rotate" style="color: #EC4899;"></i>
+                    <strong style="font-size: 13px; color: #111827;">2. Manutenção & Retoque</strong>
+                  </div>
+                  <button type="button" class="btn-copy-template" onclick="testMsgTemplate('manutencao')" style="border: 1px solid #25D366; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+                    <i class="fa-brands fa-whatsapp"></i> Testar
+                  </button>
+                </div>
+                <textarea id="tplManutencao" rows="3" style="width: 100%; border: 1.5px solid #D1D5DB; border-radius: 8px; padding: 10px; font-size: 12px; font-family: var(--font-main); outline: none; resize: vertical;"></textarea>
+              </div>
+
+              <!-- 3. Retorno -->
+              <div class="template-card" style="background: #fff; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 14px; box-shadow: var(--shadow-card);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-heart" style="color: #EF4444;"></i>
+                    <strong style="font-size: 13px; color: #111827;">3. Pós-Atendimento & Retorno</strong>
+                  </div>
+                  <button type="button" class="btn-copy-template" onclick="testMsgTemplate('retorno')" style="border: 1px solid #25D366; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+                    <i class="fa-brands fa-whatsapp"></i> Testar
+                  </button>
+                </div>
+                <textarea id="tplRetorno" rows="3" style="width: 100%; border: 1.5px solid #D1D5DB; border-radius: 8px; padding: 10px; font-size: 12px; font-family: var(--font-main); outline: none; resize: vertical;"></textarea>
+              </div>
+
+              <!-- 4. Lembrete -->
+              <div class="template-card" style="background: #fff; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 14px; box-shadow: var(--shadow-card);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-bell" style="color: #F59E0B;"></i>
+                    <strong style="font-size: 13px; color: #111827;">4. Lembrete de Agendamento</strong>
+                  </div>
+                  <button type="button" class="btn-copy-template" onclick="testMsgTemplate('lembrete')" style="border: 1px solid #25D366; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+                    <i class="fa-brands fa-whatsapp"></i> Testar
+                  </button>
+                </div>
+                <textarea id="tplLembrete" rows="3" style="width: 100%; border: 1.5px solid #D1D5DB; border-radius: 8px; padding: 10px; font-size: 12px; font-family: var(--font-main); outline: none; resize: vertical;"></textarea>
+              </div>
+
+              <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-top: 4px;" onclick="saveMsgTemplatesFromScreen()">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Salvar Todas as Mensagens</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA 7: CLIENTES (CRM A-Z COM FOTOS ANTES E DEPOIS)
              ------------------------------------------------------------------ -->
         <section class="app-screen hidden" id="screenClientes">
           
@@ -593,7 +718,7 @@
               <button class="btn-hamburger" onclick="openDrawer()">
                 <i class="fa-solid fa-bars"></i>
               </button>
-              <h1 class="header-title">Clientes & Anamnese</h1>
+              <h1 class="header-title">Clientes</h1>
             </div>
             <button class="header-icon-btn" onclick="openNewClientModal()" title="Cadastrar Cliente">
               <i class="fa-solid fa-user-plus"></i>
@@ -638,16 +763,9 @@
               <div class="online-banner-overlay"></div>
             </div>
 
-            <div class="online-profile-box">
-              <img src="assets/logo-kiko.jpg" alt="Logo Kiko" class="online-avatar">
-              <div style="margin-top: 6px;">
-                <h2 style="font-size: 18px; font-weight: 800; color: #111827;">Studio Kiko & Co</h2>
-                <p style="font-size: 12px; color: #6B7280;">Design Estratégico de Sobrancelhas & Visagismo</p>
-                <div class="online-domain-chip">
-                  <i class="fa-solid fa-globe"></i>
-                  <span>portal.minhaagendaapp.com.br/agenda</span>
-                </div>
-              </div>
+            <div class="online-profile-box" style="padding: 14px 18px 6px; text-align: center;">
+              <h2 style="font-size: 19px; font-weight: 800; color: #111827;" id="onlineStudioName">Studio Sobrancelha VIP</h2>
+              <p style="font-size: 12px; color: #6B7280; margin-top: 2px;" id="onlineStudioHeadline">Agendamento de Atendimentos & Procedimentos VIP</p>
             </div>
 
             <!-- Banner Informativo de Agendamento Online -->
@@ -816,55 +934,7 @@
     </div>
   </div>
 
-  <!-- ====================================================================
-       MODAL: DETALHES DA COMANDA (CONFORME IMAGEM 4)
-       ==================================================================== -->
-  <div class="action-modal-overlay" id="comandaDetailModal" onclick="closeComandaModal(event)">
-    <div class="action-modal-card" onclick="event.stopPropagation()">
-      <div class="action-icons-row">
-        <a href="tel:11988889900" class="action-icon-col ligar">
-          <i class="fa-solid fa-phone"></i>
-          <span>Ligar</span>
-        </a>
-        <a href="javascript:void(0)" class="action-icon-col whats" onclick="openWhatsAppChat()">
-          <i class="fa-brands fa-whatsapp"></i>
-          <span>Whats</span>
-        </a>
-        <button type="button" class="action-icon-col editar">
-          <i class="fa-solid fa-pencil"></i>
-          <span>Editar</span>
-        </button>
-        <button type="button" class="action-icon-col deletar" onclick="closeComandaModalDirect()">
-          <i class="fa-regular fa-trash-can"></i>
-          <span>Deletar</span>
-        </button>
-      </div>
 
-      <div style="font-size: 13px; color: #111827; padding: 4px 0 12px; display: flex; flex-direction: column; gap: 8px;">
-        <div><i class="fa-solid fa-file-lines" style="color: var(--purple-primary); margin-right: 6px;"></i> <strong id="comandaServiceTitle">Pacote Massagens</strong></div>
-        <div><i class="fa-solid fa-user" style="color: var(--purple-primary); margin-right: 6px;"></i> Cliente: <span id="comandaClientName">Dayane</span></div>
-        <div><i class="fa-regular fa-calendar" style="color: var(--purple-primary); margin-right: 6px;"></i> Data da Comanda: <span>28 de Setembro de 2026</span></div>
-        <div style="display: flex; justify-content: space-between; border-top: 1px solid #F3F4F6; padding-top: 6px;">
-          <span>Valor Total:</span>
-          <strong id="comandaTotalVal">R$ 400,00</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; color: #DC2626; font-weight: 700;">
-          <span>Total Pago:</span>
-          <span id="comandaPaidVal">R$ 150,00 (Devendo: R$ 250,00)</span>
-        </div>
-      </div>
-
-      <button type="button" class="btn-view-all-reports" style="margin-top: 0; margin-bottom: 8px;" onclick="showToast('Pagamento registrado!')">
-        Adicionar Pagamento
-      </button>
-      <button type="button" class="btn-view-all-reports" style="border-color: #FECDD3; background: #FFF1F2; color: #E11D48; margin-top: 0; margin-bottom: 12px;" onclick="showToast('Comanda finalizada!')">
-        Fechar Comanda
-      </button>
-      <button type="button" class="btn-action-close" onclick="closeComandaModalDirect()">
-        Fechar
-      </button>
-    </div>
-  </div>
 
   <!-- ====================================================================
        MODAL: FICHA TÉCNICA DA CLIENTE (FOTOS ANTES E DEPOIS)
@@ -1003,7 +1073,7 @@
         </select>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
         <div>
           <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Data</label>
           <input type="date" id="newAptDate" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;">
@@ -1013,6 +1083,26 @@
           <select id="newAptTime" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px; background: #fff;">
             <!-- Populado via app.js das 07:00 às 22:00 -->
           </select>
+        </div>
+      </div>
+
+      <!-- Disparo de Mensagem Pré-definida no WhatsApp -->
+      <div style="background: #F9FAFB; border: 1.5px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px;">
+        <label style="font-size: 11px; font-weight: 700; color: #374151; display: block; margin-bottom: 4px;">
+          <i class="fa-brands fa-whatsapp" style="color: #25D366; margin-right: 4px;"></i> Mensagem Pré-definida para Enviar:
+        </label>
+        <select id="newAptMsgTemplate" style="width: 100%; padding: 8px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-bottom: 8px; background: #fff;">
+          <option value="novaCliente">✨ Boas-vindas (Nova Cliente)</option>
+          <option value="lembrete" selected>🔔 Lembrete de Agendamento</option>
+          <option value="manutencao">🔄 Lembrete de Manutenção / Retorno</option>
+          <option value="retorno">💖 Pós-Atendimento & Retorno</option>
+          <option value="none">Nenhuma mensagem</option>
+        </select>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="newAptSendWhatsApp" checked style="width: 16px; height: 16px; accent-color: var(--purple-primary); cursor: pointer;">
+          <label for="newAptSendWhatsApp" style="font-size: 11px; font-weight: 700; color: #4B5563; cursor: pointer;">
+            Abrir WhatsApp para enviar confirmação agora
+          </label>
         </div>
       </div>
 
@@ -1028,7 +1118,7 @@
   </div>
 
   <!-- ====================================================================
-       MODAL: CADASTRAR / EDITAR PROCEDIMENTO & PREÇO
+       MODAL: CADASTRAR / EDITAR PROCEDIMENTO & PREÇO & CORES
        ==================================================================== -->
   <div class="action-modal-overlay" id="serviceEditModal" onclick="closeServiceModal(event)">
     <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
@@ -1037,7 +1127,7 @@
           <i class="fa-solid fa-wand-magic-sparkles"></i>
         </div>
         <h3 style="font-size: 16px; font-weight: 800; color: #111827;" id="serviceModalTitle">Cadastrar Procedimento</h3>
-        <p style="font-size: 12px; color: #6B7280;">Defina o nome, valor cobrado e duração do serviço</p>
+        <p style="font-size: 12px; color: #6B7280;">Defina preço, cor no calendário e prazo de manutenção</p>
       </div>
 
       <input type="hidden" id="editServiceId">
@@ -1049,12 +1139,46 @@
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
         <div>
-          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Preço (R$) *</label>
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Preço Cobrado (R$) *</label>
           <input type="number" step="0.50" id="editServicePrice" placeholder="180.00" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
         </div>
         <div>
           <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Duração (minutos)</label>
           <input type="number" id="editServiceDuration" placeholder="60" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        </div>
+      </div>
+
+      <!-- Cor de Destaque no Calendário / Agenda -->
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Cor no Calendário (Identificação Visual) *</label>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+          <input type="color" id="editServiceColor" value="#8B5CF6" style="width: 44px; height: 38px; border: 1.5px solid #D1D5DB; border-radius: 8px; cursor: pointer; padding: 2px; background: #fff;" onchange="updateServiceColorPreview(this.value)">
+          <div id="serviceColorPreviewBox" style="flex: 1; padding: 8px 12px; border-radius: 8px; background: rgba(139, 92, 246, 0.15); border-left: 4px solid #8B5CF6; font-size: 12px; font-weight: 700; color: #111827;">
+            Exemplo visual na grade de horários
+          </div>
+        </div>
+        <!-- Paleta de cores rápidas -->
+        <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;" id="colorSwatchesContainer">
+          <button type="button" class="color-swatch-circle" style="background:#EF4444;" title="Vermelho" onclick="selectServiceColorSwatch('#EF4444')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#10B981;" title="Verde" onclick="selectServiceColorSwatch('#10B981')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#3B82F6;" title="Azul" onclick="selectServiceColorSwatch('#3B82F6')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#8B5CF6;" title="Roxo" onclick="selectServiceColorSwatch('#8B5CF6')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#EC4899;" title="Rosa" onclick="selectServiceColorSwatch('#EC4899')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#F59E0B;" title="Laranja" onclick="selectServiceColorSwatch('#F59E0B')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#06B6D4;" title="Ciano" onclick="selectServiceColorSwatch('#06B6D4')"></button>
+          <button type="button" class="color-swatch-circle" style="background:#84CC16;" title="Verde-Limão" onclick="selectServiceColorSwatch('#84CC16')"></button>
+        </div>
+      </div>
+
+      <!-- Prazo de Manutenção e Custo Estimado -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Prazo Retorno (dias)</label>
+          <input type="number" id="editServiceReturnDays" placeholder="30" value="30" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Custo Material (R$)</label>
+          <input type="number" step="0.50" id="editServiceCost" placeholder="15.00" value="15.00" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
         </div>
       </div>
 
@@ -1132,71 +1256,167 @@
   </div>
 
   <!-- ====================================================================
-       MODAL: STATUS DA NUVEM (VERCEL + MONGODB + RESEND)
+       MODAL: ADICIONAR GASTO MENSAL DO ESTÚDIO
        ==================================================================== -->
-  <div class="action-modal-overlay" id="cloudStatusModal" onclick="closeCloudStatusModal(event)">
+  <div class="action-modal-overlay" id="addExpenseModal" onclick="closeAddExpenseModal(event)">
     <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
       <div style="text-align: center; margin-bottom: 14px;">
-        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #8B5CF6, #6B21A8); color: #FFFFFF; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 22px; box-shadow: 0 4px 14px rgba(107, 33, 168, 0.4);">
-          <i class="fa-solid fa-cloud-bolt"></i>
+        <div style="width: 46px; height: 46px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">
+          <i class="fa-solid fa-receipt"></i>
         </div>
-        <h3 style="font-size: 17px; font-weight: 800; color: #111827;">Infraestrutura da Nuvem</h3>
-        <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">Vercel • MongoDB Atlas • Resend E-mails</p>
+        <h3 style="font-size: 16px; font-weight: 800; color: #111827;">Adicionar Gasto Mensal</h3>
+        <p style="font-size: 12px; color: #6B7280;">Lance contas de água, luz, aluguel, internet ou compras</p>
       </div>
 
-      <!-- Itens de status -->
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
-        <!-- Vercel Hosting -->
-        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-server" style="color: #6B21A8; font-size: 16px;"></i>
-            <div>
-              <div style="font-size: 12px; font-weight: 700; color: #111827;">Servidor & Hosting</div>
-              <div style="font-size: 10px; color: #6B7280;">Vercel Edge / Serverless Node.js</div>
-            </div>
+      <form id="addExpenseForm" onsubmit="handleSaveExpense(event)">
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Descrição do Gasto *</label>
+          <input type="text" id="expDescription" placeholder="Ex: Conta de Luz / Aluguel / Descartáveis" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Valor (R$) *</label>
+            <input type="number" step="0.01" id="expAmount" placeholder="150.00" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
           </div>
-          <div id="cloudServerStatus" style="font-size: 11px; font-weight: 700;">
-            <span class="status-badge-online"><i class="fa-solid fa-circle-check"></i> Ativo</span>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Categoria</label>
+            <select id="expCategory" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px; background: #fff;">
+              <option value="contas">💡 Contas Fixas (Luz, Água, Net)</option>
+              <option value="aluguel">🏢 Aluguel do Estúdio</option>
+              <option value="materiais">💅 Materiais & Pigmentos</option>
+              <option value="marketing">📢 Marketing & Tráfego</option>
+              <option value="outros">📦 Outros Gastos</option>
+            </select>
           </div>
         </div>
 
-        <!-- MongoDB Atlas -->
-        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-database" style="color: #10B981; font-size: 16px;"></i>
-            <div>
-              <div style="font-size: 12px; font-weight: 700; color: #111827;">Banco de Dados</div>
-              <div style="font-size: 10px; color: #6B7280;">MongoDB Atlas (Persistência)</div>
-            </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Data de Vencimento</label>
+            <input type="text" id="expDueDate" placeholder="Ex: 10/10/2026" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;">
           </div>
-          <div id="cloudMongoStatus" style="font-size: 11px; font-weight: 700;">
-            <span class="status-badge-online"><i class="fa-solid fa-circle-check"></i> Conectado</span>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Status de Pagamento</label>
+            <select id="expStatus" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px; background: #fff;">
+              <option value="pago" selected>✅ Pago</option>
+              <option value="pendente">⏳ A Pagar (Pendente)</option>
+            </select>
           </div>
         </div>
 
-        <!-- Resend -->
-        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-envelope-circle-check" style="color: #EC4899; font-size: 16px;"></i>
-            <div>
-              <div style="font-size: 12px; font-weight: 700; color: #111827;">Disparo de E-mails</div>
-              <div style="font-size: 10px; color: #6B7280;">Resend Transactional API</div>
-            </div>
-          </div>
-          <div id="cloudResendStatus" style="font-size: 11px; font-weight: 700;">
-            <span class="status-badge-online"><i class="fa-solid fa-circle-check"></i> Ativo</span>
-          </div>
+        <button type="submit" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Salvar Despesa</span>
+        </button>
+
+        <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeAddExpenseModalDirect()">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: CADASTRAR / EDITAR PROFISSIONAL & COMISSÃO
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="professionalModal" onclick="closeProfessionalModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 46px; height: 46px; border-radius: 50%; background: #FDF2F8; color: #EC4899; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">
+          <i class="fa-solid fa-user-tie"></i>
         </div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #111827;" id="proModalTitle">Cadastrar Profissional</h3>
+        <p style="font-size: 12px; color: #6B7280;">Defina o cargo e a comissão repassada à parceira</p>
       </div>
 
-      <button type="button" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;" onclick="openCloudStatusModal()">
-        <i class="fa-solid fa-rotate"></i>
-        <span>Testar Conexão em Tempo Real</span>
-      </button>
+      <input type="hidden" id="proId">
 
-      <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeCloudStatusModalDirect()">
-        Fechar
-      </button>
+      <form id="proForm" onsubmit="handleSaveProfessional(event)">
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome da Profissional *</label>
+          <input type="text" id="proName" placeholder="Ex: Camila Rocha" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Especialidade / Cargo</label>
+          <input type="text" id="proRole" placeholder="Ex: Designer de Sobrancelha / Lash" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">WhatsApp</label>
+            <input type="tel" id="proPhone" placeholder="(11) 98765-4321" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;">
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Comissão (%) *</label>
+            <input type="number" min="0" max="100" id="proCommission" placeholder="50" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Salvar Profissional</span>
+        </button>
+
+        <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeProfessionalModalDirect()">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL: REGISTRAR MANUTENÇÃO MANUAL
+       ==================================================================== -->
+  <div class="action-modal-overlay" id="addMaintenanceModal" onclick="closeAddMaintenanceModal(event)">
+    <div class="action-modal-card" style="max-height: 88vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 46px; height: 46px; border-radius: 50%; background: #F5EEFD; color: var(--purple-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 20px;">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </div>
+        <h3 style="font-size: 16px; font-weight: 800; color: #111827;">Registrar Manutenção de Cliente</h3>
+        <p style="font-size: 12px; color: #6B7280;">Adicione um procedimento anterior e o prazo de retorno</p>
+      </div>
+
+      <form id="addMaintenanceForm" onsubmit="handleSaveMaintenance(event)">
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Nome da Cliente *</label>
+          <input type="text" id="maintClientName" placeholder="Ex: Amanda Silveira" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">WhatsApp da Cliente *</label>
+          <input type="tel" id="maintClientPhone" placeholder="(11) 98765-4321" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Procedimento Realizado *</label>
+          <select id="maintServiceName" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px; background: #fff;" onchange="onMaintServiceChange(this.value)">
+            <!-- Populado via app.js -->
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Data do Atendimento *</label>
+            <input type="date" id="maintServiceDate" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;" required>
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Prazo Retorno (dias) *</label>
+            <input type="number" id="maintReturnDays" placeholder="30" value="30" style="width: 100%; padding: 9px 10px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 12px; outline: none; margin-top: 4px;" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-action-close" style="background: var(--purple-primary); margin-bottom: 8px;">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Salvar Ciclo de Retorno</span>
+        </button>
+
+        <button type="button" class="btn-action-close" style="background: #E5E7EB; color: #374151;" onclick="closeAddMaintenanceModalDirect()">
+          Cancelar
+        </button>
+      </form>
     </div>
   </div>
 
@@ -1230,7 +1450,7 @@
         </div>
 
         <div style="margin-bottom: 14px;">
-          <label style="font-size: 11px; font-weight: 700; color: #4B5563; text-transform: uppercase;">Seu E-mail para Notificações (Resend)</label>
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563; text-transform: uppercase;">Seu E-mail para Notificações</label>
           <input type="email" id="cfgDesignerEmail" placeholder="Ex: seuemail@gmail.com" style="width: 100%; padding: 10px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;" required>
           <div style="font-size: 11px; color: #6B7280; margin-top: 4px; line-height: 1.4;">
             <i class="fa-solid fa-circle-info" style="color: #6B21A8;"></i> É neste e-mail que você receberá os avisos instantâneos sempre que uma cliente fizer um agendamento online.
