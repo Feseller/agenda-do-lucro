@@ -103,6 +103,11 @@
               <span class="drawer-badge-new" style="background: #EF4444;">Retorno</span>
             </a>
 
+            <a href="javascript:void(0)" class="drawer-item" id="drawerItemServicos" onclick="navigateToScreen('screenServicos', this)">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Serviços & Procedimentos</span>
+            </a>
+
             <a href="javascript:void(0)" class="drawer-item" id="drawerItemMeusPagamentos" onclick="navigateToScreen('screenMeusPagamentos', this)">
               <i class="fa-solid fa-wallet"></i>
               <span>Meus Pagamentos</span>
@@ -507,6 +512,64 @@
 
             <!-- Lista de Procedimentos com Preço, Custo e Lucro Líquido -->
             <div id="paymentsProcedureList" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Populado via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------------------------
+             TELA: SERVIÇOS & PROCEDIMENTOS (CATÁLOGO, PREÇOS E DURAÇÃO)
+             ------------------------------------------------------------------ -->
+        <section class="app-screen hidden" id="screenServicos">
+          
+          <div class="app-header">
+            <div class="header-left">
+              <button class="btn-hamburger" onclick="openDrawer()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h1 class="header-title">Serviços & Procedimentos</h1>
+            </div>
+            <button class="header-icon-btn" onclick="openNewServiceModal()" title="Cadastrar Novo Procedimento">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
+          <div class="services-screen-container" style="padding: 14px 16px;">
+            <!-- Banner Informativo -->
+            <div style="background: linear-gradient(135deg, #F5F3FF, #EDE9FE); border: 1.5px solid #DDD6FE; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <div>
+                <div style="font-size: 13px; font-weight: 800; color: #5B21B6; margin-bottom: 2px;">Catálogo de Procedimentos</div>
+                <div style="font-size: 11px; color: #6B7280; line-height: 1.4;">Configure duração (5m a 1h+), valor cobrado e cores sincronizadas com a agenda.</div>
+              </div>
+              <button type="button" class="btn-apt-secondary-chip" onclick="openNewServiceModal()" style="white-space: nowrap; padding: 7px 12px; font-size: 12px;">
+                <i class="fa-solid fa-plus"></i> Novo
+              </button>
+            </div>
+
+            <!-- Resumo Rápido de Serviços -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+              <div style="background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 10px; text-align: center; box-shadow: var(--shadow-card);">
+                <div style="font-size: 10px; font-weight: 700; color: #6B7280; text-transform: uppercase;">Procedimentos</div>
+                <div style="font-size: 18px; font-weight: 900; color: var(--purple-primary); margin-top: 2px;" id="srvTotalCount">0</div>
+              </div>
+              <div style="background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 10px; text-align: center; box-shadow: var(--shadow-card);">
+                <div style="font-size: 10px; font-weight: 700; color: #6B7280; text-transform: uppercase;">Preço Médio</div>
+                <div style="font-size: 18px; font-weight: 900; color: #111827; margin-top: 2px;" id="srvAvgPrice">R$ 0</div>
+              </div>
+              <div style="background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 10px; text-align: center; box-shadow: var(--shadow-card);">
+                <div style="font-size: 10px; font-weight: 700; color: #6B7280; text-transform: uppercase;">Margem Média</div>
+                <div style="font-size: 18px; font-weight: 900; color: #059669; margin-top: 2px;" id="srvAvgMargin">0%</div>
+              </div>
+            </div>
+
+            <!-- Título da Seção -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <h3 style="font-size: 13px; font-weight: 800; color: #111827;">Seus Procedimentos Ativos:</h3>
+              <span style="font-size: 11px; color: var(--purple-primary); font-weight: 700; cursor: pointer;" onclick="openNewServiceModal()">+ Adicionar</span>
+            </div>
+
+            <!-- Container da Lista de Serviços -->
+            <div id="servicesListContainer" style="display: flex; flex-direction: column; gap: 10px;">
               <!-- Populado via app.js -->
             </div>
           </div>
@@ -982,9 +1045,11 @@
   <div class="action-modal-overlay" id="newAppointmentModal" onclick="closeNewAppointmentModal(event)">
     <div class="action-modal-card modern-apt-card" onclick="event.stopPropagation()">
       
-      <!-- Topo: Fechar (roxo à esquerda) + Rádios Agendamento / Bloqueio à direita -->
+      <!-- Topo: Voltar (roxo à esquerda) + Rádios Agendamento / Bloqueio no centro + Fechar (X) à direita -->
       <div class="apt-modal-header-row">
-        <button type="button" class="btn-apt-link-close" onclick="closeNewAppointmentModalDirect()">Fechar</button>
+        <button type="button" class="btn-apt-link-close" onclick="closeNewAppointmentModalDirect()">
+          <i class="fa-solid fa-chevron-left" style="margin-right: 4px;"></i> Voltar
+        </button>
         <div class="apt-type-radios">
           <label class="apt-radio-label">
             <input type="radio" name="aptTypeRadio" id="aptRadioAgendamento" value="agendamento" checked onchange="handleAptTypeToggle('agendamento')">
@@ -995,6 +1060,9 @@
             <span>Bloqueio</span>
           </label>
         </div>
+        <button type="button" class="btn-apt-x-close" onclick="closeNewAppointmentModalDirect()" title="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
       <!-- Linha do Intervalo Calculado & Sino -->
@@ -1073,14 +1141,18 @@
         <label class="apt-field-label">Duração (Valor padrão baseado no serviço)</label>
         <div class="apt-select-wrapper">
           <select id="newAptDuration" class="apt-form-control apt-select-control" onchange="onAptDurationChange()">
+            <option value="5">5 min</option>
+            <option value="10">10 min</option>
             <option value="15">15 min</option>
             <option value="20">20 min</option>
-            <option value="25" selected>25 min</option>
+            <option value="25">25 min</option>
             <option value="30">30 min</option>
+            <option value="35">35 min</option>
             <option value="40">40 min</option>
             <option value="45">45 min</option>
             <option value="50">50 min</option>
-            <option value="60">60 min (1h)</option>
+            <option value="55">55 min</option>
+            <option value="60" selected>60 min (1h)</option>
             <option value="75">1h 15m (75 min)</option>
             <option value="90">1h 30m (90 min)</option>
             <option value="105">1h 45m (105 min)</option>
@@ -1139,11 +1211,14 @@
 
       <!-- Botões de Ação na Base -->
       <div class="apt-actions-row">
-        <button type="button" class="btn-apt-save-primary" onclick="saveManualAppointment()">
+        <button type="button" class="btn-apt-save-primary" id="btnSaveAppointment" onclick="saveManualAppointment()">
           Salvar
         </button>
-        <button type="button" class="btn-apt-multi-secondary" onclick="saveManualAppointment(true)">
+        <button type="button" class="btn-apt-multi-secondary" id="btnMultiAppointment" onclick="saveManualAppointment(true)">
           Agendamento Múltiplo
+        </button>
+        <button type="button" class="btn-apt-cancel-return" onclick="closeNewAppointmentModalDirect()">
+          <i class="fa-solid fa-arrow-left"></i> Voltar para a Agenda / Cancelar
         </button>
       </div>
 
@@ -1176,8 +1251,27 @@
           <input type="number" step="0.50" id="editServicePrice" placeholder="180.00" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
         </div>
         <div>
-          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Duração (minutos)</label>
-          <input type="number" id="editServiceDuration" placeholder="60" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px;">
+          <label style="font-size: 11px; font-weight: 700; color: #4B5563;">Duração do Atendimento *</label>
+          <select id="editServiceDuration" style="width: 100%; padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; margin-top: 4px; background: #fff;">
+            <option value="5">5 minutos</option>
+            <option value="10">10 minutos</option>
+            <option value="15">15 minutos</option>
+            <option value="20">20 minutos</option>
+            <option value="25">25 minutos</option>
+            <option value="30">30 minutos</option>
+            <option value="35">35 minutos</option>
+            <option value="40">40 minutos</option>
+            <option value="45">45 minutos</option>
+            <option value="50">50 minutos</option>
+            <option value="55">55 minutos</option>
+            <option value="60" selected>60 min (1 hora)</option>
+            <option value="75">1h 15m (75 min)</option>
+            <option value="90">1h 30m (90 min)</option>
+            <option value="105">1h 45m (105 min)</option>
+            <option value="120">2 horas (120 min)</option>
+            <option value="150">2h 30m</option>
+            <option value="180">3 horas</option>
+          </select>
         </div>
       </div>
 

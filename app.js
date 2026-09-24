@@ -388,6 +388,8 @@ function navigateToScreen(screenId, menuItem) {
     renderManutencao();
   } else if (screenId === 'screenMeusPagamentos') {
     renderMeusPagamentos();
+  } else if (screenId === 'screenServicos') {
+    renderServicosList();
   } else if (screenId === 'screenProfissionais') {
     renderProfissionais();
   } else if (screenId === 'screenMensagens') {
@@ -734,8 +736,13 @@ function addChargeFromAppointment() {
 }
 
 function editAppointment() {
+  if (!appState.currentActionAppointment) {
+    showToast('Nenhum agendamento selecionado.');
+    return;
+  }
+  const apt = appState.currentActionAppointment;
   closeActionModalDirect();
-  showToast('Edição de agendamento aberta');
+  openEditAppointmentModal(apt);
 }
 
 function deleteAppointment() {
@@ -1061,7 +1068,20 @@ function openEditServiceModal(serviceId) {
   document.getElementById('editServiceId').value = s.id;
   document.getElementById('editServiceName').value = s.name;
   document.getElementById('editServicePrice').value = Number(s.price).toFixed(2);
-  document.getElementById('editServiceDuration').value = s.duration || 60;
+  
+  const durSelect = document.getElementById('editServiceDuration');
+  if (durSelect) {
+    const durStr = String(s.duration || 60);
+    const exists = Array.from(durSelect.options).some(o => o.value === durStr);
+    if (exists) {
+      durSelect.value = durStr;
+    } else {
+      const opt = new Option(`${durStr} min`, durStr, true, true);
+      durSelect.add(opt);
+      durSelect.value = durStr;
+    }
+  }
+
   document.getElementById('editServiceCategory').value = s.category || 'sobrancelha';
   document.getElementById('editServiceDesc').value = s.desc || '';
 
@@ -1156,6 +1176,7 @@ function saveServiceModal() {
 
   saveData();
   closeServiceModalDirect();
+  renderServicosList();
   renderOnlinePortal();
   renderTimeline();
   if (typeof renderMeusPagamentos === 'function') renderMeusPagamentos();
@@ -1187,12 +1208,123 @@ function deleteServiceModal() {
 
   saveData();
   closeServiceModalDirect();
+  renderServicosList();
   renderOnlinePortal();
+  if (typeof renderMeusPagamentos === 'function') renderMeusPagamentos();
   showToast('Procedimento excluído com sucesso.');
 
   // Sincronizar exclusão com backend MongoDB
   fetch(`/api/services?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
     .catch(err => console.warn('Erro ao remover serviço:', err));
+}
+
+function deleteServiceDirect(id) {
+  if (!id) return;
+  if (!confirm('Deseja realmente excluir este procedimento do catálogo?')) return;
+
+  appState.services = (appState.services || []).filter(s => s.id !== id);
+  if (appState.selectedOnlineService && appState.selectedOnlineService.id === id) {
+    appState.selectedOnlineService = appState.services[0] || null;
+  }
+
+  saveData();
+  renderServicosList();
+  renderOnlinePortal();
+  if (typeof renderMeusPagamentos === 'function') renderMeusPagamentos();
+  showToast('Procedimento excluído com sucesso.');
+
+  fetch(`/api/services?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+    .catch(err => console.warn('Erro ao remover serviço:', err));
+}
+
+// Renderização da Tela de Serviços (Item 1)
+function renderServicosList() {
+  const container = document.getElementById('servicesListContainer');
+  if (!container) return;
+
+  const services = (appState.services && appState.services.length) ? appState.services : DEFAULT_SERVICES;
+  if (!appState.services || appState.services.length === 0) {
+    appState.services = [...DEFAULT_SERVICES];
+  }
+
+  // Atualizar KPIs superiores
+  const totalCountEl = document.getElementById('srvTotalCount');
+  const avgPriceEl = document.getElementById('srvAvgPrice');
+  const avgMarginEl = document.getElementById('srvAvgMargin');
+
+  const count = services.length;
+  const totalPrice = services.reduce((acc, s) => acc + (parseFloat(s.price) || 0), 0);
+  const totalCost = services.reduce((acc, s) => acc + (parseFloat(s.cost) || 0), 0);
+  const avgPrice = count > 0 ? (totalPrice / count) : 0;
+  const avgMargin = totalPrice > 0 ? (((totalPrice - totalCost) / totalPrice) * 100) : 0;
+
+  if (totalCountEl) totalCountEl.innerText = String(count);
+  if (avgPriceEl) avgPriceEl.innerText = `R$ ${Math.round(avgPrice)}`;
+  if (avgMarginEl) avgMarginEl.innerText = `${Math.round(avgMargin)}%`;
+
+  if (services.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 30px 16px; background: #fff; border-radius: 12px; border: 1.5px dashed #D1D5DB;">
+        <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 32px; color: #9CA3AF; margin-bottom: 8px;"></i>
+        <p style="font-size: 13px; font-weight: 700; color: #374151;">Nenhum procedimento cadastrado ainda.</p>
+        <button type="button" class="btn-apt-secondary-chip" onclick="openNewServiceModal()" style="margin-top: 10px;">
+          + Cadastrar Primeiro Procedimento
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = services.map(s => {
+    const priceNum = typeof s.price === 'number' ? s.price : parseFloat(s.price) || 0;
+    const costNum = typeof s.cost === 'number' ? s.cost : parseFloat(s.cost) || 0;
+    const profitNum = Math.max(0, priceNum - costNum);
+    const colorHex = s.color || '#8B5CF6';
+    const durMin = s.duration || 60;
+    const durLabel = durMin >= 60 
+      ? (durMin % 60 === 0 ? `${durMin / 60}h` : `${Math.floor(durMin / 60)}h ${durMin % 60}m`)
+      : `${durMin} min`;
+
+    return `
+      <div class="service-management-card" style="background: #FFFFFF; border: 1.5px solid #E5E7EB; border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow-card); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; bottom: 0; width: 5px; background: ${colorHex};"></div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-left: 4px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${colorHex};"></span>
+              <h4 style="font-size: 14px; font-weight: 800; color: #111827; margin: 0;">${s.name}</h4>
+              <span style="background: #F3F4F6; color: #4B5563; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px;">
+                <i class="fa-regular fa-clock" style="margin-right: 2px;"></i> ${durLabel}
+              </span>
+            </div>
+            <p style="font-size: 11px; color: #6B7280; margin: 4px 0 0 0; line-height: 1.3;">
+              ${s.desc || 'Procedimento personalizado de estética e sobrancelhas.'}
+            </p>
+          </div>
+          <div style="text-align: right; flex-shrink: 0;">
+            <div style="font-size: 16px; font-weight: 900; color: var(--purple-primary);">R$ ${priceNum.toFixed(2).replace('.', ',')}</div>
+            <div style="font-size: 10px; color: #059669; font-weight: 700; margin-top: 1px;">Lucro: R$ ${profitNum.toFixed(2).replace('.', ',')}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #F3F4F6; margin-left: 4px;">
+          <div style="display: flex; gap: 10px; font-size: 11px; color: #6B7280;">
+            <span><strong style="color: #374151;">Custo:</strong> R$ ${costNum.toFixed(2).replace('.', ',')}</span>
+            <span><strong style="color: #374151;">Retorno:</strong> ${s.returnDays || 30} dias</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-service-action-edit" onclick="openEditServiceModal('${s.id}')" title="Editar Preço e Tempo">
+              <i class="fa-solid fa-pencil"></i> Editar
+            </button>
+            <button type="button" class="btn-service-action-del" onclick="deleteServiceDirect('${s.id}')" title="Excluir">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ==========================================================================
@@ -1494,10 +1626,17 @@ function confirmOnlineBooking() {
 // MODAL: NOVO AGENDAMENTO VIP / RELÓGIO DINÂMICO (FOTO 2 & ITENS 2, 3, 5, 6)
 // ==========================================================================
 let currentAptType = 'agendamento';
+let editingAppointmentId = null;
 
 function openNewAppointmentModal(preHourOrTime) {
   const modal = document.getElementById('newAppointmentModal');
   if (!modal) return;
+
+  editingAppointmentId = null;
+  const saveBtn = document.getElementById('btnSaveAppointment');
+  if (saveBtn) saveBtn.innerText = 'Salvar';
+  const multiBtn = document.getElementById('btnMultiAppointment');
+  if (multiBtn) multiBtn.style.display = '';
 
   currentAptType = 'agendamento';
   const radioApt = document.getElementById('aptRadioAgendamento');
@@ -1562,7 +1701,106 @@ function openNewAppointmentModal(preHourOrTime) {
   modal.classList.add('active');
 }
 
+function openEditAppointmentModal(apt) {
+  const modal = document.getElementById('newAppointmentModal');
+  if (!modal || !apt) return;
+
+  editingAppointmentId = apt.id;
+
+  // Setar tipo (agendamento ou bloqueio)
+  const isBlock = !!apt.isBlock;
+  currentAptType = isBlock ? 'bloqueio' : 'agendamento';
+  const radioApt = document.getElementById('aptRadioAgendamento');
+  const radioBloq = document.getElementById('aptRadioBloqueio');
+  if (radioApt) radioApt.checked = !isBlock;
+  if (radioBloq) radioBloq.checked = isBlock;
+  handleAptTypeToggle(currentAptType);
+
+  // Preencher procedimentos no seletor
+  const selectService = document.getElementById('newAptService');
+  if (selectService) {
+    selectService.innerHTML = (appState.services || []).map(s => `
+      <option value="${s.id}">${s.name} — R$ ${Number(s.price).toFixed(2).replace('.', ',')}</option>
+    `).join('');
+
+    if (!isBlock) {
+      let matchedIdx = -1;
+      for (let i = 0; i < selectService.options.length; i++) {
+        if (selectService.options[i].value === apt.serviceId || selectService.options[i].text.includes(apt.serviceName)) {
+          matchedIdx = i;
+          break;
+        }
+      }
+      if (matchedIdx !== -1) selectService.selectedIndex = matchedIdx;
+    }
+  }
+
+  // Preencher Data
+  const dateInput = document.getElementById('newAptDate');
+  if (dateInput) {
+    const y = apt.year !== undefined ? apt.year : (appState.selectedYear || _realNowDate.getFullYear());
+    const m = String((apt.month !== undefined ? apt.month : (appState.selectedMonth !== undefined ? appState.selectedMonth : _realNowDate.getMonth())) + 1).padStart(2, '0');
+    const d = String(apt.day !== undefined ? apt.day : (appState.selectedDay || _realNowDate.getDate())).padStart(2, '0');
+    dateInput.value = `${y}-${m}-${d}`;
+  }
+
+  // Preencher Horário de Início
+  const timeInput = document.getElementById('newAptTime');
+  if (timeInput) {
+    timeInput.value = apt.timeStart || '09:00';
+  }
+
+  // Preencher Duração
+  const durationSelect = document.getElementById('newAptDuration');
+  if (durationSelect) {
+    const durStr = String(apt.durationMin || 30);
+    const exists = Array.from(durationSelect.options).some(o => o.value === durStr);
+    if (exists) {
+      durationSelect.value = durStr;
+    } else {
+      const opt = new Option(`${durStr} min`, durStr, true, true);
+      durationSelect.add(opt);
+      durationSelect.value = durStr;
+    }
+  }
+
+  // Preencher Dados da Cliente
+  const nameInput = document.getElementById('newAptClientName');
+  if (nameInput) nameInput.value = isBlock ? '' : (apt.clientName || '');
+  const phoneInput = document.getElementById('newAptClientPhone');
+  if (phoneInput) phoneInput.value = isBlock ? '' : (apt.clientPhone || '');
+  const notesInput = document.getElementById('newAptNotes');
+  if (notesInput) {
+    notesInput.value = apt.notes || '';
+    if (apt.notes) {
+      const moreContainer = document.getElementById('aptMoreFieldsContainer');
+      if (moreContainer) moreContainer.classList.remove('hidden');
+    }
+  }
+
+  // Ajustar botão de Salvar para Edição
+  const saveBtn = document.getElementById('btnSaveAppointment');
+  if (saveBtn) saveBtn.innerText = 'Salvar Alterações';
+  
+  // Ocultar agendamento múltiplo no modo edição
+  const multiBtn = document.getElementById('btnMultiAppointment');
+  if (multiBtn) multiBtn.style.display = 'none';
+
+  const conflictAlert = document.getElementById('newAptConflictAlert');
+  if (conflictAlert) conflictAlert.classList.add('hidden');
+
+  updateCalculatedInterval();
+  modal.classList.add('active');
+  showToast(`Editando agendamento de ${apt.clientName || 'cliente'}`);
+}
+
 function closeNewAppointmentModalDirect() {
+  editingAppointmentId = null;
+  const saveBtn = document.getElementById('btnSaveAppointment');
+  if (saveBtn) saveBtn.innerText = 'Salvar';
+  const multiBtn = document.getElementById('btnMultiAppointment');
+  if (multiBtn) multiBtn.style.display = '';
+
   const modal = document.getElementById('newAppointmentModal');
   if (modal) modal.classList.remove('active');
   const autocompleteList = document.getElementById('aptClientAutocompleteList');
@@ -1570,8 +1808,7 @@ function closeNewAppointmentModalDirect() {
 }
 
 function closeNewAppointmentModal(e) {
-  const modal = document.getElementById('newAppointmentModal');
-  if (modal) modal.classList.remove('active');
+  closeNewAppointmentModalDirect();
 }
 
 function handleAptTypeToggle(type) {
@@ -1615,7 +1852,13 @@ function onAptServiceChange() {
     if (s.duration && durationSelect) {
       const durStr = String(s.duration);
       const exists = Array.from(durationSelect.options).some(o => o.value === durStr);
-      if (exists) durationSelect.value = durStr;
+      if (exists) {
+        durationSelect.value = durStr;
+      } else {
+        const opt = new Option(`${durStr} min`, durStr, true, true);
+        durationSelect.add(opt);
+        durationSelect.value = durStr;
+      }
     }
   }
   updateCalculatedInterval();
@@ -1663,7 +1906,7 @@ function updateCalculatedInterval() {
 
   // Verificação de conflito em tempo real
   if (dateInput && dateInput.value) {
-    const conflict = checkAppointmentCollision(dateInput.value, timeStart, timeEnd);
+    const conflict = checkAppointmentCollision(dateInput.value, timeStart, timeEnd, editingAppointmentId);
     const alertBox = document.getElementById('newAptConflictAlert');
     const alertText = document.getElementById('newAptConflictText');
     if (conflict.conflict) {
@@ -1809,7 +2052,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Salvar Agendamento Manual (com bloqueio de conflito e agendamento múltiplo)
+// Salvar Agendamento Manual (com bloqueio de conflito e suporte a edição)
 function saveManualAppointment(isMultiple = false) {
   const nameInput = document.getElementById('newAptClientName');
   const phoneInput = document.getElementById('newAptClientPhone');
@@ -1848,8 +2091,8 @@ function saveManualAppointment(isMultiple = false) {
   const timeEnd = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
   const hourSlot = String(h || 0).padStart(2, '0');
 
-  // Checar colisão de horário (Item 6)
-  const collision = checkAppointmentCollision(selectedDate, timeStart, timeEnd);
+  // Checar colisão de horário (desconsiderando o próprio agendamento caso esteja em edição)
+  const collision = checkAppointmentCollision(selectedDate, timeStart, timeEnd, editingAppointmentId);
   if (collision.conflict) {
     const alertBox = document.getElementById('newAptConflictAlert');
     if (alertBox) alertBox.classList.remove('hidden');
@@ -1873,6 +2116,87 @@ function saveManualAppointment(isMultiple = false) {
 
   const s = (appState.services || []).find(srv => srv.id === serviceId) || (appState.services && appState.services[0]) || { name: 'Procedimento VIP', price: 100, color: '#8B5CF6' };
   const colorHex = isBlock ? '#6B7280' : (s.color || s.colorHex || '#8B5CF6');
+
+  // Caso esteja editando um agendamento existente
+  if (editingAppointmentId) {
+    const idx = (appState.appointments || []).findIndex(a => a.id === editingAppointmentId);
+    if (idx !== -1) {
+      appState.appointments[idx] = {
+        ...appState.appointments[idx],
+        timeStart,
+        timeEnd,
+        hourSlot,
+        durationMin,
+        clientName,
+        clientPhone: clientPhone || '(11) 98888-7777',
+        serviceName: isBlock ? 'Horário Bloqueado' : s.name,
+        serviceId: isBlock ? 'block' : s.id,
+        price: isBlock ? 0 : s.price,
+        colorHex: colorHex,
+        day,
+        month,
+        year,
+        notes: notes,
+        isBlock: isBlock
+      };
+    }
+
+    const targetEmail = (appState.studioConfig && appState.studioConfig.designerEmail) || (appState.currentUser ? appState.currentUser.email : '');
+    const updatedApt = appState.appointments[idx];
+    if (updatedApt) {
+      fetch('/api/appointments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...updatedApt, id: editingAppointmentId, designerEmail: targetEmail })
+      }).catch(err => console.warn('Erro ao atualizar agendamento:', err));
+    }
+
+    // Atualizar manutenção se houver
+    if (!isBlock) {
+      const returnDays = s.returnDays ? parseInt(s.returnDays, 10) : 30;
+      const serviceDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      if (!appState.maintenanceList) appState.maintenanceList = [];
+      const existingMaintIdx = appState.maintenanceList.findIndex(m => m.clientName.toLowerCase() === clientName.toLowerCase());
+      const maintItem = {
+        id: existingMaintIdx >= 0 ? appState.maintenanceList[existingMaintIdx].id : 'maint-' + Date.now(),
+        clientName,
+        clientPhone: clientPhone || '(11) 98888-7777',
+        serviceName: s.name,
+        serviceDate: serviceDateStr,
+        returnDays: returnDays
+      };
+      if (existingMaintIdx >= 0) {
+        appState.maintenanceList[existingMaintIdx] = maintItem;
+      } else {
+        appState.maintenanceList.unshift(maintItem);
+      }
+    }
+
+    saveData();
+    editingAppointmentId = null;
+    const saveBtn = document.getElementById('btnSaveAppointment');
+    if (saveBtn) saveBtn.innerText = 'Salvar';
+    const multiBtn = document.getElementById('btnMultiAppointment');
+    if (multiBtn) multiBtn.style.display = '';
+
+    closeNewAppointmentModalDirect();
+    showToast(`Agendamento de ${clientName} atualizado com sucesso!`);
+
+    // Se o agendamento foi em outro dia ou mês, navegar a timeline para aquele dia
+    if (appState.selectedDay !== day || appState.selectedMonth !== month || appState.selectedYear !== year) {
+      appState.selectedDay = day;
+      appState.selectedMonth = month;
+      appState.selectedYear = year;
+      renderAgendaDays();
+    }
+
+    renderTimeline();
+    renderClientesCRM();
+    renderManutencao();
+    renderMeusPagamentos();
+    renderResumoFinanceiro();
+    return;
+  }
 
   const newApt = {
     id: 'apt-' + Date.now(),
@@ -3574,6 +3898,8 @@ window.prevFullCalendarMonth = prevFullCalendarMonth;
 window.nextFullCalendarMonth = nextFullCalendarMonth;
 window.selectFullCalendarDay = selectFullCalendarDay;
 window.openNewAppointmentModal = openNewAppointmentModal;
+window.openEditAppointmentModal = openEditAppointmentModal;
+window.editAppointment = editAppointment;
 window.closeNewAppointmentModal = closeNewAppointmentModal;
 window.closeNewAppointmentModalDirect = closeNewAppointmentModalDirect;
 window.saveManualAppointment = saveManualAppointment;
@@ -3586,6 +3912,12 @@ window.selectAutocompleteClient = selectAutocompleteClient;
 window.toggleAptMoreFields = toggleAptMoreFields;
 window.openNewClientQuickModal = openNewClientQuickModal;
 window.closeClientRecordModalDirect = closeClientRecordModalDirect;
+window.renderServicosList = renderServicosList;
+window.deleteServiceDirect = deleteServiceDirect;
+window.openNewServiceModal = openNewServiceModal;
+window.openEditServiceModal = openEditServiceModal;
+window.saveServiceModal = saveServiceModal;
+window.deleteServiceModal = deleteServiceModal;
 
 document.addEventListener('DOMContentLoaded', () => {
   initDefaultData();
@@ -3596,6 +3928,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initReportsMonths();
   renderClientesCRM();
   renderOnlinePortal();
+  renderServicosList();
   renderManutencao();
   renderMeusPagamentos();
   renderResumoFinanceiro();

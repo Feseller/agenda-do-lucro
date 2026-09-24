@@ -2378,15 +2378,24 @@ body {
    ========================================================================== */
 .modern-apt-card {
   max-width: 440px !important;
+  max-height: 92vh !important;
+  overflow-y: auto !important;
   border-radius: 20px !important;
-  padding: 18px 20px !important;
+  padding: 16px 18px !important;
+  position: relative !important;
 }
 
 .apt-modal-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  position: sticky;
+  top: -16px;
+  background: #FFFFFF;
+  z-index: 30;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid #F3F4F6;
 }
 
 .btn-apt-link-close {
@@ -2394,12 +2403,33 @@ body {
   border: none;
   color: var(--purple-primary, #7C3AED);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   padding: 4px 6px;
+  display: flex;
+  align-items: center;
 }
 .btn-apt-link-close:hover {
   text-decoration: underline;
+}
+
+.btn-apt-x-close {
+  background: #F3F4F6;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+.btn-apt-x-close:hover {
+  background: #E5E7EB;
+  color: #111827;
 }
 
 .apt-type-radios {
@@ -2686,6 +2716,61 @@ body {
 .btn-apt-multi-secondary:hover {
   background: #EDE9FE;
   border-color: #C4B5FD;
+}
+
+.btn-apt-cancel-return {
+  background: #F3F4F6;
+  color: #4B5563;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-apt-cancel-return:hover {
+  background: #E5E7EB;
+  color: #1F2937;
+}
+
+.btn-service-action-edit {
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  color: var(--purple-primary, #7C3AED);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+.btn-service-action-edit:hover {
+  background: #EDE9FE;
+}
+
+.btn-service-action-del {
+  background: #FEE2E2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-service-action-del:hover {
+  background: #FCA5A5;
+  color: #B91C1C;
 }
 
 /* ==========================================================================
