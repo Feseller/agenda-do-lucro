@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda do Lucro VIP — O App Completo para Designers de Sobrancelha</title>
+  
+  <meta name="description" content="O aplicativo definitivo para designers de sobrancelha e profissionais da beleza organizarem horários, fidelizarem clientes e multiplicarem seus lucros.">
+  <link rel="icon" type="image/jpeg" href="assets/banner-sobrancelha.jpg">
+
+  <!-- Fontes Google de Alto Padrão -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --purple-primary: #7C3AED;
+      --purple-dark: #581C87;
+      --purple-deep: #3B0764;
+      --purple-light: #F3E8FF;
+      --purple-ultra-light: #FAF5FF;
+      --purple-accent: #9333EA;
+      --gold-luxury: #D97706;
+      --gold-light: #FEF3C7;
+      --emerald-success: #059669;
+      --text-main: #1E1B4B;
+      --text-muted: #6B7280;
+      --bg-white: #FFFFFF;
+      --bg-light: #FBF9FE;
+      --border-soft: #EDE9FE;
+      --shadow-sm: 0 2px 8px rgba(124, 58, 237, 0.06);
+      --shadow-md: 0 8px 30px rgba(124, 58, 237, 0.08);
+      --shadow-lg: 0 16px 48px rgba(88, 28, 135, 0.14);
+      --shadow-vip: 0 20px 50px rgba(124, 58, 237, 0.22);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-white);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Container Central */
+    .container {
+      width: 100%;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Barra Superior de Notificação */
+    .top-announcement {
+      background: linear-gradient(90deg, #581C87, #7C3AED, #581C87);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .top-announcement span {
+      background: #FEF08A;
+      color: #854D0E;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    /* Navegação */
+    .navbar {
+      padding: 18px 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--purple-deep);
+    }
+    .brand-logo i {
+      font-size: 22px;
+      color: var(--purple-primary);
+    }
+    .brand-logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .brand-logo-text span {
+      color: var(--purple-primary);
+    }
+    .btn-nav-cta {
+      background: var(--purple-light);
+      color: var(--purple-primary);
+      border: 1.5px solid var(--border-soft);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-nav-cta:hover {
+      background: var(--purple-primary);
+      color: #FFFFFF;
+      border-color: var(--purple-primary);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 50px 0 70px;
+      background: radial-gradient(circle at 50% 20%, rgba(243, 232, 255, 0.7) 0%, rgba(255, 255, 255, 1) 75%);
+      text-align: center;
+      position: relative;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--purple-primary);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 22px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px;
+      line-height: 1.2;
+      color: var(--purple-deep);
+      max-width: 860px;
+      margin: 0 auto 20px;
+      font-weight: 800;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #7C3AED, #9333EA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 32px;
+      font-weight: 400;
+    }
+    .hero-cta-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .btn-primary-glow {
+      background: linear-gradient(135deg, #7C3AED 0%, #581C87 100%);
+      color: #FFFFFF;
+      padding: 16px 36px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(124, 58, 237, 0.35);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary-glow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(124, 58, 237, 0.45);
+    }
+    .hero-guarantee-note {
+      font-size: 12px;
+      color: #6B7280;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Banner Oficial de Apresentação */
+    .hero-banner-wrapper {
+      max-width: 1020px;
+      margin: 0 auto;
+      border-radius: 24px;
+      padding: 8px;
+      background: linear-gradient(135deg, rgba(233, 213, 255, 0.6), rgba(255, 255, 255, 0.8));
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .hero-banner-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 18px;
+    }
+
+    /* Seção Pilares de Valor */
+    .pillars-section {
+      padding: 70px 0;
+      background: var(--bg-white);
+    }
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 50px;
+    }
+    .section-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--purple-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      color: var(--purple-deep);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .pillar-card {
+      background: var(--bg-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 26px 20px;
+      text-align: center;
+      transition: all 0.25s ease;
+    }
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: #DDD6FE;
+      background: #FFFFFF;
+    }
+    .pillar-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--purple-light);
+      color: var(--purple-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin: 0 auto 16px;
+    }
+    .pillar-card h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .pillar-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Seção Entregáveis Detalhados */
+    .deliverables-section {
+      padding: 70px 0;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FAF7FF 100%);
+    }
+    .deliverables-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .deliverable-box {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      gap: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .deliverable-box:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #C4B5FD;
+    }
+    .deliv-icon-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: #FAF5FF;
+      color: var(--purple-primary);
+      border: 1px solid #E9D5FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .deliv-content h4 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--purple-deep);
+      margin-bottom: 6px;
+    }
+    .deliv-content p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* ======================================================================
+       SEÇÃO DE OFERTAS & PREÇOS (3 PLANOS SEM BÔNUS)
+       ====================================================================== */
+    .pricing-section {
+      padding: 80px 0 90px;
+      background: #FFFFFF;
+      position: relative;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 30px;
+    }
+
+    .pricing-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 24px;
+      padding: 34px 26px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* CARD ANUAL VIP — DESTAQUE MÁXIMO LUXO */
+    .pricing-card.card-vip {
+      border: 2.5px solid var(--purple-primary);
+      background: linear-gradient(180deg, #FFFFFF 0%, #FAF5FF 100%);
+      box-shadow: var(--shadow-vip);
+      transform: scale(1.03);
+      z-index: 2;
+    }
+    .pricing-card.card-vip:hover {
+      transform: scale(1.05) translateY(-4px);
+    }
+
+    /* Selo de Melhor Oferta */
+    .vip-top-badge {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #7C3AED, #581C87);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 6px 18px;
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .plan-header {
+      text-align: center;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 22px;
+    }
+    .plan-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--purple-deep);
+      margin-bottom: 4px;
+    }
+    .plan-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      min-height: 36px;
+    }
+
+    .plan-price-box {
+      margin-top: 14px;
+    }
+    .price-strike {
+      font-size: 13px;
+      color: #9CA3AF;
+      text-decoration: line-through;
+      margin-bottom: 2px;
+    }
+    .price-main {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+      font-family: 'Playfair Display', serif;
+    }
+    .price-period {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .price-annual-ref {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--purple-primary);
+      margin-top: 6px;
+      background: var(--purple-light);
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    /* Destaque de Economia no Card VIP */
+    .vip-economy-banner {
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #065F46;
+      font-size: 12.5px;
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .plan-features-list {
+      list-style: none;
+      margin-bottom: 28px;
+      flex-grow: 1;
+    }
+    .plan-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .plan-feature-item i {
+      color: var(--emerald-success);
+      font-size: 14px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .btn-plan-cta {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-plan-secondary {
+      background: #FFFFFF;
+      color: var(--purple-primary);
+      border: 2px solid #DDD6FE;
+    }
+    .btn-plan-secondary:hover {
+      background: var(--purple-light);
+      border-color: var(--purple-primary);
+    }
+    .btn-plan-vip {
+      background: linear-gradient(135deg, #7C3AED 0%, #581C87 100%);
+      color: #FFFFFF;
+      border: none;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+    }
+    .btn-plan-vip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(124, 58, 237, 0.45);
+    }
+
+    /* Seção de Comparativo Rápido */
+    .compare-summary-box {
+      max-width: 820px;
+      margin: 40px auto 0;
+      background: #FAF5FF;
+      border: 1.5px dashed #C4B5FD;
+      border-radius: 16px;
+      padding: 18px 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--purple-deep);
+    }
+    .compare-summary-box strong {
+      color: var(--purple-primary);
+      font-weight: 800;
+    }
+
+    /* Garantia */
+    .guarantee-section {
+      padding: 60px 0;
+      background: var(--bg-light);
+      border-top: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .guarantee-card {
+      max-width: 760px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .guarantee-badge {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #FEF3C7;
+      color: #B45309;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .guarantee-text h4 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .guarantee-text p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* FAQ */
+    .faq-section {
+      padding: 70px 0 80px;
+      background: #FFFFFF;
+    }
+    .faq-accordion {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .faq-item {
+      background: var(--bg-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 18px 22px;
+    }
+    .faq-question {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--purple-deep);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .faq-question i {
+      color: var(--purple-primary);
+      font-size: 13px;
+    }
+    .faq-answer {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      line-height: 1.55;
+    }
+
+    /* Rodapé */
+    .footer {
+      background: #1E1B4B;
+      color: #E0E7FF;
+      padding: 40px 0 30px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .footer-brand span {
+      color: #C084FC;
+    }
+    .footer-text {
+      color: #94A3B8;
+      max-width: 580px;
+      margin: 0 auto 16px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .footer-copy {
+      color: #64748B;
+      font-size: 11px;
+    }
+
+    /* Responsividade */
+    @media (max-width: 992px) {
+      .hero-title { font-size: 34px; }
+      .pillars-grid { grid-template-columns: repeat(2, 1fr); }
+      .deliverables-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin: 30px auto 0; }
+      .pricing-card.card-vip { transform: none; }
+      .pricing-card.card-vip:hover { transform: translateY(-4px); }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title { font-size: 28px; }
+      .hero-subtitle { font-size: 15px; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .guarantee-card { flex-direction: column; text-align: center; }
+      .btn-primary-glow { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior de Aviso VIP -->
+  <aside class="top-announcement">
+    <span>Lançamento VIP</span>
+    Economize R$ 133,80 na assinatura Anual com acesso imediato na tela do seu celular!
+  </aside>
+
+  <!-- Cabeçalho de Navegação -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="brand-logo">
+        <i class="fa-solid fa-crown"></i>
+        <div class="brand-logo-text">AGENDA DO <span>LUCRO</span></div>
+      </a>
+      <a href="#planos" class="btn-nav-cta">
+        <i class="fa-solid fa-bolt"></i> Ver Planos
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      
+      <div class="hero-tag">
+        <i class="fa-solid fa-sparkles"></i>
+        O Sistema Exclusivo para Designers de Sobrancelha & Beleza
+      </div>
+
+      <h1 class="hero-title">
+        Seu talento merece uma agenda que <span>trabalha e lucra por você!</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Elimine o caderno de papel, bloqueie horários duplicados, traga suas clientes de volta automaticamente no WhatsApp e visualize seu lucro líquido real no final de cada mês.
+      </p>
+
+      <div class="hero-cta-wrap">
+        <a href="#planos" class="btn-primary-glow">
+          <i class="fa-solid fa-crown"></i>
+          <span>GARANTIR MEU ACESSO VIP AGORA</span>
+        </a>
+        <div class="hero-guarantee-note">
+          <i class="fa-solid fa-shield-check" style="color: #059669;"></i>
+          Garantia incondicional de 7 dias • Acesso instantâneo liberado na Kiwify
+        </div>
+      </div>
+
+      <!-- Mockup Oficial da Aplicação -->
+      <div class="hero-banner-wrapper">
+        <img src="assets/banner-vendas.png" alt="Agenda do Lucro - Visão Oficial no Celular" class="hero-banner-img">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pilares de Valor do App -->
+  <section class="pillars-section">
+    <div class="container">
+      
+      <div class="section-header">
+        <span class="section-badge">Os 4 Pilares da Designer Lucrativa</span>
+        <h2 class="section-title">Construído sob medida para a sua rotina real</h2>
+        <p class="section-desc">Tudo que você precisa para gerenciar seus horários e suas finanças em um único lugar, sem complicações técnicas.</p>
+      </div>
+
+      <div class="pillars-grid">
+        
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fa-regular fa-calendar-check"></i>
+          </div>
+          <h3>Agenda Inteligente</h3>
+          <p>Grade dinâmica que aceita qualquer horário exato e bloqueia clientes marcadas no mesmo intervalo.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fa-solid fa-sack-dollar"></i>
+          </div>
+          <h3>Controle de Lucro Real</h3>
+          <p>Subtraia os custos de lâminas, hennas e descartáveis do faturamento e descubra seu lucro líquido.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fa-solid fa-users-viewfinder"></i>
+          </div>
+          <h3>Minha Clientela VIP</h3>
+          <p>CRM completo com aniversários, WhatsApp, histórico e sugestão automática de dados ao agendar.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fa-brands fa-whatsapp"></i>
+          </div>
+          <h3>Retorno Automático</h3>
+          <p>Ciclo inteligente que avisa a hora certa de chamar a cliente para a manutenção a cada 15, 20 ou 30 dias.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Entregáveis Oficiais do Aplicativo (Sem Bônus Fictícios) -->
+  <section class="deliverables-section">
+    <div class="container">
+      
+      <div class="section-header">
+        <span class="section-badge">O que está incluso no seu acesso</span>
+        <h2 class="section-title">Todos os entregáveis que você recebe</h2>
+        <p class="section-desc">Sem pegadinhas ou promessas vazias. Conheça as ferramentas completas que você usará todos os dias.</p>
+      </div>
+
+      <div class="deliverables-grid">
+        
+        <!-- Entregável 1 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-regular fa-clock"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>1. Grade de Agendamento Estilo Relógio</h4>
+            <p>Escolha o horário livremente (ex: 08:30, 08:40, 09:10) e defina a duração personalizada de cada sessão com cálculo de intervalo em tempo real.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 2 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>2. Sistema Anti-Conflito de Horários</h4>
+            <p>O app detecta sobreposição de horários e exibe aviso automático de "Horário não disponível", impedindo 2 clientes no mesmo horário.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 3 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-address-book"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>3. CRM & Ficha da Cliente Simplificada</h4>
+            <p>Exatamente os 5 campos essenciais: Nome, WhatsApp, Data de Aniversário, Procedimento e Anotações Importantes. Armazenamento automático para sessões futuras.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 4 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-rotate"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>4. Ciclo de Manutenção & Retornos</h4>
+            <p>Painel que mostra quando foi o último procedimento da cliente e calcula a data ideal para retorno (ex: Henna a cada 20 dias, Nanoblading a cada 30 dias).</p>
+          </div>
+        </div>
+
+        <!-- Entregável 5 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-brands fa-whatsapp"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>5. Mensagens Pré-definidas no WhatsApp</h4>
+            <p>Disparo em 1 clique para Boas-Vindas de novas clientes, Lembretes de Agendamento, Manutenção Preventiva e Pesquisa de Pós-Atendimento.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 6 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>6. Resumo Financeiro & Gráfico de Pizza</h4>
+            <p>Acompanhe receitas, custos de materiais e adicione despesas do estúdio (água, luz, aluguel) com gráfico de pizza exclusivo e faturamento mês a mês.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 7 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>7. Painel Meus Pagamentos</h4>
+            <p>Descubra a margem e o valor líquido exato que você recebe em cada procedimento realizado, sem precisar fazer contas complicadas em cadernos.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 8 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-calendar-days"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>8. Calendário Mensal Completo em Grade</h4>
+            <p>Acesse o mês todo em grade de 7 colunas, navegue por todos os meses do ano, visualize o dia de hoje sempre em vermelho e toque em qualquer dia para abrir a agenda.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 9 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>9. Aplicativo Instalável no Celular (PWA)</h4>
+            <p>Adicione o ícone direto na área de trabalho do seu iPhone ou Android e abra o app em tela cheia com alta velocidade e sem barra de navegador.</p>
+          </div>
+        </div>
+
+        <!-- Entregável 10 -->
+        <div class="deliverable-box">
+          <div class="deliv-icon-wrap">
+            <i class="fa-solid fa-user-group"></i>
+          </div>
+          <div class="deliv-content">
+            <h4>10. Gestão de Equipe & Comissões</h4>
+            <p>Cadastre parceiras do estúdio, defina percentuais de comissão e gere demonstrativos de repasse profissionais automaticamente.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       SEÇÃO DE PREÇOS COM AS 3 OFERTAS OFICIAIS
+       ====================================================================== -->
+  <section class="pricing-section" id="planos">
+    <div class="container">
+      
+      <div class="section-header">
+        <span class="section-badge">Planos de Acesso Oficial</span>
+        <h2 class="section-title">Escolha o plano ideal para o seu estúdio</h2>
+        <p class="section-desc">Acesso completo e imediato a todas as ferramentas do aplicativo. Sem custos ocultos.</p>
+      </div>
+
+      <div class="pricing-grid">
+        
+        <!-- OFERTA 1: MENSAL BÁSICO -->
+        <div class="pricing-card">
+          <div class="plan-header">
+            <h3 class="plan-name">Mensal Básico</h3>
+            <p class="plan-desc">Acesso contínuo com cobrança mensal automática.</p>
+            <div class="plan-price-box">
+              <div class="price-main">R$ 35,90</div>
+              <div class="price-period">por mês</div>
+              <div class="price-annual-ref">Valor acumulado: R$ 430,80 / ano</div>
+            </div>
+          </div>
+
+          <ul class="plan-features-list">
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Grade de agendamento estilo relógio</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Bloqueio de horários duplicados</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Cadastro & CRM de clientes com 5 campos</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Ciclo de manutenção e avisos de retorno</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Disparo de WhatsApp com modelos prontos</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Resumo financeiro & gastos do estúdio</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Calendário mensal em grade completo</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Instalação na tela de início do celular</span>
+            </li>
+          </ul>
+
+          <a href="https://pay.kiwify.com.br/RHHJNBk" target="_blank" class="btn-plan-cta btn-plan-secondary">
+            Assinar Plano Mensal
+          </a>
+        </div>
+
+        <!-- OFERTA 3: ANUAL VIP (SUPER DESTAQUE MÁXIMO) -->
+        <div class="pricing-card card-vip">
+          
+          <div class="vip-top-badge">
+            <i class="fa-solid fa-crown"></i>
+            MELHOR OFERTA • MAIS VANTAJOSA
+          </div>
+
+          <div class="plan-header">
+            <h3 class="plan-name">Anual VIP</h3>
+            <p class="plan-desc">Acesso completo durante 12 meses inteiros com máxima economia.</p>
+            
+            <div class="plan-price-box">
+              <div class="price-strike">De R$ 430,80</div>
+              <div class="price-main" style="color: var(--purple-primary);">R$ 297,00</div>
+              <div class="price-period">à vista por 1 ano inteiro (ou em até 12x)</div>
+              
+              <div class="vip-economy-banner">
+                <i class="fa-solid fa-badge-percent"></i>
+                <span>Economize R$ 133,80 em relação ao mensal!</span>
+              </div>
+            </div>
+          </div>
+
+          <ul class="plan-features-list">
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span><strong>12 meses de acesso VIP garantido</strong></span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span><strong>Economia equivalente a quase 4 meses grátis</strong></span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Grade de agendamento estilo relógio & horários livres</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Sistema anti-conflito de horários duplicados</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>CRM & Ficha técnica simplificada (5 campos)</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Ciclo de manutenção para retorno de clientes</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Mensagens pré-definidas para WhatsApp</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Resumo financeiro & gráfico de pizza</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Painel Meus Pagamentos & Margens Líquidas</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Calendário mensal em grade de todos os meses</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Suporte a aplicativo instalado no celular (PWA)</span>
+            </li>
+          </ul>
+
+          <a href="https://pay.kiwify.com.br/xY4y0tc" target="_blank" class="btn-plan-cta btn-plan-vip">
+            <i class="fa-solid fa-crown"></i>
+            QUERO APROVEITAR A MELHOR OFERTA (ANUAL VIP)
+          </a>
+        </div>
+
+        <!-- OFERTA 2: SEMESTRAL PRATA -->
+        <div class="pricing-card">
+          <div class="plan-header">
+            <h3 class="plan-name">Semestral Prata</h3>
+            <p class="plan-desc">Acesso durante 6 meses com pagamento único.</p>
+            <div class="plan-price-box">
+              <div class="price-main">R$ 197,00</div>
+              <div class="price-period">por 6 meses (R$ 32,83/mês equivalente)</div>
+              <div class="price-annual-ref" style="background: #F3F4F6; color: #4B5563;">Custo anual equivalente: R$ 394,00</div>
+            </div>
+          </div>
+
+          <ul class="plan-features-list">
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>6 meses de acesso completo</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Grade de agendamento estilo relógio</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Bloqueio de horários duplicados</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Cadastro & CRM de clientes com 5 campos</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Ciclo de manutenção e avisos de retorno</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Disparo de WhatsApp com modelos prontos</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Resumo financeiro & gastos do estúdio</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Calendário mensal em grade completo</span>
+            </li>
+            <li class="plan-feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Instalação na tela de início do celular</span>
+            </li>
+          </ul>
+
+          <a href="https://pay.kiwify.com.br/qm0gnDP" target="_blank" class="btn-plan-cta btn-plan-secondary">
+            Garantir Plano Semestral
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Resumo Comparativo Destacando a Vantagem do Anual -->
+      <div class="compare-summary-box">
+        💡 <strong>Por que o Plano Anual VIP é o mais vantajoso?</strong><br>
+        Enquanto no plano mensal você investiria <strong>R$ 430,80 por ano</strong>, e no semestral <strong>R$ 394,00 por ano</strong>, no <strong>Anual VIP você paga apenas R$ 297,00</strong>. Você economiza <strong>R$ 133,80</strong> direto no seu bolso e garante estabilidade por 12 meses inteiros!
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Garantia Incondicional de 7 Dias -->
+  <section class="guarantee-section">
+    <div class="container">
+      <div class="guarantee-card">
+        <div class="guarantee-badge">
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+        <div class="guarantee-text">
+          <h4>Garantia Incondicional de 7 Dias</h4>
+          <p>
+            Entre, use todas as ferramentas do aplicativo, cadastre seus procedimentos e atenda suas clientes. Se por qualquer motivo você achar que o app não atendeu às suas expectativas, basta solicitar o reembolso na Kiwify com 1 clique dentro dos 7 dias e 100% do seu dinheiro será devolvido.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Perguntas Frequentes (FAQ) -->
+  <section class="faq-section">
+    <div class="container">
+      
+      <div class="section-header">
+        <span class="section-badge">Tire suas dúvidas</span>
+        <h2 class="section-title">Perguntas Frequentes</h2>
+        <p class="section-desc">Tudo que você precisa saber antes de garantir seu acesso.</p>
+      </div>
+
+      <div class="faq-accordion">
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Como recebo meu acesso após o pagamento?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Imediatamente após a aprovação pela Kiwify, você recebe um e-mail com o link direto e os seus dados de acesso para entrar na sua conta e começar a usar na hora.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Funciona no iPhone e no Android?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Sim! O aplicativo funciona perfeitamente em qualquer smartphone (iOS e Android), além de computadores, notebooks e tablets pelo navegador. Você também pode instalá-lo na tela de início do seu celular com 1 toque.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Preciso pagar taxas na App Store ou Google Play?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Não. O aplicativo utiliza tecnologia PWA moderna. Você não paga taxas para a Apple nem para o Google e não precisa passar por aprovação de lojas.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Posso parcelar no cartão de crédito?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Sim! Especialmente o Plano Anual VIP pode ser parcelado em até 12x no cartão de crédito diretamente pelo checkout seguro da Kiwify. Também aceitamos PIX à vista.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Meus dados e clientes ficam seguros?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Totalmente seguros! Cada designer possui seu banco de dados individual e criptografado na nuvem. Nenhuma outra profissional tem acesso às suas clientes ou aos seus relatórios de faturamento.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Rodapé Oficial -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-brand">
+        <i class="fa-solid fa-crown" style="font-size: 16px; color: #C084FC; margin-right: 6px;"></i>
+        AGENDA DO <span>LUCRO</span>
+      </div>
+      <p class="footer-text">
+        O sistema de gestão financeira e agendamento inteligente criado para valorizar o trabalho das profissionais de sobrancelha e beleza em todo o Brasil.
+      </p>
+      <div class="footer-copy">
+        © 2026 Agenda do Lucro VIP. Todos os direitos reservados. Processamento seguro via Kiwify.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
